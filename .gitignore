@@ -71,3 +71,9 @@ local_settings.py
 pip-log.txt
 # redis dumps
 *.rdb
+
+# PS China
+*.zip
+!/config/durant-names.txt
+!/config/replay-head.txt
+!/config/replay-tail.txt
