@@ -74,19 +74,8 @@ pip-log.txt
 
 # PS China
 *.zip
-!/config/ps-china
-/config/ps-china/team-db
-/config/ps-china/auto-chess/*.json
-/config/ps-china/whitelist.json
-/config/ps-china/intro/news.json
-!/config/pet-mode
-/config/pet-mode/user-properties
-/config/pet-mode/user-gifts
-/config/pet-mode/deposit
-/config/pet-mode/trade-log
-/config/pet-mode/lottery-log
-/config/pet-mode/hyper-config.json
-/config/pet-mode/tmp
-!/config/rouge
-/config/rouge/test.json
-/config/rouge/user-properties
+!/config/random-formats-teams.json
+!/config/durant-names.txt
+!/config/replay-head.txt
+!/config/replay-tail.txt
+!/config/intro
