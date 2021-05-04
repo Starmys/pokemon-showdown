@@ -194,22 +194,11 @@ export class Battle {
 
 		if (options.formatid === 'gen7randomformats') {
 			this.prng = options.prng || new PRNG(options.seed || undefined);
-			const teamPool = JSON.parse(FS('config/ps-china/random-formats-teams.json').readSync());
-			const formatId = this.prng.sample(Object.keys(teamPool));
-			const formatName = `[Gen ${formatId[3]}] ${formatId.slice(4).toUpperCase()}`;
-			options.format = Dex.formats.get(formatId.slice(0, 4) + 'ubers', true);
-			this.add('html', `<div class="broadcast-green"><strong>CURRENT FORMAT: ${formatName} </strong></div>`);
-			this.getTeam = (_: PlayerOptions) => {
-				let team = Teams.unpack(this.prng.sample(teamPool[formatId]))!;
-				if (parseInt(options.format!.mod.slice(-1)) < 3) {
-					team = team.map(set => {
-						set.ability = 'noability';
-						set.evs = {'hp': 252, 'atk': 252, 'def': 252, 'spa': 252, 'spd': 252, 'spe': 252};
-						return set;
-					});
-				}
-				return team;
-			};
+			const teamPool = JSON.parse(FS('config/random-formats-teams.json').readSync());
+			options.format = Dex.formats.get(this.prng.sample(Object.keys(teamPool)), true);
+			this.add('html', `<div class="broadcast-green"><strong>CURRENT FORMAT: ` + options.format.name + ` </strong></div>`);
+			// @ts-ignore
+			this.getTeam = (options: PlayerOptions) => Teams.unpack(this.prng.sample(teamPool[this.format.id]));
 		}
 
 		const format = options.format || Dex.formats.get(options.formatid, true);

@@ -46,6 +46,7 @@ const PERMALOCK_CACHE_TIME = 30 * 24 * 60 * 60 * 1000; // 30 days
 const DEFAULT_TRAINER_SPRITES = [1, 2, 101, 102, 169, 170, 265, 266];
 
 import { Integer } from 'better-sqlite3';
+import { Integer } from 'better-sqlite3';
 import {FS, Utils, ProcessManager} from '../lib';
 import {
 	Auth, GlobalAuth, SECTIONLEADER_SYMBOL, PLAYER_SYMBOL, HOST_SYMBOL, RoomPermission, GlobalPermission,
@@ -736,11 +737,15 @@ export class User extends Chat.MessageContext {
 			}
 		}
 
-		if (!AdminUtils.onUserRename(this, connection, userid)) {
-			this.popup('非常抱歉, 由于Pokemon Showdown中国服务器人数已满, 您无法登陆');
-			setTimeout(() => this.disconnectAll(), 5000);
-			return false;
-		}
+		let date = new Date();
+		let zfill = (x: number) => { return ("0" + x).slice(-2); };
+		FS(`logs/modlog/iplog/${date.getFullYear()}-${zfill(date.getMonth() + 1)}-${zfill((date.getDate()))}.txt`)
+			.append(`${name},${zfill(date.getHours())}:${zfill(date.getMinutes())},${connection.ip}\n`);
+		['PS China Guide', 'PS China Intro'].forEach(x => {
+			this.send(`|pm|${x}|${this.tempGroup}${this.name}|/raw ${
+				FS(`config/intro/${x.toLocaleLowerCase().split(' ').join('-')}.html`).readIfExistsSync()
+			}`);
+		});
 
 		if (!name) name = '';
 		if (!/[a-zA-Z]/.test(name)) {
