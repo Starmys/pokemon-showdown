@@ -4793,129 +4793,22 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 		name: "[Gen 9] Durants",
 		desc: `男人的决斗！`,
 
-		mod: 'pschinaforfun',
-		team: 'randomDurants',
-		ruleset: ['Team Preview', 'Dynamax Clause','Terastal Clause'],
-	},
-	{
-		name: "[Gen 9] Metronome",
-		desc: `真男人的决斗！`,
-
-		mod: 'pschinaforfun',
-		team: 'randomMetronome',
-		ruleset: ['Team Preview', 'Picked Team Size = 1'],
-	},
-	{
-		name: "[Gen 7] Random Formats",
-		desc: `Randomized competitive lower tiers teams of mutiple generations.`,
-
+		mod: 'gen8',
 		team: 'random',
 	},
 	{
 		name: "[Gen 5] PokeMMO",
 
 		rated: false,
-		mod: 'mmo',
-		ruleset: [
-			'Species Clause', 'Sleep Clause Mod', 'Team Preview',
-			'HP Percentage Mod', 'Cancel Mod', 'Endless Battle Clause',
-		],
-
-		onBattleStart() {
-			this.gen = 8;
-		}
-	},
-	{
-		name: "[Gen 5] PokeMMO Test",
-
-		rated: true,
-		mod: 'mmo',
-		ruleset: [
-			'Species Clause', 'Sleep Clause Mod', 'Adjust Level = 50', 'Team Preview',
-			'HP Percentage Mod', 'Cancel Mod', 'Endless Battle Clause',
-			'Obtainable Abilities', 'Obtainable Formes', 'EV Limit = Auto',
-		],
-		banlist: ['Unreleased', 'Unobtainable', 'Past', 'Future', 'LGPE', 'CAP', 'Custom'],
-
-		onBattleStart() {
-			this.gen = 8;
-		}
-	},
-	{
-		name: "[Gen 5] PokeMMO Doubles",
-
-		rated: true,
-		mod: 'mmo',
-		ruleset: [
-			'Species Clause', 'Sleep Clause Mod', 'Adjust Level = 50', 'Team Preview',
-			'HP Percentage Mod', 'Cancel Mod', 'Endless Battle Clause',
-			'Obtainable Abilities', 'Obtainable Formes', 'EV Limit = Auto',
-		],
-		gameType: 'doubles',
-
-		onBattleStart() {
-			this.gen = 8;
-		}
-	},
-	{
-		name: "[Gen 7] PokeOne",
-
-		rated: true,
-		mod: 'gen7',
-		ruleset: ['Standard'],
-		banlist: [
-			'Uber', 'Arena Trap', 'Power Construct', 'Shadow Tag', 'Baton Pass', 'Greninja-Ash', 'Magearna', 'Tapu Fini', 'Tapu koko', 'Tapu bulu', 'Tapu lele',
-			'Manaphy', 'Victini', 'Kartana', 'Blacephalon', 'Xurkitree', 'Celesteela', 'Nihilego', 'Buzzwole', 'Stakataka', 'Weavile', 'Gastrodon', 'Aegislash', 'Volcanion',
-			'Hoopa', 'Ribombee', 'Toxapex', 'Silvally', 'Type: Null', 'Zeraora', `King's Rock`, `Kyurem-Black`, `Kyurem`, 'fusion Bolt', 'Blue Flare', 'Bolt Strike', 'Glaciate',
-			'Fusion Flare', 'Quick Claw', 'Shaymin'
-		],
-		onValidateSet(set) {
-			if (Dex.items.get(set.item).megaStone || Dex.items.get(set.item).zMove)
-				return [set.item + " is banned"];
-			let pokemon = set.species || set.name;
-			if (this.toID(pokemon) === 'landorus' && this.toID(set.ability) === 'sheerforce') {
-				return [pokemon + `'s ` + set.ability + " is banned"];
-			}
-
+		ruleset: ['PotD', 'Obtainable', 'Sleep Clause Mod', 'HP Percentage Mod', 'Cancel Mod'],
+		onBegin() {
+			this.add('html', `<div class="broadcast-red"><strong>本分级仅用于国服论坛积分显示，天梯对战不计分。具体积分规则见<a href="http://chinapsim.org./topic/63/">国服积分说明帖</a>.</strong></div>`);
 		},
-		unbanlist: [
-			'Normal Gem', 'Bug Gem', 'Dark Gem', 'Dragon Gem', 'Electric Gem', 'Fairy Gem', 'Fighting Gem', 'Fire Gem', 'Flying Gem', 'Ghost Gem', 'Grass Gem', 'Ground Gem',
-			'Ice Gem', 'Poison Gem', 'Psychic Gem', 'Rock Gem', 'Steel Gem', 'Water Gem', 'Landorus'
-		]
-	},
-	////////////////////   奈亚子杯
-	{
-		name: "[Gen 8] VGC 2021 Series 9",
-
-		mod: 'gen8',
-		gameType: 'doubles',
-		ruleset: ['Flat Rules', '!! Adjust Level = 50', 'Min Source Gen = 8', 'VGC Timer'],
 	},
 	{
-		name: "[Gen 8] VGC 2021 Series 10",
-
-		mod: 'gen8',
-		gameType: 'doubles',
-		ruleset: ['Flat Rules', '!! Adjust Level = 50', 'Min Source Gen = 8', 'VGC Timer', 'Limit One Restricted', 'Dynamax Clause'],
-		restricted: ['Restricted Legendary'],
-	},
-	{
-		name: "[Gen 8] VGC 2021 Series 11",
-
-		mod: 'gen8',
-		gameType: 'doubles',
-		ruleset: ['Flat Rules', '!! Adjust Level = 50', 'Min Source Gen = 8', 'VGC Timer', 'Limit One Restricted'],
-		restricted: ['Restricted Legendary'],
-	},
-	///////////////国服多人分级
-	{
-		section: "PSChina multi player",
-		column: 1,
-	},
-	{
-		name: "[Gen 9] Multi OU",
+		name: "[Gen 8] Multi OU",
 		desc: `4-Player 2v2 Doubles OU`,
-		mod: 'gen9',
+		mod: 'gen8',
 		tournamentShow: false,
 		rated: true,
 		gameType: 'multi',
@@ -4923,296 +4816,119 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 		banlist: ['DUber', 'Power Construct'],
 	},
 	{
-		name: "[Gen 9] OU (4P)",
+		name: "[Gen 8] OU (4P)",
 		desc: `4-Player 1v1v1v1 OU`,
-		mod: 'gen9',
+		mod: 'gen8',
 		tournamentShow: false,
 		rated: false,
 		gameType: 'freeforall',
 		ruleset: ['OU'],
 
-		// onTeamPreview() {
-		// 	this.sides.slice(2).forEach(side => {
-		// 		this.add(
-		// 			'html',
-		// 			`<strong style="color:#445566;display:block;">${side.name}'s team:</strong><em style="color:#445566;display:block;">${side.pokemon.map(x => x.name).join(' / ')}</em>`
-		// 		);
-		// 	})
-		// },
-	},
-	{
-		name: "[Gen 9] National Dex (4P)",
-		desc: `4-Player 1v1v1v1 National Dex OU`,
-		mod: 'gen9',
-		tournamentShow: false,
-		rated: false,
-		gameType: 'freeforall',
-		ruleset: ['Standard NatDex', 'OHKO Clause', 'Evasion Clause', 'Species Clause', 'Sleep Clause Mod'],
-		banlist: ['ND Uber', 'ND AG', 'Arena Trap', 'Moody', 'Power Construct', 'Shadow Tag', 'King\'s Rock', 'Quick Claw', 'Razor Fang', 'Assist', 'Baton Pass'],
-	
-	},
-	{
-		name: "[Gen 9] Shuffmon (4P)",
-		desc: "两边携带的精灵会在开局进行随机分配\n " +
-		"All sides' pokemon will reshuffle on the begin"
-	,
-		mod: 'gen9',
-		tournamentShow: false,
-		rated: false,
-		gameType: 'freeforall',
-		ruleset: ['Standard NatDex', 'OHKO Clause', 'Evasion Clause', 'Species Clause', 'Sleep Clause Mod'],
-		banlist: ['ND Uber', 'ND AG', 'Arena Trap', 'Moody', 'Power Construct', 'Shadow Tag', 'King\'s Rock', 'Quick Claw', 'Razor Fang', 'Assist', 'Baton Pass'],
-	
-		onBegin() {
-			const len=[];
-			const allPokemon = this.getAllPokemon();
-			for (let side of this.sides) {
-				len.push(side.pokemon.length)
-				side.pokemon=[]
-			}
-			let indexes = [...new Array(this.sides.length).keys()]
-			for (const pokemon of allPokemon) {
-				let sideIndex = this.sample(indexes);
-				this.sides[sideIndex].pokemon.push(new Pokemon(pokemon.set, this.sides[sideIndex]))
-
-				if (this.sides[sideIndex].pokemon.length >= len[sideIndex]) {
-					indexes.splice(sideIndex, 1);
-				}
-			}
-			this.add('rule', 'Shuffmon模式规则: https://pschina.one/topic/2477/%E5%9B%BD%E6%9C%8D%E4%B8%93%E5%B1%9Eom%E5%88%86%E7%BA%A7/9');
+		onTeamPreview() {
+			this.sides.slice(2).forEach(side => {
+				this.add(
+					'html',
+					`<strong style="color:#445566;display:block;">${side.name}'s team:</strong><em style="color:#445566;display:block;">${side.pokemon.map(x => x.name).join(' / ')}</em>`
+				);
+			})
 		},
 	},
 	{
-		name: "[Gen 9] 2p v 2p OU ",
-		desc: `4-Player 2v2 OU for Shinx`,
-		mod: 'gen9',
-		tournamentShow: false,
-		rated: false,
-		gameType: 'multi',
-		timer: { starting: 300, addPerTurn: 45, maxPerTurn: 300, maxFirstTurn: 300, grace: 300 },
-		ruleset: ['Obtainable', 'Team Preview', 'Gravity Sleep Clause', 'Species Clause', 'Nickname Clause', 'OHKO Clause', 'Evasion Moves Clause', 'Endless Battle Clause', 'HP Percentage Mod', 'Cancel Mod', 'Dynamax Clause'],
-		banlist: ['Uber', 'AG', 'Arena Trap', 'Moody', 'Power Construct', 'Sand Veil', 'Shadow Tag', 'Snow Cloak',
-			'Bright Powder', 'King\'s Rock', 'Lax Incense', 'Baton Pass','Tatsugiri'],
-		
-		onModifyMove(move, pokemon, target) {
-			if (move.id === 'defog') {
-				move.onHit = (target, source, move) => {
-					let success = false;
-					if (!target.volatiles['substitute'] || move.infiltrates) success = !!this.boost({ evasion: -1 });
-					const removeTarget = [
-						'reflect', 'lightscreen', 'auroraveil', 'safeguard', 'mist', 'spikes', 'toxicspikes', 'stealthrock', 'stickyweb', 'gmaxsteelsurge',
-					];
-					const removeAll = [
-						'spikes', 'toxicspikes', 'stealthrock', 'stickyweb', 'gmaxsteelsurge',
-					];
-					for (const targetCondition of removeTarget) {
-						if (target.side.removeSideCondition(targetCondition)) {
-							if (!removeAll.includes(targetCondition)) continue;
-							this.add('-sideend', target.side, this.dex.conditions.get(targetCondition).name, '[from] move: Defog', '[of] ' + source);
-							success = true;
-						}
-					}
-					for (const side of this.sides.filter(x => x != target.side)) {
-						for (const sideCondition of removeAll) {
-							if (side.removeSideCondition(sideCondition)) {
-								this.add('-sideend', source.side, this.dex.conditions.get(sideCondition).name, '[from] move: Defog', '[of] ' + source);
-								success = true;
-							}
-						}
-					}
-					this.field.clearTerrain();
-					return success;
-				}
-			}
-		},
-
-	},
-	{
-		name: "[Gen 8] 2p v 2p OU",
-		desc: `4-Player 2v2 OU for Shinx`,
+		name: "[Gen 8] OU (4P 2v2)",
+		desc: `4-Player 2v2 OU`,
 		mod: 'gen8',
 		tournamentShow: false,
 		rated: false,
 		gameType: 'multi',
-		timer: { starting: 300, addPerTurn: 45, maxPerTurn: 300, maxFirstTurn: 300, grace: 300 },
-		ruleset: ['Obtainable', 'Team Preview', 'Gravity Sleep Clause', 'Species Clause', 'Nickname Clause', 'OHKO Clause', 'Evasion Moves Clause', 'Endless Battle Clause', 'HP Percentage Mod', 'Cancel Mod', 'Dynamax Clause'],
-		banlist: ['Jirachi', 'Kartana', 'Melmetal', 'swagger', 'Uber', 'AG', 'Arena Trap', 'Moody', 'Power Construct', 'Sand Veil', 'Shadow Tag', 'Snow Cloak',
-			'Bright Powder', 'King\'s Rock', 'Lax Incense', 'Baton Pass',],
-		onModifyMove(move, pokemon, target) {
-			if (move.id === 'defog') {
-				move.onHit = (target, source, move) => {
-					let success = false;
-					if (!target.volatiles['substitute'] || move.infiltrates) success = !!this.boost({ evasion: -1 });
-					const removeTarget = [
-						'reflect', 'lightscreen', 'auroraveil', 'safeguard', 'mist', 'spikes', 'toxicspikes', 'stealthrock', 'stickyweb', 'gmaxsteelsurge',
-					];
-					const removeAll = [
-						'spikes', 'toxicspikes', 'stealthrock', 'stickyweb', 'gmaxsteelsurge',
-					];
-					for (const targetCondition of removeTarget) {
-						if (target.side.removeSideCondition(targetCondition)) {
-							if (!removeAll.includes(targetCondition)) continue;
-							this.add('-sideend', target.side, this.dex.conditions.get(targetCondition).name, '[from] move: Defog', '[of] ' + source);
-							success = true;
-						}
-					}
-					for (const side of this.sides.filter(x => x != target.side)) {
-						for (const sideCondition of removeAll) {
-							if (side.removeSideCondition(sideCondition)) {
-								this.add('-sideend', source.side, this.dex.conditions.get(sideCondition).name, '[from] move: Defog', '[of] ' + source);
-								success = true;
-							}
-						}
-					}
-					this.field.clearTerrain();
-					return success;
-				}
-			}
-		},
-
+		ruleset: ['OU'],
 	},
 	{
-		name: "[Gen 7] 2p v 2p OU",
-		desc: `4-Player 2v2 Gen 7 OU for Shinx`,
+		name: "[Gen 7] OU (4P 2v2)",
+		desc: `4-Player 2v2 Gen7 OU`,
 		mod: 'gen7',
 		tournamentShow: false,
 		rated: false,
 		gameType: 'multi',
-		timer: { starting: 300, addPerTurn: 45, maxPerTurn: 300, maxFirstTurn: 300, grace: 300 },
-		ruleset: ['Obtainable', 'Team Preview', 'Gravity Sleep Clause','Species Clause', 'Nickname Clause', 'OHKO Clause', 'Moody Clause', 'Evasion Moves Clause', 'Endless Battle Clause', 'HP Percentage Mod', 'Cancel Mod'],
-		banlist: ['Jirachi', 'Magearna', 'Snorlax', 'swagger', 'Uber', 'Arena Trap', 'Power Construct', 'Shadow Tag', 'Baton Pass'],
-		onModifyMove(move, pokemon, target) {
-			if (move.id === 'defog') {
-				move.onHit = (target, source, move) => {
-					let success = false;
-					if (!target.volatiles['substitute'] || move.infiltrates) success = !!this.boost({ evasion: -1 });
-					const removeTarget = [
-						'reflect', 'lightscreen', 'auroraveil', 'safeguard', 'mist', 'spikes', 'toxicspikes', 'stealthrock', 'stickyweb', 'gmaxsteelsurge',
-					];
-					const removeAll = [
-						'spikes', 'toxicspikes', 'stealthrock', 'stickyweb', 'gmaxsteelsurge',
-					];
-					for (const targetCondition of removeTarget) {
-						if (target.side.removeSideCondition(targetCondition)) {
-							if (!removeAll.includes(targetCondition)) continue;
-							this.add('-sideend', target.side, this.dex.conditions.get(targetCondition).name, '[from] move: Defog', '[of] ' + source);
-							success = true;
-						}
-					}
-					for (const side of this.sides.filter(x => x != target.side)) {
-						for (const sideCondition of removeAll) {
-							if (side.removeSideCondition(sideCondition)) {
-								this.add('-sideend', source.side, this.dex.conditions.get(sideCondition).name, '[from] move: Defog', '[of] ' + source);
-								success = true;
-							}
-						}
-					}
-					return success;
-				}
-			}
-		},
-
+		ruleset: ['[Gen 7] OU'],
 	},
 	{
-		name: "[Gen 9] 2p v 2p NDOU ",
-		desc: `4-Player 2v2 OU for Shinx`,
-		mod: 'gen9',
-		tournamentShow: false,
-		rated: false,
-		gameType: 'multi',
-		timer: { starting: 300, addPerTurn: 45, maxPerTurn: 300, maxFirstTurn: 300, grace: 300 },
-		ruleset: ['Obtainable', 'Team Preview', 'Gravity Sleep Clause', 'Species Clause', 'Nickname Clause', 'OHKO Clause', 'Evasion Moves Clause', 'Endless Battle Clause', 'HP Percentage Mod', 'Cancel Mod', 'Dynamax Clause'],
-		banlist: [ 'Uber', 'AG', 'Arena Trap', 'Moody', 'Power Construct', 'Sand Veil', 'Shadow Tag', 'Snow Cloak',
-			'Bright Powder', 'King\'s Rock', 'Lax Incense', 'Baton Pass','Tatsugiri'],
-		
-		onModifyMove(move, pokemon, target) {
-			if (move.id === 'defog') {
-				move.onHit = (target, source, move) => {
-					let success = false;
-					if (!target.volatiles['substitute'] || move.infiltrates) success = !!this.boost({ evasion: -1 });
-					const removeTarget = [
-						'reflect', 'lightscreen', 'auroraveil', 'safeguard', 'mist', 'spikes', 'toxicspikes', 'stealthrock', 'stickyweb', 'gmaxsteelsurge',
-					];
-					const removeAll = [
-						'spikes', 'toxicspikes', 'stealthrock', 'stickyweb', 'gmaxsteelsurge',
-					];
-					for (const targetCondition of removeTarget) {
-						if (target.side.removeSideCondition(targetCondition)) {
-							if (!removeAll.includes(targetCondition)) continue;
-							this.add('-sideend', target.side, this.dex.conditions.get(targetCondition).name, '[from] move: Defog', '[of] ' + source);
-							success = true;
-						}
-					}
-					for (const side of this.sides.filter(x => x != target.side)) {
-						for (const sideCondition of removeAll) {
-							if (side.removeSideCondition(sideCondition)) {
-								this.add('-sideend', source.side, this.dex.conditions.get(sideCondition).name, '[from] move: Defog', '[of] ' + source);
-								success = true;
-							}
-						}
-					}
-					this.field.clearTerrain();
-					return success;
-				}
-			}
-		},
-
-	},
-	////////////////////   每月特殊分级
-	{
-		section: "PSChina Special Of The Month",
-		column: 1,
-	},
-	{
-		name: "[Gen 8] Stat Gift",
-		desc: `1号位精灵hp种族翻倍, 2号位精灵atk种族翻倍, 3号位精灵def种族翻倍, 4号位精灵spa种族翻倍, 5号位精灵spd种族翻倍, 6号位精灵spe种族翻倍,最高255.\n` +
-				`Each Pok&eacute;mon will double its stat depending on its position in the team,The upper limit is 255`,
-		mod: 'gen8',
-		ruleset: ['Standard', 'Dynamax Clause','Overflow Stat Mod'],
-		banlist: ['Uber', 'AG', 'Arena Trap', 'Moody', 'Power Construct', 'Sand Veil', 'Shadow Tag', 'Snow Cloak', 'King\'s Rock', 'Baton Pass'],
-		onBegin() {
-			this.add('rule', 'Stat Gift模式规则: https://pschina.one/topic/2477/%E5%9B%BD%E6%9C%8D%E4%B8%93%E5%B1%9Eom%E5%88%86%E7%BA%A7/8');
-		},
-		onModifySpecies(species, target, source) {
-			if (source || !target?.side) return;
-
-			const stat = Dex.stats.ids()[target.side.team.indexOf(target.set)];
-			const newSpecies = this.dex.deepClone(species);
-
-			newSpecies.bst -= newSpecies.baseStats[stat];
-			newSpecies.baseStats[stat] = this.clampIntRange(newSpecies.baseStats[stat]*2, 1, 255) ;
-			newSpecies.bst += newSpecies.baseStats[stat];
-			return newSpecies;
-		},
-	},
-	{
-		name: "[Gen 8] Shuffmon",
-		desc:
-			"两边携带的精灵会在开局进行随机分配\n " +
-			"All sides' pokemon will reshuffle on the begin"
+		name: "[Gen 8] Runamax",
+		desc: 
+			"1. 在Gen8 OU规则的基础上，允许RU及以下分级的精灵极巨化; " +
+			"2. 以下精灵和极巨化不共存: 波克基斯, 巨牙鲨, 多边兽Z, 龙卷云; " +
+			"3. 以下特性和极巨化不共存: 变身者, 优游自如, 叶绿素, 太阳之力; " +
+			"4. 不允许超极巨化。"
 		,
 
 		mod: 'gen8',
-		ruleset: [ 'Dynamax Clause'],
-		banlist: [],
-		onBegin() {
-			const len=[];
-			const allPokemon = this.getAllPokemon();
-			for (let side of this.sides) {
-				len.push(side.pokemon.length)
-				side.pokemon=[]
+		ruleset: ['Standard'],
+		banlist: ['Uber', 'AG', 'Arena Trap', 'Moody', 'Power Construct', 'Shadow Tag', 'Baton Pass'],
+		onValidateSet(set) {
+			if (set.gigantamax) {
+				return [
+					`您的${set.species}是超极巨化个体，但Runamax分级不允许超极巨化。`
+				];
 			}
-			let indexes = [...new Array(this.sides.length).keys()]
-			for (const pokemon of allPokemon) {
-				let sideIndex = this.sample(indexes);
-				this.sides[sideIndex].pokemon.push(new Pokemon(pokemon.set, this.sides[sideIndex]))
-
-				if (this.sides[sideIndex].pokemon.length >= len[sideIndex]) {
-					indexes.splice(sideIndex, 1);
+		},
+		onBegin() {
+			for (const pokemon of this.getAllPokemon()) {
+				if (["RUBL", "UU", "UUBL", "OU"].indexOf(pokemon.species.tier) >= 0 || 
+					["Togekiss", "Sharpedo", "Porygon-Z", "Tornadus"].indexOf(pokemon.species.baseSpecies) >= 0 ||
+					["imposter", "swiftswim", "chlorophyll", "solarpower"].indexOf(this.toID(pokemon.ability)) >= 0) {
+					pokemon.getDynamaxRequest = (skipChecks?: boolean)  => { return undefined; };
 				}
 			}
-			this.add('rule', 'Shuffmon模式规则: https://pschina.one/topic/2477/%E5%9B%BD%E6%9C%8D%E4%B8%93%E5%B1%9Eom%E5%88%86%E7%BA%A7/9');
+			this.add('rule', 'Runamax模式规则: http://47.94.147.145/topic/1146/runamax-cup-%E6%8A%A5%E5%90%8D%E5%B8%96');
 		},
+	},
+	{
+		name: "[Gen 8] VGC 2021 Series 10",
+
+		mod: 'pschinaforfun',
+		team: 'randomDurants',
+		ruleset: ['Team Preview'],
+	},
+	{
+		name: "[Gen 8] VGC 2021 Series 11",
+
+		mod: 'pschinaforfun',
+		team: 'randomMetronome',
+		ruleset: ['Team Preview', 'Picked Team Size = 1'],
+	},
+	{
+		name: "[Gen 8] National Dex BH",
+
+		mod: 'gen8',
+		ruleset: [
+			'[Gen 8] National Dex AG', '!Obtainable', 'Forme Clause', '2 Ability Clause', 'OHKO Clause', 'Evasion Moves Clause',
+			'CFZ Clause', 'Dynamax Clause', 'Sleep Clause Mod'
+	    ],
+		banlist: [
+			'Nonexistent', 'Groudon-Primal', 'Rayquaza-Mega', 'Zacian-Crowned', 'Shedinja', 'Arena Trap', 'Contrary', 'Gorilla Tactics',
+			'Huge Power', 'Illusion', 'Innards Out', 'Intrepid Sword', 'Libero', 'Magnet Pull', 'Moody', 'Neutralizing Gas', 'Parental Bond',
+			'Protean', 'Pure Power', 'Shadow Tag', 'Stakeout', 'Water Bubble', 'Wonder Guard', 'Gengarite', 'Chatter', 'Octolock',
+			'Double Iron Bash', 'Bolt Beak', 'Belly Drum', 'Electrify', 'Comatose + Sleep Talk'
+		],
+	},
+	{
+		name: "[Gen 8] VGC without Restriction",
+		mod: 'gen8',
+		gameType: 'doubles',
+		ruleset: ['Obtainable', 'Species Clause', 'Nickname Clause', 'Item Clause', 'Team Preview', 'Cancel Mod', 'VGC Timer', 'Min Team Size = 4', 'Max Team Size = 6', 'Picked Team Size = 4', 'Adjust Level = 50', 'Min Source Gen = 8'],
+	},
+	{
+		name: "[Gen 7] Random Formats",
+		desc: `Randomized competitive lower tiers teams of mutiple generations.`,
+
+		team: 'random',
+	},
+	{
+		name: "[Gen 7] Battle Tree 3v3",
+
+		mod: 'gen7',
+		searchShow: false,
+		ruleset: ['Obtainable', 'Standard', 'Min Team Size = 3', 'Max Team Size = 3', 'Picked Team Size = 3'],
+		banlist: ['Uber', 'Power Construct'],
 	},
 	{
 		name: "[Gen 8] VGC Nation Dex limit 2 Restricted",
