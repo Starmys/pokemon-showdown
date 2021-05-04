@@ -4786,7 +4786,7 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 
 	{
 		section: "PSChina Special",
-		column: 4,
+		column: 1,
 	},
 	{
 		name: "[Gen 8] PS国服积分",
@@ -4802,6 +4802,52 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 		},
 	},
 	{
+		name: "[Gen 8] Multi OU",
+		desc: `4-Player 2v2 Doubles OU`,
+		mod: 'gen8',
+		tournamentShow: false,
+		rated: true,
+		gameType: 'multi',
+		ruleset: ['Standard Doubles', 'Dynamax Clause',  'Picked Team Size = 3'],
+		banlist: ['DUber', 'Power Construct'],
+	},
+	{
+		name: "[Gen 8] OU (4P)",
+		desc: `4-Player 1v1v1v1 OU`,
+		mod: 'gen8',
+		tournamentShow: false,
+		rated: false,
+		gameType: 'freeforall',
+		ruleset: ['OU'],
+
+		onTeamPreview() {
+			this.sides.slice(2).forEach(side => {
+				this.add(
+					'html',
+					`<strong style="color:#445566;display:block;">${side.name}'s team:</strong><em style="color:#445566;display:block;">${side.pokemon.map(x => x.name).join(' / ')}</em>`
+				);
+			})
+		},
+	},
+	{
+		name: "[Gen 8] OU (4P 2v2)",
+		desc: `4-Player 2v2 OU`,
+		mod: 'gen8',
+		tournamentShow: false,
+		rated: false,
+		gameType: 'multi',
+		ruleset: ['OU'],
+	},
+	{
+		name: "[Gen 7] OU (4P 2v2)",
+		desc: `4-Player 2v2 Gen7 OU`,
+		mod: 'gen7',
+		tournamentShow: false,
+		rated: false,
+		gameType: 'multi',
+		ruleset: ['[Gen 7] OU'],
+	},
+	{
 		name: "[Gen 8] Runamax",
 		desc: 
 			"1. 在Gen8 OU规则的基础上，允许RU及以下分级的精灵极巨化; " +
@@ -4811,14 +4857,31 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 		,
 
 		mod: 'gen8',
-		ruleset: ['Standard', 'Runamax Clause'],
+		ruleset: ['Standard'],
 		banlist: ['Uber', 'AG', 'Arena Trap', 'Moody', 'Power Construct', 'Shadow Tag', 'Baton Pass'],
+		onValidateSet(set) {
+			if (set.gigantamax) {
+				return [
+					`您的${set.species}是超极巨化个体，但Runamax分级不允许超极巨化。`
+				];
+			}
+		},
+		onBegin() {
+			for (const pokemon of this.getAllPokemon()) {
+				if (["RUBL", "UU", "UUBL", "OU"].indexOf(pokemon.species.tier) >= 0 || 
+					["Togekiss", "Sharpedo", "Porygon-Z", "Tornadus"].indexOf(pokemon.species.baseSpecies) >= 0 ||
+					["imposter", "swiftswim", "chlorophyll", "solarpower"].indexOf(this.toID(pokemon.ability)) >= 0) {
+					pokemon.getDynamaxRequest = (skipChecks?: boolean)  => { return undefined; };
+				}
+			}
+			this.add('rule', 'Runamax模式规则: http://47.94.147.145/topic/1146/runamax-cup-%E6%8A%A5%E5%90%8D%E5%B8%96');
+		},
 	},
 	{
 		name: "[Gen 8] Durants",
 		desc: `男人的决斗！`,
 
-		mod: 'gen8',
+		mod: 'pschinaforfun',
 		team: 'randomDurants',
 		ruleset: ['Team Preview'],
 	},
@@ -4826,12 +4889,9 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 		name: "[Gen 8] Metronome",
 		desc: `真男人的决斗！`,
 
-		mod: 'gen8',
+		mod: 'pschinaforfun',
 		team: 'randomMetronome',
-		teamLength: {
-			battle: 1,
-		},
-		ruleset: ['Team Preview'],
+		ruleset: ['Team Preview', 'Picked Team Size = 1'],
 	},
 	{
 		name: "[Gen 8] National Dex BH",
@@ -4852,48 +4912,20 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 		name: "[Gen 8] VGC without Restriction",
 		mod: 'gen8',
 		gameType: 'doubles',
-		forcedLevel: 50,
-		teamLength: {
-			validate: [4, 6],
-			battle: 4,
-		},
-		ruleset: ['Obtainable', 'Species Clause', 'Nickname Clause', 'Item Clause', 'Team Preview', 'Cancel Mod', 'VGC Timer'],
-		minSourceGen: 8,
+		ruleset: ['Obtainable', 'Species Clause', 'Nickname Clause', 'Item Clause', 'Team Preview', 'Cancel Mod', 'VGC Timer', 'Min Team Size = 4', 'Max Team Size = 6', 'Picked Team Size = 4', 'Adjust Level = 50', 'Min Source Gen = 8'],
 	},
 	{
-		name: "[Gen 7] Random Formats",
-		desc: `Randomized competitive lower tiers teams of mutiple generations.`,
+		name: "[Gen 7] Random Formats",
+		desc: `Randomized competitive lower tiers teams of mutiple generations.`,
 
-		// mod: new PRNG().sample(['gen7','gen3']),
-		team: 'randomFormats',
-		ruleset: ['Obtainable', 'Sleep Clause Mod', 'HP Percentage Mod', 'Cancel Mod', 'RF-TeamPreview'],
-		mod: 'gen7',
-		// @ts-ignore
-		formatsList: [
-			'gen1ou', 'gen1ubers', 'gen1uu',
-			'gen2ou', 'gen2ubers', 'gen2uu', 'gen2nu', 'gen2lc',
-			'gen3ou', 'gen3ubers', 'gen3uu', 'gen3nu', 'gen3pu', 'gen3lc',
-			'gen4ou', 'gen4ubers', 'gen4uu', 'gen4nu', 'gen4pu', 'gen4lc',
-			'gen5ou', 'gen5ubers', 'gen5uu', 'gen5ru', 'gen5nu', 'gen5pu', 'gen5lc',
-			'gen6ou', 'gen6ubers', 'gen6uu', 'gen6ru', 'gen6nu', 'gen6pu', 'gen6lc',
-			// 'gen7ou', 'gen7ubers', 'gen7uu', 'gen7ru', 'gen7nu', 'gen7pu', 'gen7lc',
-			// 'gen8ou', 'gen8ubers', 'gen8uu', 'gen8ru', 'gen8nu', 'gen8pu', 'gen8lc',
-		],
-		realFormat: '',
-		onBegin() {
-			this.add('html', `<div class="broadcast-green"><strong>CURRENT FORMAT: ` + this.realFormat + ` </strong></div>`);
-		},
+		team: 'random',
 	},
 	{
 		name: "[Gen 7] Battle Tree 3v3",
 
 		mod: 'gen7',
 		searchShow: false,
-		teamLength: {
-			validate: [1, 3],
-			battle: 3,
-		},
-		ruleset: ['Obtainable', 'Standard'],
+		ruleset: ['Obtainable', 'Standard', 'Min Team Size = 3', 'Max Team Size = 3', 'Picked Team Size = 3'],
 		banlist: ['Uber', 'Power Construct'],
 	},
 	{
