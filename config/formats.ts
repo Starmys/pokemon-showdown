@@ -4929,8 +4929,8 @@ export const Formats: FormatList = [
 		column: 1,
 	},
 	{
-		name: "[Gen 9] Durants",
-		desc: `男人的决斗！`,
+		name: "[Gen 8] PS 国服积分",
+		desc: `用于国服论坛积分显示，天梯对战不计分。`,
 
 		mod: 'gen8',
 		team: 'random',
@@ -4943,6 +4943,14 @@ export const Formats: FormatList = [
 		onBegin() {
 			this.add('html', `<div class="broadcast-red"><strong>本分级仅用于国服论坛积分显示，天梯对战不计分。具体积分规则见<a href="http://chinapsim.org./topic/63/">国服积分说明帖</a>.</strong></div>`);
 		},
+	},
+	{
+		name: "[Gen 8] Pet Mode 宠物模式",
+		desc: `与自己培养的宝可梦并肩作战吧！`,
+
+		mod: 'pet',
+		team: 'randomPetMode',
+		ruleset: ['PS China Pet Mode'],
 	},
 	{
 		name: "[Gen 8] Multi OU",
@@ -5050,6 +5058,12 @@ export const Formats: FormatList = [
 		],
 	},
 	{
+		name: "[Gen 8] BSS Series 8",
+		mod: 'gen8',
+		ruleset: ['[Gen 8] Battle Stadium Singles'],
+		unbanlist: ['Mythical', 'Restricted Legendary'],
+	},
+	{
 		name: "[Gen 8] VGC without Restriction",
 		mod: 'gen8',
 		gameType: 'doubles',
@@ -5077,36 +5091,11 @@ export const Formats: FormatList = [
 		ruleset: ['Flat Rules', '!! Adjust Level = 50', 'VGC Timer', '+Unobtainable', '+Past', 'Limit Two Restricted'],
 		restricted: ['Restricted Legendary'],
 		onValidateSet(set) {
-			// These Pokemon are still unobtainable
-			const unobtainables = [
-				'Eevee-Starter', 'Floette-Eternal', 'Pichu-Spiky-eared',
-				'Pikachu-Belle', 'Pikachu-Cosplay', 'Pikachu-Libre',
-				'Pikachu-PhD', 'Pikachu-Pop-Star', 'Pikachu-Rock-Star',
-				'Pikachu-Starter', 'Eternatus-Eternamax',
-			];
-			const species = this.dex.species.get(set.species);
-			if (unobtainables.includes(species.name)) {
-				if (this.ruleTable.has(`+pokemon:${species.id}`)) return;
-				return [`${set.name || set.species} does not exist in the National Dex.`];
+			if (set.species === 'Necrozma-Dusk-Mane' && set.moves.includes('swordsdance')) {
+				return [`携带剑舞的奈克洛兹玛-黄昏之鬃在该分级下不可用。`];
 			}
-			if (species.tier === "Unreleased") {
-				const basePokemon = this.toID(species.baseSpecies);
-				if (this.ruleTable.has(`+pokemon:${species.id}`) ||
-
-					this.ruleTable.has(`+basepokemon:${basePokemon}`)) {
-					return;
-				}
-				return [`${set.name || set.species} does not exist in the National Dex.`];
-			}
-			// Items other than Z-Crystals and Pokémon-specific items should be illegal
-			if (!set.item) return;
-			const item = this.dex.items.get(set.item);
-			if (!item.isNonstandard) return;
-			if (['Past', 'Unobtainable'].includes(item.isNonstandard) && !
-
-				item.zMove && !item.itemUser && !item.forcedForme) {
-				if (this.ruleTable.has(`+item:${item.id}`)) return;
-				return [`${set.name}'s item ${item.name} does not exist in Gen ${this.dex.gen}.`];
+			if (set.item === 'Red Orb' && (set.moves.includes('swordsdance') || set.moves.includes('rockpolish'))) {
+				return [`携带剑舞和岩切的原始固拉多在该分级下不可用。`];
 			}
 		},
 		
