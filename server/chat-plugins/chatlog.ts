@@ -995,6 +995,7 @@ export const pages: Chat.PageTable = {
 			if (roomid.startsWith('wcop')) {
 				throw new Chat.ErrorMessage("WCOP team discussions are super secret.");
 			}
+			*/
 			if (UPPER_STAFF_ROOMS.includes(roomid) && !user.inRooms.has(roomid)) {
 				throw new Chat.ErrorMessage("Upper staff rooms are super secret.");
 			}
