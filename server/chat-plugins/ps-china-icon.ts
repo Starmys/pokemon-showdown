@@ -3,33 +3,18 @@
 * Credits: Lord Haji, panpawn.*
 *******************************/
 import {FS} from '../../lib';
-import {SERVER_URL} from './ps-china-pet-mode';
-
 let https = require("https");
 
-const ICONS_FOLDER = 'icons-2023';
+let icons = FS("config/icons.json").readIfExistsSync();
 
-const speciesIdByNumber: {[num: number]: string[]} = {};
-Dex.species.all().forEach(species => {
-	if (species.num > 0) {
-		if (!speciesIdByNumber[species.num]) {
-			speciesIdByNumber[species.num] = [];
-		}
-		speciesIdByNumber[species.num].push(species.id);
-	}
-});
-export const iconURLs: {[speciesId: string]: string} = {};
-Object.entries(speciesIdByNumber).forEach(([num, speciesIdList]) => speciesIdList.forEach((speciesId, index) => {
-	const fileName = `${num}.${speciesId}.gif`;
-	if (FS(`./config/avatars/${ICONS_FOLDER}/${fileName}`).existsSync()) {
-		iconURLs[speciesId] = `${SERVER_URL}/avatars/${ICONS_FOLDER}/${fileName}`;
-	}
-}));
-
-let icons: {[username: string]: string} = JSON.parse(FS("config/icons.json").readIfExistsSync() || '{}');
+if (icons !== "") {
+	icons = JSON.parse(icons);
+} else {
+	icons = {};
+}
 
 function reloadCSS() {
-	let req = https.get(`https://play.pokemonshowdown.com/customcss.php?server=${Config.serverid}&invalidate`, () => {});
+	let req = https.get('https://play.pokemonshowdown.com/customcss.php?server=' + (Config.serverid), () => {});
 	req.end();
 }
 
@@ -66,7 +51,7 @@ export const commands: Chat.ChatCommands = {
 	customicon: "icon",
 	icon: {
 		set(target, room, user) {
-			this.checkCan("lock");
+			this.checkCan("bypassall");
 			let targets = target.split(",");
 			for (let u in targets) targets[u] = targets[u].trim();
 			if (targets.length !== 2) return this.parse("/iconhelp");
@@ -75,19 +60,16 @@ export const commands: Chat.ChatCommands = {
 
 			let iconLink = targets[1];
 			const species = Dex.species.get(iconLink);
-			if (iconURLs[species.id]) {
-				iconLink = iconURLs[species.id];
-			} else {
-				const [num, index] = iconLink.split(/\_+/).map(x => parseInt(x));
-				if (speciesIdByNumber[num]) {
-					iconLink = iconURLs[speciesIdByNumber[num][index || 0]];
-				}
+			if (species.num > 0) {
+				iconLink = `http://47.94.147.145:8000/avatars/icons/icon${("00" + species.num).slice(-3)}.gif`;
+			} else if (parseInt(iconLink.substr(0, 3))) {
+				iconLink = `http://47.94.147.145:8000/avatars/icons/icon${iconLink}.gif`;
 			}
 
 			if (icons[targetName]) return this.errorReply("This user already has a custom userlist icon.  Do /icon delete [user] and then set their new icon.");
 			this.sendReply(`|raw|You have given ${targets[0]} an icon.`);
 			Monitor.log(`${targets[0]} has received an icon from ${user.name}.`);
-			this.sendReplyBox(`${targets[0]} has received icon: <img src="${iconLink}"> from ${user.name}.`);
+			this.sendReplyBox(`${targets[0]} has received icon: <img src="${iconLink}" width="32" height="32"> from ${user.name}.`);
 			this.modlog("ICON", targets[0], `Set icon to ${iconLink}`);
 			icons[targetName] = iconLink;
 			updateIcons();
@@ -95,7 +77,7 @@ export const commands: Chat.ChatCommands = {
 
 		remove: "delete",
 		delete(target, room, user) {
-			this.checkCan("lock");
+			this.checkCan("bypassall");
 			const targetName = toID(target);
 			if (!icons[targetName]) return this.errorReply(`/icon - ${targetName} does not have an icon.`);
 			delete icons[targetName];
@@ -131,12 +113,12 @@ export const commands: Chat.ChatCommands = {
 	showicons(target, room, user) {
 		if (toID(target).indexOf("detail") > -1 || toID(target).indexOf("table") > -1 ) {
 			const iconTable = `<table>${Object.entries(icons).map(
-				([k, v], e) => `<tr><td>${k}</td><td><img src="${v}" width=40 height=32></td></tr>`
+				([k, v], e) => `<tr><td>${k}</td><td><img src="${v}" width=32 height=32></td></tr>`
 			).join('')}</table>`;
 			this.sendReplyBox(`<details><summary><strong>Users with Icons</strong></summary>${iconTable}</details>`);
 		} else {
 			const iconList = Array.from(new Set(Object.values(icons).sort())).map(
-				x => `<img src="${x}" width=40 height=32>`
+				x => `<img src="${x}" width=32 height=32>`
 			).join('');	
 			this.sendReplyBox(`<details><summary><strong>Already Used Icons</strong></summary>${iconList}</details>`);
 		}
