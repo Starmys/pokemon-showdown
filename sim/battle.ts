@@ -24,6 +24,7 @@ import { State } from './state';
 import { BattleQueue, type Action } from './battle-queue';
 import { BattleActions } from './battle-actions';
 import { Utils } from '../lib/utils';
+import { FS } from '../lib';
 declare const __version: any;
 
 export type ChannelID = 0 | 1 | 2 | 3 | 4;
