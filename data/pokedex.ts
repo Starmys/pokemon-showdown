@@ -14642,6 +14642,7 @@ export const Pokedex: import('../sim/dex-species').SpeciesDataTable = {
 		weightkg: 8,
 		color: "Gray",
 		tags: ["Mythical"],
+		evos: ["Melmetal"],
 		eggGroups: ["Undiscovered"],
 	},
 	melmetal: {
@@ -14655,6 +14656,7 @@ export const Pokedex: import('../sim/dex-species').SpeciesDataTable = {
 		weightkg: 800,
 		color: "Gray",
 		tags: ["Mythical"],
+		evoType: "other",
 		eggGroups: ["Undiscovered"],
 		canGigantamax: "G-Max Meltdown",
 	},
