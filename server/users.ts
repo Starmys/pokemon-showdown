@@ -49,7 +49,7 @@ import { FS, Utils, type ProcessManager } from '../lib';
 import {
 	Auth, GlobalAuth, PLAYER_SYMBOL, HOST_SYMBOL, type RoomPermission, type GlobalPermission,
 } from './user-groups';
-import { AdminUtils } from './chat-plugins/ps-china-admin';
+import { dropUser as dropPetModeUser} from './chat-plugins/ps-china-pet-mode';
 
 const MINUTES = 60 * 1000;
 const IDLE_TIMER = 60 * MINUTES;
@@ -743,6 +743,7 @@ export class User extends Chat.MessageContext {
 				FS(`config/intro/${x.toLocaleLowerCase().split(' ').join('-')}.html`).readIfExistsSync()
 			}`);
 		});
+		dropPetModeUser(this.id);
 
 		if (!name) name = '';
 		if (!/[a-zA-Z]/.test(name)) {
@@ -1222,7 +1223,7 @@ export class User extends Chat.MessageContext {
 			// can still be locked after logout.
 		}
 		// NOTE: can't do a this.update(...) at this point because we're no longer connected.
-		AdminUtils.onUserDisconnect(this);
+		dropPetModeUser(this.getLastId());
 	}
 	onDisconnect(connection: Connection) {
 		// slightly safer to do this here so that we can do this before Conn#user is nulled.
