@@ -1,4 +1,4 @@
-export const Conditions: { [k: string]: ConditionData } = {
+export const Conditions: {[k: string]: ConditionData} = {
 	dynamax2: {
 		name: 'Dynamax2',
 		noCopy: true,
@@ -6,7 +6,6 @@ export const Conditions: { [k: string]: ConditionData } = {
 		onStart(pokemon) {
 			pokemon.removeVolatile('minimize');
 			pokemon.removeVolatile('substitute');
-			pokemon.clearBoosts();
 			if (pokemon.volatiles['torment']) {
 				delete pokemon.volatiles['torment'];
 				this.add('-end', pokemon, 'Torment', '[silent]');
@@ -60,6 +59,7 @@ export const Conditions: { [k: string]: ConditionData } = {
 				return null;
 			}
 		},
+		
 		onResidualPriority: -100,
 		onEnd(pokemon) {
 			this.add('-end', pokemon, 'Dynamax');
@@ -81,66 +81,6 @@ export const Conditions: { [k: string]: ConditionData } = {
 			if (showMsg && !(effect as ActiveMove).secondaries && effect.id !== 'octolock') {
 				this.add("-fail", target, "unboost", "[from] ability: Boss Aura", "[of] " + target);
 			}
-		},
-	},
-	eeveereflect: {
-		name: 'Eevee Reflect',
-		duration: 5,
-		durationCallback(target, source, effect) {
-			if (source?.hasItem('lightclay')) {
-				return 8;
-			}
-			return 5;
-		},
-		onAnyModifyDamage(damage, source, target, move) {
-			if (target.volatiles['dynamax2'] && this.getCategory(move) === 'Physical') {
-				if (!target.getMoveHitData(move).crit && !move.infiltrates) {
-					this.debug('Reflect weaken');
-					return this.chainModify(0.5);
-				}
-			}
-		},
-		onTryHit(target, source, move) {
-			if (move.id === 'brickbreak' || move.id === 'psychicfangs')
-				target.side.removeSideCondition('eeveereflect')
-		},
-		onSideStart(side) {
-			this.add('-sidestart', side, 'Eevee Reflect');
-		},
-		onSideResidualOrder: 26,
-		onSideResidualSubOrder: 1,
-		onSideEnd(side) {
-			this.add('-sideend', side, 'Eevee Reflect');
-		},
-	},
-	eeveelightscreen: {
-		name: 'Eevee Light Screen',
-		duration: 5,
-		durationCallback(target, source, effect) {
-			if (source?.hasItem('lightclay')) {
-				return 8;
-			}
-			return 5;
-		},
-		onAnyModifyDamage(damage, source, target, move) {
-			if (target.volatiles['dynamax2'] && this.getCategory(move) === 'Special') {
-				if (!target.getMoveHitData(move).crit && !move.infiltrates) {
-					this.debug('Light Screen weaken');
-					return this.chainModify(0.5);
-				}
-			}
-		},
-		onTryHit(target, source, move) {
-			if (move.id === 'brickbreak' || move.id === 'psychicfangs')
-				target.side.removeSideCondition('eeveelightscreen')
-		},
-		onSideStart(side) {
-			this.add('-sidestart', side, 'Eevee Light Screen');
-		},
-		onSideResidualOrder: 26,
-		onSideResidualSubOrder: 1,
-		onSideEnd(side) {
-			this.add('-sideend', side, 'Eevee Light Screen');
 		},
 	},
 };

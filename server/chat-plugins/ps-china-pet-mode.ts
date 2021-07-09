@@ -1,15 +1,10 @@
 /*
 	Pokemon Showdown China Pet Mode Version 1.0 Author: Starmind
-	1. 劣质王冠: 2, 银色王冠: 25, 金色王冠: 100, 特性胶囊: 50, 特性膏药: 100, 性格薄荷: 50
-	2. /add 选项 nv 能不能大师球
-	3. 防沉迷
-	4. Acid Rain 特效
-	5. git rebase -i
-	6. 孵蛋系统
-
-	a. bot定时/add
-	b. bot host tour
-	c. 用户ip映射图 便于自动加分
+	p2. /add 选项 nv 能不能大师球
+	p2. Acid Rain, Mercy Aura 特效
+	p1. 孵蛋系统
+	p1. 精灵球
+	p0. Mercy Aura
 */
 
 import { FS } from "../../lib";
@@ -20,14 +15,16 @@ import { PokemonIconIndexes } from "../../config/pet-mode/poke-num";
 import { PokemonSprites } from "../../config/pet-mode/poke-sprites";
 import { PetModeRoomConfig } from "../../config/pet-mode/room-config";
 import { PetModeShopConfig } from "../../config/pet-mode/shop-config";
+import { PetModeBossConfig } from "../../config/pet-mode/boss-config";
 import { PetModeGymConfig } from "../../config/pet-mode/gym-config";
 
 type userProperty = {
 	'bag': string[],
 	'box': string[],
-	'items': {[itemName: string]: number},
+	'items': { [itemName: string]: number },
 	'badges': string[],
-	'time': {'ball': number, 'draw': number, 'search': number, 'gym': number},
+	'boss': string[],
+	'time': { 'ball': number, 'draw': number, 'search': number, 'gym': number, 'boss': number },
 };
 type petPosition = {'type': 'bag' | 'box', 'index': number};
 type statPosition = {'type': 'ivs' | 'evs', 'index': 'hp' | 'atk' | 'def' | 'spa' | 'spd' | 'spe'};
@@ -45,6 +42,7 @@ const POKESPRITESSHINY = 'https://play.pokemonshowdown.com/sprites/ani-shiny';
 const ITEMSHEET = 'https://play.pokemonshowdown.com/sprites/itemicons-sheet.png';
 const TYPEICONS = 'https://play.pokemonshowdown.com/sprites/types';
 const CATICONS = 'https://play.pokemonshowdown.com/sprites/categories';
+const ITEMFOLDER = 'http://47.94.147.145:8000/avatars/items';
 
 const LAWNCD = 2000;
 const GYMCD = 300000;
@@ -74,7 +72,7 @@ class Utils {
 		return maxIndex;
 	}
 
-	static sample(s: {[name: string]: number}): string {
+	static sample(s: { [name: string]: number }): string {
 		let r = Math.random();
 		let key = Object.keys(s)[0];
 		for (key in s) {
@@ -101,15 +99,28 @@ class Utils {
 		return `${date.getFullYear()}-${zfill(date.getMonth() + 1)}-${zfill((date.getDate()))}`;
 	}
 
+	static getDay(): number {
+		return Math.floor(Date.now() / 24 / 60 / 60 / 1000);
+	}
+
 	static image(style: string) {
 		return `<img style="${style}"/>`;
 	}
 
 	static itemStyle(name: string) {
+		switch (toID(name)) {
+			case 'box':
+			case 'naturemint':
+			case 'abilitycapsule':
+			case 'abilitypatch':
+			case 'rocketbottlecap':
+			case 'rustybottlecap':
+				return `background:transparent url(${ITEMFOLDER}/${toID(name)}.png) no-repeat; height: 24px; width: 24px;`;
+		}
 		const num = Dex.items.get(name).spritenum || 0;
 		let top = Math.floor(num / 16) * 24;
 		let left = (num % 16) * 24;
-		return `background:transparent url(${ITEMSHEET}?g8) no-repeat scroll -${left}px -${top}px; height: 24px; width: 24px;`
+		return `background:transparent url(${ITEMSHEET}?g8) no-repeat scroll -${left}px -${top}px; height: 24px; width: 24px;`;
 	}
 
 	static iconStyle(name: string, gender: string = 'N') {
@@ -149,9 +160,9 @@ class Pet {
 
 	static sprites = new Set(PokemonSprites);
 
-	static iconIndex: {[speciesid: string]: number} = PokemonIconIndexes;
+	static iconIndex: { [speciesid: string]: number } = PokemonIconIndexes;
 
-	static learnSets: {[speciesid: string]: {[moveid: string]: number}} = PetModeLearnSets;
+	static learnSets: { [speciesid: string]: { [moveid: string]: number } } = PetModeLearnSets;
 
 	static defaultWildMons = [
 		'Caterpie', 'Weedle', 'Ledyba', 'Spinarak', 'Wurmple', 'Kricketot', 'Sewaddle', 'Venipede',
@@ -185,9 +196,9 @@ class Pet {
 		'Goomy', 'Sliggoo', 'Goodra', 'Jangmo-o', 'Hakamo-o', 'Kommo-o', 'Dreepy', 'Drakloak', 'Dragapult'
 	];
 
-	static typeIcons: {[speciesname: string]: string} = {};
+	static typeIcons: { [speciesname: string]: string } = {};
 
-	static moveIcons: {[movename: string]: string} = {};
+	static moveIcons: { [movename: string]: string } = {};
 
 	static initButtons = [0, 1, 2].map(x => Pet.initMons.slice(x * 8, x * 8 + 8).map(
 		x => Utils.button(`/pet init set ${x}`, '', Utils.iconStyle(x))
@@ -203,7 +214,9 @@ class Pet {
 		return sprite;
 	}
 
-	static validMoves(speciesid: string, level: number): string[] {
+	static validMoves(speciesname: string, level: number): string[] {
+		let speciesid = toID(speciesname);
+		if (!this.learnSets[speciesid]) speciesid = toID(speciesname.split('-')[0]);
 		if (!this.learnSets[speciesid]) return [];
 		return Object.keys(this.learnSets[speciesid]).filter(moveid => {
 			return this.learnSets[speciesid][moveid] <= level;
@@ -236,10 +249,10 @@ class Pet {
 		if (species.num <= 0) return '';
 		const set: PokemonSet = {
 			name: species.name,
-			species: species.name,
+			species: prng.sample([species.name].concat(species.cosmeticFormes || [])),
 			item: "",
 			ability: this.randomAbility(species, hidden),
-			moves: this.sampleMoves(species.id, level),
+			moves: this.sampleMoves(species.name, level),
 			nature: prng.sample(Dex.natures.all()).name,
 			gender: species.gender ? species.gender : (prng.randomChance(Math.floor(species.genderRatio.M * 1000), 1000) ? 'M' : 'F'),
 			evs: {hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0},
@@ -253,16 +266,14 @@ class Pet {
 
 	static wild(roomid: string, lawnid: string, maxLevel: number, restrictLevel: number, legend: boolean = false): string {
 		if (legend && PetBattle.legends[roomid]) return PetBattle.legends[roomid];
+		if (!PetBattle.roomConfig[roomid] || !PetBattle.roomConfig[roomid]['lawn'][lawnid]) return '';
 		if (restrictLevel <= PetBattle.roomConfig[roomid]['minlevel']) return '';
-		if (PetBattle.roomConfig[roomid] && PetBattle.roomConfig[roomid]['lawn'][lawnid]) {
-			return this.gen(
-				Utils.sample(PetBattle.roomConfig[roomid]['lawn'][lawnid]),
-				Math.min(restrictLevel, prng.sample([...new Array(11).keys()].map(x => {
-					return x + Math.min(maxLevel, PetBattle.roomConfig[roomid]['maxlevel']) - 5;
-				})))
-			);
-		}
-		return 'noconf';
+		return this.gen(
+			Utils.sample(PetBattle.roomConfig[roomid]['lawn'][lawnid]),
+			Math.min(restrictLevel, prng.sample([...new Array(11).keys()].map(x => {
+				return x + Math.min(maxLevel, PetBattle.roomConfig[roomid]['maxlevel']) - 5;
+			})))
+		);
 		// return this.gen(
 		// 	prng.sample(this.defaultWildMons),
 		// 	Math.min(restrictLevel, prng.sample([...new Array(11).keys()].map(x => x + Utils.restrict(maxLevel, 5, 20) - 5)))
@@ -275,8 +286,8 @@ class Pet {
 		if (!sets) return;
 		const set = sets[0];
 		set.level = floatLevel;
-		if (!set.species) set.species = set.name;
-		const species = Dex.species.get(set.species);
+		const species = Dex.species.get(set.species || set.name);
+		set.species = species.name;
 		if (species.gender) set.gender = species.gender;
 		if (!set.ability) set.ability = species.abilities["0"];
 		if (!set.evs) set.evs = {hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0};
@@ -288,8 +299,16 @@ class Pet {
 	}
 
 	static validEvos(set: PokemonSet, traded: boolean = false): (string)[][] {
-		return Dex.species.get(set.species).evos.map(x => {
+		const rawSpecies = Dex.species.get(set.species);
+		return rawSpecies.evos.map(x => {
 			const species = Dex.species.get(x);
+			if (species.cosmeticFormes && species.formeOrder) {
+				if (rawSpecies.formeOrder) {
+					x = species.formeOrder[rawSpecies.formeOrder.indexOf(set.species)] || x;
+				} else {
+					x = species.formeOrder[Math.abs(Utils.hash(Utils.getDate())) % species.formeOrder.length];
+				}
+			}
 			if (species.gender && species.gender !== set.gender) return [];
 			if (traded) {
 				if (species.evoType === 'trade') {
@@ -335,7 +354,7 @@ class Pet {
 
 	static evo(set: PokemonSet, targetSpecies: string, item: boolean): PokemonSet {		
 		if (item) set.item = '';
-		if (set.species === set.name) set.name = targetSpecies;
+		if (toID(set.species) === toID(set.name)) set.name = targetSpecies;
 		const preAbilities = Dex.species.get(set.species).abilities;
 		const postAbilities = Dex.species.get(targetSpecies).abilities;
 		if (set.ability === preAbilities['1'] && postAbilities['1']) set.ability = postAbilities['1'];
@@ -367,32 +386,38 @@ Dex.moves.all().forEach(move => {
 	Pet.moveIcons[move.name] = `background: url(${TYPEICONS}/${move.type}.png) no-repeat 5%, ` +
 		`url(${CATICONS}/${move.category}.png) no-repeat 95%;`;
 })
+const typeIconImage = (t: string) => Utils.image(`background: url(${TYPEICONS}/${t}.png); width: 32px; height: 14px`);
 Dex.species.all().forEach(species => {
-	Pet.typeIcons[species.name] = Utils.image(`background: url(${TYPEICONS}/${species.types[0]}.png); width: 32px; height: 14px`) +
-		(species.types[1] ? Utils.image(`background: url(${TYPEICONS}/${species.types[1]}.png); width: 32px; height: 14px`) : '');
+	const img = typeIconImage(species.types[0]) + (species.types[1] ? typeIconImage(species.types[1]) : '');
+	Pet.typeIcons[species.name] = img;
+	species.cosmeticFormes?.forEach(forme => Pet.typeIcons[forme] = img);
 })
 
 class PetBattle {
 
-	static legends: {[roomid: string]: string} = {};
+	static legends: { [roomid: string]: string } = {};
 
-	static nextRoom: {[roomid: string]: string} = {};
+	static nextRoom: { [roomid: string]: string } = {};
 
-	static previousRoom: {[roomid: string]: string} = {};
+	static previousRoom: { [roomid: string]: string } = {};
 
-	static roomConfig: {[roomid: string]: {
-		'lawn': {[lawnid: string]: {[species: string]: number}},
+	static roomConfig: { [roomid: string]: {
+		'lawn': { [lawnid: string]: { [species: string]: number } },
 		'minlevel': number,
 		'maxlevel': number
-	}} = PetModeRoomConfig;
+	} } = PetModeRoomConfig;
 
-	static gymConfig: {[gymname: string]: {
+	static gymConfig: { [gymname: string]: {
 		'maxlevel': number, 'botteam': string, 'userteam': string, 'ace': string,
 		'bonus'?: string, 'terrain'?: string, 'weather'?: string,
-		'msg': {'start': string, 'ace': string, 'win': string, 'lose': string}
-	}} = PetModeGymConfig;
+		'msg': { 'start': string, 'ace': string, 'win': string, 'lose': string }
+	} } = PetModeGymConfig;
 
-	static balls: {[ballname: string]: number} = {'Poke Ball': 1, 'Great Ball': 2, 'Ultra Ball': 4, 'Master Ball': Infinity};
+	static bossConfig: { [bossname: string]: {
+		'set': string, 'bonus': string
+	} } = PetModeBossConfig;
+
+	static balls: { [ballname: string]: number } = {'Poke Ball': 1, 'Great Ball': 2, 'Ultra Ball': 4, 'Master Ball': Infinity};
 
 	static inBattle(userid: string): string | undefined {
 		const battleWithBot = (roomid: string) => {
@@ -402,7 +427,7 @@ class PetBattle {
 		}
 		const user = Users.get(userid);
 		if (!user) return undefined;
-		return [...user.inRooms].filter(x => x.indexOf('petmode') >= 0 && battleWithBot(x))[0];
+		return [...user.inRooms].filter(x => toID(x).indexOf('petmode') >= 0 && battleWithBot(x))[0];
 	}
 
 	static validate(rule: string, userSets: string[]): string {
@@ -438,20 +463,21 @@ class PetBattle {
 	}
 
 	static createBattle(
-		user: User, bot: User, userTeam: string, botTeam: string, format: string, hidden: boolean
+		user: User, bot: User, userTeam: string, botTeam: string, format: string, hidden: boolean,
+		delayedStart: boolean | 'multi' | undefined = false
 	): GameRoom | undefined {
 		return Rooms.createBattle({
 			format: format,
 			p1: {
-				user: user,
-				team: userTeam,
+				user: bot,
+				team: botTeam,
 				rating: 0,
 				hidden: hidden,
 				inviteOnly: false,
 			},
 			p2: {
-				user: bot,
-				team: botTeam,
+				user: user,
+				team: userTeam,
 				rating: 0,
 				hidden: hidden,
 				inviteOnly: false,
@@ -460,7 +486,7 @@ class PetBattle {
 			p4: undefined,
 			rated: 0,
 			challengeType: 'unrated',
-			delayedStart: false,
+			delayedStart: delayedStart,
 		});
 	}
 
@@ -482,13 +508,80 @@ for (let roomid in PetBattle.roomConfig) {
 
 class Shop {
 
-	static shopConfig: {[goodtype: string]: {[goodname: string]: number}} = PetModeShopConfig;
+	static shopConfig: { [goodtype: string]: { [goodname: string]: number} } = PetModeShopConfig;
 
-	static types: {[goodtype: string]: string} = {
-		'ball': '精灵球', 'draw': '进化道具', 'berry': '树果', 'battle': '对战道具', 'special': '专用对战道具'
+	static types: { [goodtype: string]: string } = {
+		'ball': '精灵球', 'draw': '进化道具', 'berry': '树果',
+		'battle': '对战道具', 'special': '专用对战道具', 'util': '其他道具'
 	};
 
-	static goodButtons: {[goodtype: string]: string} = {
+	static goodDesc: { [goodtype: string]: string } = {
+		'Box': '添加一个盒子',
+		'Nature Mint': '宝可梦携带并使用后可以改变性格',
+		'Ability Capsule': '宝可梦携带并使用后可以改变特性 (不可改变为隐藏特性)',
+		'Ability Patch': '宝可梦携带并使用后可以改变为隐藏特性',
+		'Rocket Bottle Cap': '宝可梦携带并使用后可以使一项个体值随机提升',
+		'Rusty Bottle Cap': '宝可梦携带并使用后可以使一项个体值重置为随机值',
+		'Bottle Cap': '宝可梦携带并使用后可以使一项个体值提升至31',
+		'Gold Bottle Cap': '宝可梦携带并使用后可以使全部个体值提升至31',
+	};
+
+	static func: { [goodid: string]: (set: PokemonSet, arg: string) => boolean } = {
+		'rustybottlecap': (set: PokemonSet, arg: string) => {
+			if (Object.keys(set.ivs).indexOf(arg) < 0) return false;
+			// @ts-ignore
+			set.ivs[arg] = prng.sample([...new Array(32).keys()]);
+			return true;
+		},
+		'rocketbottlecap': (set: PokemonSet, arg: string) => {
+			if (Object.keys(set.ivs).indexOf(arg) < 0) return false;
+			// @ts-ignore
+			if (set.ivs[arg] >= 31) return false;
+			// @ts-ignore
+			set.ivs[arg] = set.ivs[arg] + 1 + prng.sample([...new Array(31 - set.ivs[arg]).keys()]);
+			return true;
+		},
+		'bottlecap': (set: PokemonSet, arg: string) => {
+			if (Object.keys(set.ivs).indexOf(arg) < 0) return false;
+			// @ts-ignore
+			set.ivs[arg] = 31;
+			return true;
+		},
+		'goldbottlecap': (set: PokemonSet, arg: string) => {
+			set.ivs = {hp: 31, atk: 31, def: 31, spa: 31, spd: 31, spe: 31};
+			return true;
+		},
+		'abilitycapsule': (set: PokemonSet, arg: string) => {
+			const abilities = Dex.species.get(set.species).abilities;
+			if (!abilities['1']) return false;
+			if (toID(set.ability) === toID(abilities['0'])) {
+				set.ability = abilities['1'];
+				return true;
+			} else if (toID(set.ability) === toID(abilities['1'])) {
+				set.ability = abilities['0'];
+				return true;
+			}
+			return false;
+		},
+		'abilitypatch': (set: PokemonSet, arg: string) => {
+			const abilities = Dex.species.get(set.species).abilities;
+			if (!abilities['H']) return false;
+			if (toID(set.ability) === toID(abilities['H'])) return false;
+			set.ability = abilities['H'];
+			return true;
+		},
+		'naturemint': (set: PokemonSet, arg: string) => {
+			for (let nature of Dex.natures.all()) {
+				if (toID(arg) === nature.id && toID(set.nature) !== nature.id) {
+					set.nature = nature.name;
+					return true;
+				}
+			}
+			return false;
+		},
+	}
+
+	static goodButtons: { [goodtype: string]: string } = {
 		'ball': Object.keys(PetModeShopConfig['ball']).map(goodname => {
 			return Utils.button(`/pet shop show ball=>${goodname}`, '', Utils.itemStyle(goodname));
 		}).join(''),
@@ -504,6 +597,9 @@ class Shop {
 		'special': Object.keys(PetModeShopConfig['special']).map(goodname => {
 			return Utils.button(`/pet shop show special=>${goodname}`, '', Utils.itemStyle(goodname));
 		}).join(''),
+		'util': Object.keys(PetModeShopConfig['util']).map(goodname => {
+			return Utils.button(`/pet shop show util=>${goodname}`, '', Utils.itemStyle(goodname));
+		}).join(''),
 	};
 
 	static getPrice(goodname: string): number {
@@ -512,8 +608,8 @@ class Shop {
 				return this.shopConfig[goodtype][goodname];
 			}
 		}
-		return 50;
-	}
+		return 40;
+	};
 
 }
 
@@ -542,7 +638,10 @@ class PetUser {
 
 	load() {
 		const userSaveData = FS(this.path).readIfExistsSync();
-		if (userSaveData) this.property = JSON.parse(userSaveData);
+		if (userSaveData) {
+			this.property = JSON.parse(userSaveData);
+			this.init();
+		}
 	}
 
 	save() {
@@ -551,11 +650,18 @@ class PetUser {
 
 	init() {
 		this.property = {
-			'bag': new Array(6).fill(''),
-			'box': new Array(30).fill(''),
-			'items': {},
-			'badges': [],
-			'time': {'ball': 0, 'draw': 0, 'search': 0, 'gym': 0}
+			'bag': this.property?.bag || new Array(6).fill(''),
+			'box': this.property?.box || new Array(30).fill(''),
+			'items': this.property?.items || {},
+			'badges': this.property?.badges || [],
+			'boss': this.property?.boss || [],
+			'time': {
+				'ball': this.property?.time?.ball || 0,
+				'draw': this.property?.time?.draw || 0,
+				'search': this.property?.time?.search || 0,
+				'gym': this.property?.time?.gym || 0,
+				'boss': this.property?.time?.boss || 0,
+			}
 		}
 	}
 
@@ -564,10 +670,12 @@ class PetUser {
 	}
 
 	editProperty(propertyString: string): boolean {
+		const pet = Teams.pack(Teams.unpack(propertyString));
+		if (pet) return this.addPet(pet);
 		const cachedProperty = JSON.parse(JSON.stringify(this.property));
 		try {
 			const parsed = JSON.parse(propertyString);
-			let items: {[itemName: string]: number} = {};
+			let items: { [itemName: string]: number } = {};
 			for (let item in parsed['items']) {
 				const parsedNum = parseInt(parsed['items'][item]);
 				if (parsedNum !== NaN) items[item] = parsedNum;
@@ -577,6 +685,7 @@ class PetUser {
 			if (parsed['bag']) Object.assign(this.property['bag'], Pet.validSets(parsed['bag']).slice(0, this.property['bag'].length));
 			if (parsed['box']) Object.assign(this.property['box'], Pet.validSets(parsed['box']).slice(0, this.property['box'].length));
 			if (parsed['badges']) this.property['badges'] = parsed['badges'].filter((x: string) => !!PetBattle.gymConfig[x]);
+			if (parsed['boss']) this.property['boss'] = parsed['boss'].filter((x: string) => !!PetBattle.bossConfig[x]);
 			if (this.property['bag'].filter(x => x).length === 0) throw Error();
 		} catch (err) {
 			this.property = cachedProperty;
@@ -591,6 +700,30 @@ class PetUser {
 		this.property = this.cachedProperty;
 		this.cachedProperty = undefined;
 		return true;
+	}
+
+	getBoxPriceBase(): number {
+		if (!this.property) return 1;
+		let a = 1, b = 1, c;
+		for (
+			let bought = this.boxNum() - this.property['badges'].filter(
+				gymid => PetBattle.gymConfig[gymid]?.bonus === 'box'
+			).length - 1;
+			bought > 0;
+			c = a, a = b, b += c, bought--
+		);
+		return b;
+	}
+
+	addBox(): boolean {
+		if (!this.property) return false;
+		this.property['box'] = this.property['box'].concat(new Array(30).fill(''));
+		return true;
+	}
+
+	boxNum(): number {
+		if (!this.property) return 1;
+		return Math.ceil(this.property['box'].length / 30);
 	}
 
 	badgeNum(): number {
@@ -647,7 +780,33 @@ class PetUser {
 
 	checkPet(position: petPosition | undefined): PokemonSet | undefined {
 		if ((this.onPosition = position) && this.property) {
-			return Pet.parseSet(this.property[position['type']][position['index']]);
+			const set = Pet.parseSet(this.getPet());
+			if (set) {
+				const species = Dex.species.get(set.species);
+				if (species.formeOrder) {
+					let modified = true;
+					const formerSpecies = set.species;
+					switch (species.baseSpecies) {
+						case 'Deerling':
+						case 'Sawsbuck':
+							set.species = species.formeOrder[Math.floor((new Date().getMonth() + 10) % 12 / 3)];
+							break;
+						case 'Burmy':
+						case 'Alcremie':
+						case 'Furfrou':
+							set.species = species.formeOrder[position['index'] % species.formeOrder.length];
+							break;
+						default:
+							modified = false;
+					}
+					if (modified) {
+						if (toID(set.name) === toID(formerSpecies)) set.name = set.species;
+						this.setPet(Teams.pack([set]));
+						this.save();
+					}
+				}
+			}
+			return set;
 		}
 	}
 
@@ -694,6 +853,7 @@ class PetUser {
 			set.species = 'Shedinja';
 			set.ability = 'Wonder Guard';
 			set.gender = 'N';
+			set.item = '';
 			this.addPet(Teams.pack([set]));
 		}
 		return true;
@@ -730,6 +890,21 @@ class PetUser {
 		}
 		this.property[position['type']][position['index']] = Teams.pack([set]);
 		return true;
+	}
+
+	useItem(arg: string): boolean {
+		if (!this.property) return false;
+		const pet = this.getPet();
+		if (!pet) return false;
+		const set = Pet.parseSet(pet);
+		if (!set) return false;
+		const itemid = toID(set.item);
+		if (Shop.func[itemid] && Shop.func[itemid](set, arg)) {
+			set.item = '';
+			this.setPet(Teams.pack([set]));
+			return true;
+		}
+		return false;
 	}
 
 	checkMoves(): string {
@@ -866,8 +1041,8 @@ class PetUser {
 		return {'sent': myPet.split('|')[0], 'received': friendPet.split('|')[0]};
 	}
 
-	merge(targetUser: PetUser): {'bag': string[], 'items': {[itemname: string]: number}} {
-		let added: {'bag': string[], 'items': {[itemname: string]: number}} = {'bag': [], 'items': {}};
+	merge(targetUser: PetUser): { 'bag': string[], 'items': { [itemname: string]: number } } {
+		let added: { 'bag': string[], 'items': { [itemname: string]: number } } = {'bag': [], 'items': {}};
 		if (!targetUser.property) return added;
 		let pokes = (targetUser.property['bag'] || []).filter(x => x);
 		targetUser.property['bag'] = [];
@@ -890,29 +1065,33 @@ class PetUser {
 	}
 }
 
-const petUsers: {[userid: string]: PetUser} = {};
+const petUsers: { [userid: string]: PetUser } = {};
 
 function getUser(userid: string): PetUser {
 	return petUsers[userid] || (petUsers[userid] = new PetUser(userid));
+}
+
+function checkUser(userid: string): boolean {
+	return FS(`${USERPATH}/${toID(userid)}.json`).existsSync();
 }
 
 export function dropUser(userid: string) {
 	delete petUsers[userid];
 }
 
-function petBox(petUser: PetUser, target: string): string {
+function petBox(petUser: PetUser, target: string, admin: boolean = false): string {
 	if (!petUser.property) return '';
 	const st = (x: string) => `<b>${x}</b>`;
 
 	let pokeDiv = ``;
 	const set = petUser.checkPet(petUser.parsePosition(target));
 	if (set) {
-		let setTitle = set.level >= petUser.levelRistriction() ?
-			`<b>达到${petUser.badgeNum()}个徽章的等级上限</b>` : '<br/>';
+		let showDesc = true;
+		let setTitle = set.level >= petUser.levelRistriction() ? `达到${petUser.badgeNum()}个徽章的等级上限` : '<br/>';
 		if (petUser.operation === 'move') {
-			setTitle = st('请选择位置');
+			setTitle = '请选择位置';
 		} else if (petUser.operation === 'drop' + target) {
-			setTitle = st(`确认放生 ${set.name} ? `) + Utils.boolButtons(
+			setTitle = `确认放生 ${set.name} ? ` + Utils.boolButtons(
 				`/pet box drop ${target}!`,
 				`/pet box drop ${target}`
 			);
@@ -925,18 +1104,18 @@ function petBox(petUser: PetUser, target: string): string {
 					['hp', 'atk', 'def', 'spa', 'spd', 'spe'].indexOf(statPosition[1])
 				]
 				if (statType && statIndex) {
-					setTitle = st(`确认清空 ${set.name} 的${statIndex}${statType}? `) + Utils.boolButtons(
+					setTitle = `确认清空 ${set.name} 的${statIndex}${statType}? ` + Utils.boolButtons(
 						`/pet box resetstat ${statOperation}!`,
 						`/pet box reset ${target}`
 					);
 				}
 			}
 		} else if (petUser.operation === 'evo') {
-			setTitle = st('请选择进化型: ') + Pet.validEvos(set).map(x => {
+			setTitle = '请选择进化型: ' + Pet.validEvos(set).map(x => {
 				return Utils.button(`/pet box evo ${target}=>${x[0]}`, '&emsp;', Utils.iconStyle(x[0], set.gender));
 			}).join('') + ' ' + Utils.button(`/pet box evo ${target}`, '取消');
 		} else if (petUser.operation?.indexOf('evo') === 0) {
-			setTitle = st(`确认将 ${set.name} 进化为 ${petUser.operation?.slice(3)}? `) + Utils.boolButtons(
+			setTitle = `确认将 ${set.name} 进化为 ${petUser.operation?.slice(3)}? ` + Utils.boolButtons(
 				`/pet box evo ${target}=>${petUser.operation?.slice(3)}`,
 				`/pet box evo ${target}`
 			);
@@ -947,7 +1126,31 @@ function petBox(petUser: PetUser, target: string): string {
 		} else if (petUser.operation?.indexOf('preex') === 0) {
 			setTitle = `用 ${set.name} 与${petUser.operation?.slice(5)}交换? ` +
 				Utils.boolButtons(`/pet box ex ${petUser.operation?.slice(5)}`, `/pet box reset ${target}`)
+		} else if (petUser.operation?.indexOf('gift') === 0) {
+			setTitle = `将 ${set.name} 赠送给${petUser.operation?.slice(4)}? ` +
+				Utils.boolButtons(`/gift ${petUser.operation?.slice(4)}!`, `/pet box reset ${target}`)
+		} else if (petUser.operation === 'useitem') {
+			setTitle = `使用 ${set.item} ? `
+			switch (toID(set.item)) {
+				case 'rustybottlecap':
+				case 'rocketbottlecap':
+				case 'bottlecap':
+					setTitle += `${Utils.button(`/pet box reset ${target}`, '取消')}<br/><div style="padding: 5px; border: ridge;">`;
+					setTitle += Object.keys(set.ivs).map(key => Utils.button(`/pet box useitem ${key}`, key)).join(' ');
+					setTitle += `</div>`;
+					showDesc = false;
+					break;
+				case 'naturemint':
+					setTitle += `${Utils.button(`/pet box reset ${target}`, '取消')}<br/><div style="padding: 5px; border: ridge;">`;
+					setTitle += Dex.natures.all().map(nature => Utils.button(`/pet box useitem ${nature.id}`, nature.name)).join(' ');
+					setTitle += `</div>`;
+					showDesc = false;
+					break;
+				default:
+					setTitle += Utils.boolButtons(`/pet box useitem default`, `/pet box reset ${target}`);
+			}
 		}
+		setTitle = st(setTitle);
 		const setButtons = [
 			Utils.button(`/pet box nameguide ${target}`, '昵称'),
 			Utils.button(`/pet box onmove ${target}`, '移动'),
@@ -957,6 +1160,7 @@ function petBox(petUser: PetUser, target: string): string {
 			Utils.button(`/pet box drop ${target}`, '放生'),
 			Utils.button(`/pet box reset`, '返回')
 		]
+		if (admin) setButtons.splice(2, 0, Utils.button(`/gift`, '赠送'))
 
 		const bst = Dex.species.get(set.species).baseStats;
 		const th = (x: string | number) => `<th style="text-align: center; padding: 0">${x}</th>`;
@@ -972,21 +1176,26 @@ function petBox(petUser: PetUser, target: string): string {
 				return td(Utils.button(`/pet box resetstat evs,${x}`, Object.values(set.evs)[i].toString()));
 			}).join('')
 		].join('</tr><tr>')}</tr></table>`;
+		const setName = toID(set.name) === toID(set.species) ? '' : `${set.name}&emsp;`;
 		const lines = [
-			`${set.name}&emsp;${st('种类')} ${set.species}&emsp;${Pet.typeIcons[set.species]}${set.shiny ? '☆' : ''}`,
+			`${setName}${st('种类')} ${set.species}&emsp;${Pet.typeIcons[set.species]}${set.shiny ? '☆' : ''}`,
 			`${st('性别')} ${{'M': '♂', 'F': '♀'}[set.gender] || '∅'}&emsp;${st('亲密度')} ${set.happiness}`,
 			`${st('等级')} ${Math.floor(set.level)} (${Math.floor((set.level - Math.floor(set.level)) * 100)}%)&emsp;` + 
-			`${st('道具')} ${set.item ? Utils.button(`/pet box item ${target}`, '', Utils.itemStyle(set.item)) : '无'}`,
+			`${st('道具')} ${set.item ? Utils.button(`/pet box item ${target}`, '&emsp;', Utils.itemStyle(set.item)) : '无'}` +
+			`${Shop.func[toID(set.item)] ? Utils.button(`/pet box useitem`, '使用') : ''}`,
 			`${st('性格')} ${set.nature}&emsp;${st('特性')} ${set.ability}`
 		]
 		const spriteURL = `${set.shiny ? POKESPRITESSHINY : POKESPRITES}/${Pet.spriteId(set.species, set.gender)}.gif`;
 		const sprite = `background: transparent url(${spriteURL}) no-repeat 90% 10% relative;`
-		pokeDiv = `<div style="width: 350px; ` +
-			`position: relative; display: inline-block;"><div style="line-height: 35px">${setTitle}</div>` +
-			`<div style=" display: inline-block; width: 50px; line-height: 32px; vertical-align: top;` +
-			`">${setButtons.join('<br/>')}</div>` +
-			`<div style="${sprite} display: inline-block; line-height: 28px; width: 300px;` +
-			`">${lines.map(x => `${x}`).join('<br/>')}<br/>${statsTable}</div>`;
+		pokeDiv = `<div style="line-height: 35px">${setTitle}</div>`;
+		if (showDesc) {
+			pokeDiv += `<div style=" display: inline-block; width: 50px; ` +
+				`line-height: ${224 / setButtons.length}px; vertical-align: top;` +
+				`">${setButtons.join('<br/>')}</div>` +
+				`<div style="${sprite} display: inline-block; line-height: 28px; width: 300px;` +
+				`">${lines.map(x => `${x}`).join('<br/>')}<br/>${statsTable}`;
+		}
+		pokeDiv = `<div style="width: 350px; position: relative; display: inline-block;">${pokeDiv}</div>`;
 	}
 
 	const boxTitle = `${st('用户ID')} ${petUser.id}&emsp;${st('徽章数')} ${petUser.badgeNum()}`;
@@ -1013,7 +1222,7 @@ function petBox(petUser: PetUser, target: string): string {
 	const shopButton = Utils.button('/pet shop', '商店');
 	const checkButton = Utils.button('/pet box check', '检查队伍');
 	const exportButton = Utils.button('/pet box export', '导出队伍');
-	const pageNum = Math.ceil(petUser.property['box'].length / 30);
+	const pageNum = petUser.boxNum();
 	let lastPageButton = '';
 	let nextPageButton = '';
 	if (pageNum > 1) {
@@ -1037,6 +1246,7 @@ export const commands: Chat.ChatCommands = {
 		this.parse(`/pet box name ${target}`);
 	},
 
+	'link': 'ex',
 	ex(target) {
 		this.parse(`/pet box ex ${target}`);
 	},
@@ -1083,6 +1293,10 @@ export const commands: Chat.ChatCommands = {
 		this.parse(`/pet admin genpoke ${target}`);
 	},
 
+	gift(target) {
+		this.parse(`/pet admin gift ${target}`);
+	},
+
 	'petmode': 'pet',
 	pet: {
 
@@ -1095,7 +1309,7 @@ export const commands: Chat.ChatCommands = {
 				const petUser = getUser(user.id);
 				if (petUser.property) return this.parse('/pet init guide');
 				this.parse('/pet init clear');
-				user.sendTo(room.roomid, `|uhtml|pet-init-show|欢迎使用宠物系统!请选择您最初的伙伴：<br/>${Pet.initButtons}`);
+				user.sendTo(room.roomid, `|uhtml|pet-init-show|欢迎使用宠物系统! 请选择您最初的伙伴:<br/>${Pet.initButtons}`);
 			},
 
 			set(target, room, user) {
@@ -1117,7 +1331,7 @@ export const commands: Chat.ChatCommands = {
 				if (Pet.initMons.indexOf(target) < 0) return this.popupReply(`${target}不是合法初始的宝可梦`)
 
 				petUser.init();
-				petUser.addPet(Pet.gen(target, 5, true, 70));
+				petUser.addPet(Pet.gen(target, 5, true, 70, 0, 0));
 				petUser.addItem('Poke Ball', 5);
 				petUser.save();
 
@@ -1155,7 +1369,7 @@ export const commands: Chat.ChatCommands = {
 				this.parse('/pet shop clear new');
 				petUser.chatRoomId = room.roomid;
 				petUser.load();
-				const div = petBox(petUser, target);
+				const div = petBox(petUser, target, user.can("bypassall"));
 				this.parse(`/pet box clear ${target}`);
 				user.sendTo(room.roomid, `|uhtml${target === 'new' ? '' : 'change'}|pet-box-show|${div}`);
 			},
@@ -1164,14 +1378,13 @@ export const commands: Chat.ChatCommands = {
 				if (!room) return this.popupReply("请在房间里使用宠物系统");
 				const petUser = getUser(user.id);
 				if (!petUser.property) return this.popupReply("您还未领取最初的伙伴!");
-				petUser.onPage = (parseInt(target) || 0) % (Math.ceil(petUser.property['box'].length / 30));
+				petUser.onPage = (parseInt(target) || 0) % petUser.boxNum();
 				this.parse(`/pet box show ${petUser.onPosition ? Object.values(petUser.onPosition).join(',') : ''}`);
 			},
 
 			check(target, room, user) {
 				const petUser = getUser(user.id);
 				if (!petUser.property) return this.popupReply("您还未领取最初的伙伴!");
-				const userTeam = Teams.unpack(petUser.property['bag'].join(']'));
 				this.popupReply(petUser.checkMoves() || "您的队伍是合法的!");
 			},
 
@@ -1268,6 +1481,26 @@ export const commands: Chat.ChatCommands = {
 				this.parse(`/pet box show ${target}`);
 			},
 
+			useitem(target, room, user) {
+				if (!room) return this.popupReply("请在房间里使用宠物系统");
+				const petUser = getUser(user.id);
+				if (!petUser.property) return this.popupReply("您还未领取最初的伙伴!");
+				if (!petUser.onPosition) return this.popupReply("请先选中要使用道具的宝可梦!")
+
+				petUser.load();
+				target = toID(target);
+				if (!target) {
+					petUser.operation = 'useitem';
+				} else if (petUser.useItem(target)) {
+					petUser.save();
+					delete petUser.operation;
+				} else {
+					this.popupReply('道具使用失败!');
+				}
+
+				this.parse(`/pet box show ${petUser.onPosition ? Object.values(petUser.onPosition).join(',') : ''}`);
+			},
+
 			moves(target, room, user) {
 				if (!room) return this.popupReply("请在房间里使用宠物系统");
 				const petUser = getUser(user.id);
@@ -1284,7 +1517,7 @@ export const commands: Chat.ChatCommands = {
 					petUser.onChangeMoves = {
 						'position': position,
 						'selected': set.moves,
-						'valid': Pet.validMoves(toID(set.species), set.level).map(x => Dex.moves.get(x).name)
+						'valid': Pet.validMoves(set.species, set.level).map(x => Dex.moves.get(x).name)
 					};
 				}
 				const div = (x: string) =>
@@ -1488,6 +1721,7 @@ export const commands: Chat.ChatCommands = {
 				}
 				petUser.save();
 				this.popupReply(replies.join('\n'));
+				this.parse(`/pet box show new`);
 			},
 
 			clear(target, room, user) {
@@ -1547,10 +1781,19 @@ export const commands: Chat.ChatCommands = {
 					FS(`${DEPOSITPATH}/${user.id}.txt`).safeWriteSync(target);
 					battleRoom = PetBattle.createBattle(user, bot, userTeam, botTeam, rule, false);
 					petUser.property['time']['gym'] = Date.now();
+				} else if (PetBattle.bossConfig[target]) {
+					const day = Utils.getDay();
+					if (day <= petUser.property['time']['boss']) {
+						return this.popupReply(`您今日已挑战过霸主宝可梦!`);
+					}
+					const rule = 'gen8petmodebossbattle';
+					petUser.battleInfo = `boss${target}`;
+					FS(`${DEPOSITPATH}/${user.id}.txt`).safeWriteSync(target);
+					battleRoom = PetBattle.createBattle(user, bot, 'random', 'random', rule, false, 'multi');
+					petUser.property['time']['boss'] = day;
 				} else {
 					const wildPokemon = Pet.wild(room.roomid, target, petUser.maxLevel(), petUser.levelRistriction(), wantLegend);
 					if (!wildPokemon) return this.popupReply('这片草丛太危险了!');
-					if (wildPokemon === 'noconf') return this.parse('/pet help lawn');
 					const rule = 'gen8petmode @@@pschinapetmodewild';
 					petUser.battleInfo = wildPokemon + (wantLegend ? `<=${room.roomid}` : '');
 					battleRoom = PetBattle.createBattle(user, bot, 'random', wildPokemon, rule, !wantLegend);
@@ -1625,6 +1868,7 @@ export const commands: Chat.ChatCommands = {
 				const shiny = parseInt(targets[2]) || 0;
 				const hidden = parseInt(targets[3]) || 0;
 				const set = Pet.gen(species.id, level, true, 70, shiny, hidden);
+				if (!set) return this.popupReply(`种类不合法`);
 				const gender = set.split('|')[7];
 				PetBattle.legends[room.roomid] = set;
 				const legendStyle = 'font-size: 12pt; text-align: center; height: 170px';
@@ -1675,24 +1919,29 @@ export const commands: Chat.ChatCommands = {
 				const goodname = targets[1];
 				let title = Object.keys(Shop.types).map(x => Utils.button(`/pet shop show ${x}`, Shop.types[x])).join('');
 				if (goods[goodname]) {
-					const price = goods[goodname];
+					let price = goods[goodname];
+					if (toID(goodname) === 'box') price *= petUser.getBoxPriceBase();
 					if (price > 0) {
-						title = `购买 ${goodname} ? (${price}积分/1个)<br/>${title}<br/>` +
+						title = `购买 ${goodname} ? ` +
+							`(${price}积分/1个${Shop.goodDesc[goodname] ? `, 效果: ${Shop.goodDesc[goodname]}` : ''})<br/>` +
 							Utils.button(`/pet shop buy ${goodtype}=>${goodname}!`, '购买5个!') +
 							Utils.button(`/pet shop buy ${goodtype}=>${goodname}`, '购买1个') +
-							Utils.button(`/pet shop show ${goodtype}`, '取消');
+							Utils.button(`/pet shop show ${goodtype}`, '取消') +
+							`<br/><br/>${title}`;
 					} else {
-						title = `领取5个 ${goodname} ?<br/>${title}<br/>` +
-							`${Utils.boolButtons(`/pet shop buy ${goodtype}=>${goodname}!`, `/pet shop show ${goodtype}`)}`;
+						title = `领取5个 ${goodname} ?<br/>` +
+							`${Utils.boolButtons(`/pet shop buy ${goodtype}=>${goodname}!`, `/pet shop show ${goodtype}`)}` +
+							`<br/><br/>${title}`;
 					}
 				} else {
-					title = `请选择商品:<br/>${title}<br/>`
+					title = `请选择商品:<br/>${title}`
 				}
-				title = `<div><b>${Utils.button('/pet shop buy ball=>Poke Ball!', '领取5个精灵球!')}` +
-					`${Utils.button('/pet shop draw', '领取随机道具!')}<br/>${title}</b></div>`;
+				title = `<div><b>${title}</b><br/><br/></div>`;
 				user.sendTo(room.roomid, `|uhtml${target === 'new' ? '' : 'change'}|pet-shop-show|` +
 					`${title}<div style="border: ridge;">${Shop.goodButtons[goodtype]}</div>` +
-					`${Utils.button(`/score pop`, '查看积分')}${Utils.button(`/pet box`, '返回')}`);
+					`${Utils.button('/pet shop buy ball=>Poke Ball!', '领取5个精灵球!')}` +
+					`${Utils.button('/pet shop draw', '领取随机道具!')}` +
+					`${Utils.button(`/score pop`, '查看积分')}${Utils.button(`/pet box show new`, '返回')}`);
 			},
 
 			async buy(target, room, user) {
@@ -1708,7 +1957,9 @@ export const commands: Chat.ChatCommands = {
 				goodname = goodnames[0];
 				let num = goodnames.length > 1 ? 5 : 1;
 				if (!goods[goodname]) return this.popupReply(`没有名为 ${goodname} 的${Shop.types[goodtype]}!`);
-				const price = goods[goodname];
+				if (toID(goodname) === 'box' && num > 1) return this.popupReply(`不可以一次性购买多个盒子!`);
+				let price = goods[goodname];
+				if (toID(goodname) === 'box') price *= petUser.getBoxPriceBase();
 				petUser.load();
 				if (price > 0) {
 					const changeScores = await addScore(user.name, -price * num);
@@ -1727,7 +1978,11 @@ export const commands: Chat.ChatCommands = {
 					}
 					if (num > 0) petUser.property['time']['ball'] = Date.now();
 				}
-				petUser.addItem(goodname, num);
+				if (toID(goodname) === 'box') {
+					petUser.addBox();
+				} else {
+					petUser.addItem(goodname, num);
+				}
 				petUser.save();
 				this.parse('/pet box');
 			},
@@ -1736,14 +1991,14 @@ export const commands: Chat.ChatCommands = {
 				const petUser = getUser(user.id);
 				if (!petUser.property) return this.popupReply("您还未领取最初的伙伴!");
 				petUser.load();
-				const day = Math.floor(Date.now() / 24 / 60 / 60 / 1000);
+				const day = Utils.getDay();
 				if (day <= petUser.property['time']['draw']) return this.popupReply("您今日已领取随机道具!");
 				const randomItem = prng.sample(Object.keys(Shop.shopConfig['draw']));
 				petUser.property['time']['draw'] = day;
 				petUser.addItem(randomItem, 1);
 				petUser.save();
 				this.popupReply(`您获得了1个 ${randomItem}!`);
-				this.parse(`/pet box show ${petUser.onPosition ? Object.values(petUser.onPosition).join(',') : ''}`)
+				this.parse(`/pet box`);
 			},
 
 			clear(target, room, user) {
@@ -1797,6 +2052,7 @@ export const commands: Chat.ChatCommands = {
 				user.sendTo(room.roomid, `|uhtml|pet-edit|${petUser.id}的盒子:<br/>` + 
 					`<input type="text" style="width: 100%" value='${JSON.stringify(petUser.property)}'/>` +
 					`修改盒子: /edit ${petUser.id}=>{"bag":["宝可梦1",...],"box":["宝可梦2",...],"items":{"道具1":数量1,...}}<br/>` +
+					`添加宠物: /edit ${petUser.id}=>宝可梦` +
 					`生成宠物: /genpoke 种类, 等级(, fullivs, shiny, hidden)<br/>` +
 					Utils.button(`/pet admin edit ${petUser.id}=>!`, '删除用户数据')
 				);
@@ -1840,6 +2096,30 @@ export const commands: Chat.ChatCommands = {
 				this.sendReply(set);
 			},
 
+			gift(target, room, user) {
+				this.checkCan('bypassall');
+				if (!target) return this.popupReply("请输入: /gift 用户id");
+				const petUser = getUser(user.id);
+				if (!petUser.property) return this.popupReply("您还未领取最初的伙伴!");
+				if (!petUser.onPosition) return this.popupReply("请先选中想要赠送的宝可梦!");
+				if (!checkUser(target)) return this.popupReply(`未找到用户 ${target} !`);
+				if (target.indexOf('!') < 0) {
+					petUser.operation = `gift${target}`;
+				} else {
+					const rcverId = toID(target);
+					const pet = petUser.getPet();
+					const gift = new PetUser(rcverId, GIFTPATH);
+					if (!gift.property) gift.init();
+					gift.addPet(pet);
+					gift.save();
+					petUser.removePet(petUser.onPosition);
+					petUser.save();
+					delete petUser.operation;
+					Users.get(rcverId)?.popup(`${user.name}赠送给您一只宝可梦! 请输入/pet点击领取礼物`);
+				}
+				this.parse(`/pet box show ${petUser.onPosition ? Object.values(petUser.onPosition).join(',') : ''}`);
+			},
+
 		},
 
 		'': 'help',
@@ -1856,7 +2136,7 @@ export const commands: Chat.ChatCommands = {
 				buttons.push([
 					Utils.button('/pet box', '盒子'),
 					Utils.button('/pet shop', '商店'),
-					`<button class="button"><a href="/gym">道馆</a></button>`,
+					`<a href="/gym"><button class="button">道馆</button></a>`,
 				]);
 				if (PetBattle.legends[room.roomid]) {
 					buttons[0].push(Utils.button('/pet lawn search !', `挑战房间里的 ${
