@@ -13,7 +13,7 @@ exports.PetModeShopConfig = {
 		// "Love Sweet": 40,
 		// "Ribbon Sweet": 40,
 		// "Star Sweet": 40,
-		// "Chipped Pot": 40,
+		"Chipped Pot": 40,
 		"Cracked Pot": 40,
 		"Deep Sea Scale": 40,
 		"Deep Sea Tooth": 40,
@@ -191,6 +191,7 @@ exports.PetModeShopConfig = {
 		"Utility Umbrella": 50,
 		"Mental Herb": 50,
 		"White Herb": 50,
+		"Power Herb": 50,
 		"Shell Bell": 50,
 		"Wide Lens": 50,
 		"Scope Lens": 50,
@@ -231,4 +232,14 @@ exports.PetModeShopConfig = {
 		"Rusted Sword": 50,
 		"Rusted Shield": 50,
 	},
+	'util': {
+		// 'Rusty Bottle Cap': 2,
+		'Rocket Bottle Cap': 10,
+		'Bottle Cap': 25,
+		'Gold Bottle Cap': 100,
+		'Ability Capsule': 25,
+		// 'Ability Patch': 100,
+		'Nature Mint': 50,
+		'Box': 50
+	}
 }
