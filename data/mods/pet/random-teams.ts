@@ -7,7 +7,7 @@ import { PetModeLearnSets } from "../../../config/pet-mode/learnsets";
 const USERPATH = 'config/pet-mode/user-properties';
 const LEARNSETS: {[speciesid: string]: {[moveid: string]: number}} = PetModeLearnSets;
 
-function getUserTeam(userid: string): PokemonSet[] | null {
+function getUserTeam(userid: string, maxLevel: number = 100): PokemonSet[] | null {
 	const userPropertyString = FS(`${USERPATH}/${userid}.json`).readIfExistsSync();
 	if (userPropertyString) {
 		let parsedTeam: PokemonSet[] = [];
@@ -15,6 +15,7 @@ function getUserTeam(userid: string): PokemonSet[] | null {
 			const team = Teams.unpack(x);
 			if (team) {
 				const set: PokemonSet = team[0];
+				set.level = Math.min(set.level, maxLevel);
 				set.moves = set.moves.filter((move: string) => {
 					const moveid = Dex.toID(move);
 					if (moveid === 'vcreate') return true;
@@ -33,6 +34,10 @@ export class RandomPSChinaPetModeTeams extends RandomTeams {
 
 	randomPetModeTeam(options: PlayerOptions) {
 		return getUserTeam(Dex.toID(options.name));
+	}
+
+	randomPetModeRestrictedTeam(options: PlayerOptions) {
+		return getUserTeam(Dex.toID(options.name), 50);
 	}
 
 }
