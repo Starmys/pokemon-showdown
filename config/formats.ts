@@ -4948,6 +4948,19 @@ export const Formats: FormatList = [
 		ruleset: ['PS China Pet Mode'],
 	},
 	{
+		name: "[Gen 8] Pet Mode Boss Battle",
+		desc: `去挑战强大的霸主宝可梦吧！`,
+
+		searchShow: false,
+		challengeShow: false,
+		// tournamentShow: false,
+
+		mod: 'petboss',
+		gameType: 'multi',
+		team: 'randomPetModeBossBattle',
+		ruleset: ['PS China Pet Mode Boss'],
+	},
+	{
 		name: "[Gen 8] Multi OU",
 		desc: `4-Player 2v2 Doubles OU`,
 		mod: 'gen8',
@@ -5067,10 +5080,10 @@ export const Formats: FormatList = [
 		ruleset: ['Obtainable', 'Species Clause', 'Nickname Clause', 'Item Clause', 'Team Preview', 'Cancel Mod', 'VGC Timer', 'Min Team Size = 4', 'Max Team Size = 6', 'Picked Team Size = 4', 'Adjust Level = 50', 'Min Source Gen = 8'],
 	},
 	{
-		name: "[Gen 7] Random Formats",
-		desc: `Randomized competitive lower tiers teams of mutiple generations.`,
+		name: "[Gen 7] Random Formats",
+		desc: `Randomized competitive lower tiers teams of mutiple generations.`,
 
-		team: 'random',
+		team: 'random',
 	},
 	{
 		name: "[Gen 7] Battle Tree 3v3",
