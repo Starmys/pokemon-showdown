@@ -838,7 +838,7 @@ export class RoomBattle extends RoomGame<RoomBattlePlayer> {
 		Chat.runHandlers('onBattleEnd', this, winnerid, this.players.map(p => p.id));
 		if (this.room.rated && !this.options.isBestOfSubBattle) {
 			void this.updateLadder(p1score, winnerid);
-		} else if (Config.logchallenges) {
+		} else if (Config.logchallenges && toID(this.format).indexOf('petmode') < 0) {
 			void this.logBattle(p1score);
 		} else if (!this.options.isBestOfSubBattle) {
 			this.logData = null;
