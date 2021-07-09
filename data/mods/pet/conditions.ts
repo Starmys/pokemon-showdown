@@ -45,4 +45,45 @@ export const Conditions: {[k: string]: ConditionData} = {
 			this.add('-message', 'The Acid Rain subsided.');
 		},
 	},
+	mercyaura: {
+		name: 'Mercy Aura',
+		effectType: 'Weather',
+		duration: 0,
+		onEffectivenessPriority: -1,
+		onEffectiveness(typeMod, target, type, move) {
+			if (move.type === 'Grass') {
+				if (type !== 'Grass') return 1;
+			}
+		},
+		onFieldStart(battle, source, effect) {
+			if (effect?.effectType === 'Ability') {
+				this.add('-weather', 'MercyAura', '[from] ability: ' + effect, '[of] ' + source);
+			} else {
+				this.add('-weather', 'MercyAura');
+			}
+			this.add('-message', 'Mercy Aura is radiated.');
+		},
+		onSetStatus(status, target, source, effect) {
+			if ((effect as Move)?.status && target.hasType('Grass')) {
+				this.add('-immune', target, '[from] ability: Leaf Guard');
+			}
+			return false;
+		},
+		onTryAddVolatile(status, target) {
+			if (status.id === 'yawn' && target.hasType('Grass')) 
+			{
+				this.add('-immune', target, '[from] ability: Leaf Guard');
+				return null;
+			}
+		},
+		onFieldResidualOrder: 1,
+		onFieldResidual() {
+			this.add('-weather', 'Mercy Aura', '[upkeep]');
+			this.eachEvent('Weather');
+		},
+		onFieldEnd() {
+			this.add('-weather', 'none');
+			this.add('-message', 'The Mercy Aura subsided.');
+		},
+	},
 };
