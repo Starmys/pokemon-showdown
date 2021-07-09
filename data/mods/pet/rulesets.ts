@@ -1,3 +1,8 @@
+/*
+	p1 = Bot Side
+	p2 = User Side
+*/
+
 import { FS } from "../../../lib";
 import { PetModeGymConfig } from "../../../config/pet-mode/gym-config";
 
@@ -14,16 +19,7 @@ const gymConfig: {[gymname: string]: {
 const userToGym: {[userid: string]: string} = {};
 
 function argmax(s: StatsTable): 'hp' | 'atk' | 'def' | 'spa' | 'spd' | 'spe' {
-	let maxValue = 0;
-	let maxIndex: 'hp' | 'atk' | 'def' | 'spa' | 'spd' | 'spe' = 'hp';
-	let i: 'hp' | 'atk' | 'def' | 'spa' | 'spd' | 'spe';
-	for (i in s) {
-		if (s[i] > maxValue) {
-			maxValue = s[i];
-			maxIndex = i;
-		}
-	}
-	return maxIndex;
+	return Object.keys(s)[Object.values(s).indexOf(Math.max(...Object.values(s)))] as 'hp' | 'atk' | 'def' | 'spa' | 'spd' | 'spe';
 }
 
 function addExperience(userid: string, foespecies: string, foelevel: number): boolean {
@@ -69,7 +65,8 @@ function addExperience(userid: string, foespecies: string, foelevel: number): bo
 }
 
 function writeCatchRate(userid: string, speciesid: string, hp: number, maxhp: number, status: string) {
-	const R = (1 - hp / maxhp / 1.5) * (catchRate[speciesid] || 3) * (catchStatusCorrection[status] || 1);
+	const baseSpecies = Dex.toID(Dex.species.get(speciesid).baseSpecies);
+	const R = (1 - hp / maxhp / 1.5) * (catchRate[baseSpecies] || 3) * (catchStatusCorrection[status] || 1);
 	FS(`${DEPOSITPATH}/${userid}.txt`).safeWriteSync(Math.floor(R).toString());
 }
 
@@ -98,11 +95,11 @@ function registerUser(userid: string): string | undefined {
 	}
 }
 
-function checkWin(pokemonOnFaint: Pokemon, sides: Side[]): string | undefined {
+function checkWin(pokemonOnFaint: Pokemon, sides: Side[]): Side | undefined {
 	const aliveSides = sides.filter(side => {
 		return side.pokemon.filter(pokemon => !pokemon.fainted).length > (pokemonOnFaint.side.id === side.id ? 1 : 0);
 	});
-	if (aliveSides.length === 1) return aliveSides[0].id;
+	if (aliveSides.length === 1) return aliveSides[0];
 }
 
 export const Rulesets: {[k: string]: FormatData} = {
@@ -124,36 +121,36 @@ export const Rulesets: {[k: string]: FormatData} = {
 			dcTimerBank: false,
 		},
 		onBegin() {
-			const botSide = this.sides[1];
-			botSide.emitRequest = (update: AnyObject) => {
-				this.send('sideupdate', `${botSide.id}\n|request|${JSON.stringify(update)}`);
-				botSide.activeRequest = update;
+			this.p1.emitRequest = (update: AnyObject) => {
+				this.send('sideupdate', `${this.p1.id}\n|request|${JSON.stringify(update)}`);
+				this.p1.activeRequest = update;
+				// @ts-ignore
 				setTimeout(() => {
 					for (let i = 0; i < 20; i++) {
-						botSide.chooseMove(this.sample(botSide.active[0].moves));
-						if (botSide.isChoiceDone()) break;
+						this.p1.chooseMove(this.sample(this.p1.active[0].moves));
+						if (this.p1.isChoiceDone()) break;
 					}
 				}, 10);
 			}
-			this.add('html', `<div class="broadcast-green"><strong>野生的${this.sides[1].team[0].name}出现了!</strong></div>`);
+			this.add('html', `<div class="broadcast-green"><strong>野生的${this.p1.team[0].name}出现了!</strong></div>`);
 		},
 		onBattleStart() {
 			this.add('html', `<button class="button" name="send" value="/pet lawn ball">捕捉!</button>`);
-			const userid = Dex.toID(this.sides[0].name);
-			writeCatchRate(userid, this.sides[1].pokemon[0].species.id, 1, 1, '');
+			const userid = Dex.toID(this.p2.name);
+			writeCatchRate(userid, this.p1.pokemon[0].species.id, 1, 1, '');
 		},
 		onBeforeTurn(pokemon) {
-			if (pokemon.side.id === 'p2') {
+			if (pokemon.side === this.p1) {
 				this.add('html', `<button class="button" name="send" value="/pet lawn ball">捕捉!</button>`);
-				const userid = Dex.toID(this.sides[2 - parseInt(pokemon.side.id[1])].name);
+				const userid = Dex.toID(this.p2.name);
 				writeCatchRate(userid, pokemon.species.id, pokemon.hp, pokemon.maxhp, pokemon.status);
 			}
 		},
 		onFaint(pokemon) {
-			if (pokemon.side.id === 'p2') {
+			if (pokemon.side === this.p1) {
 				this.add('html', `<div class="broadcast-green"><strong>野生的${pokemon.name}倒下了!</strong></div>`);
 				let levelUp = false;
-				levelUp = levelUp || addExperience(Dex.toID(this.sides[0].name), pokemon.species.name, pokemon.level);
+				levelUp = levelUp || addExperience(Dex.toID(this.p2.name), pokemon.species.name, pokemon.level);
 				if (levelUp) {
 					this.add('html', `<div class="broadcast-green"><strong>您的宝可梦升级了! 快去盒子查看吧!</strong></div>`);
 				}
@@ -176,23 +173,26 @@ export const Rulesets: {[k: string]: FormatData} = {
 			dcTimerBank: false,
 		},
 		onBegin() {
-			const userName = this.sides[0].name;
+			const userName = this.p2.name;
 			const gymName = registerUser(Dex.toID(userName));
 			if (!gymName) return;
 			const gymSettings = gymConfig[gymName];
-			const botSide = this.sides[1];
-			botSide.emitRequest = (update: AnyObject) => {
-				this.send('sideupdate', `${botSide.id}\n|request|${JSON.stringify(update)}`);
-				botSide.activeRequest = update;
+			this.p1.emitRequest = (update: AnyObject) => {
+				this.send('sideupdate', `${this.p1.id}\n|request|${JSON.stringify(update)}`);
+				this.p1.activeRequest = update;
+				// @ts-ignore
 				setTimeout(() => {
-					if (update.forceSwitch) {
-						const alive = botSide.pokemon.filter(
+					const activePoke = this.p1.active[0];
+					const selfBoost = eval(Object.values(activePoke.boosts).join('+'));
+					const needSwitch = activePoke.hasAbility(['truant', 'normalize']) || selfBoost <= -4;
+					if (update.forceSwitch || needSwitch) {
+						const alive = this.p1.pokemon.filter(
 							x => !x.isActive && !x.fainted && x.species.name !== gymSettings['ace']
 						).map(x => x.name);
 						if (alive.length > 0) {
-							botSide.chooseSwitch(this.prng.sample(alive));
+							this.p1.chooseSwitch(this.prng.sample(alive));
 						} else {
-							botSide.chooseSwitch(gymSettings['ace']);
+							this.p1.chooseSwitch(gymSettings['ace']);
 							this.add('message', gymSettings['msg']['ace']);
 						}
 						if (this.allChoicesDone()) {
@@ -200,59 +200,105 @@ export const Rulesets: {[k: string]: FormatData} = {
 							this.sendUpdates();
 						}
 					} else {
-						const activePoke = botSide.active[0];
-						const foeActivePoke = this.sides[0].active[0];
+						const foeActivePoke = this.p2.active[0];
+						const mega = activePoke.canMegaEvo ? 'mega' : '';
+						// Spectral Thief
+						const foeBoost = eval(Object.values(foeActivePoke.boosts).filter(x => x > 0).join('+'));
+						if (!foeActivePoke.hasType('Normal') && foeBoost >= 2) {
+							if (activePoke.hasMove('spectralthief')) {
+								this.p1.chooseMove('spectralthief', 0, mega);
+							} else {
+								const thief = this.p1.pokemon.find(x => {
+									return !x.fainted && x.hasMove('spectralthief');
+								});
+								if (thief) this.p1.chooseSwitch(thief.name);
+							}
+						}
+						// Heal
 						const hpRate = activePoke.hp / activePoke.maxhp;
 						const healPress = activePoke.speed > foeActivePoke.speed ? 1 : 2;
 						const healRate = Math.pow(1 - hpRate, 3) + 3 * Math.pow(1 - hpRate, 2) * hpRate * healPress;
-						const mega = activePoke.canMegaEvo ? 'mega' : '';
 						if (this.prng.randomChance(healRate * 1000, 1000)) {
-							const healingMove = activePoke.moves.filter(moveid => {
+							const healingMove = activePoke.moves.find(moveid => {
 								return Dex.moves.get(moveid).flags['heal'];
-							})[0];
-							if (healingMove) botSide.chooseMove(healingMove, 0, mega);
+							});
+							if (healingMove) this.p1.chooseMove(healingMove, 0, mega);
 						}
-						if (Math.max(...Object.values(foeActivePoke.boosts)) >= 2) {
-							if (activePoke.hasMove('spectralthief')) {
-								botSide.chooseMove('spectralthief', 0, mega);
-							} else {
-								const thief = botSide.pokemon.filter(x => {
-									return !x.fainted && x.hasMove('spectralthief');
-								})[0];
-								if (thief) botSide.chooseSwitch(thief.name);
+						// Other Moves
+						const checkImmune = (moveid: string): boolean => {
+							const move = Dex.moves.get(moveid);
+							if (foeActivePoke.types.find(type => Dex.types.get(type).damageTaken[move.type] === 3)) return false;
+							switch (Dex.toID(activePoke.ability)) {
+								case 'moldbreaker':
+								case 'turboblaze':
+								case 'teravolt':
+									return true;
+							}
+							switch (move.id) {
+								case 'sunsteelstrike':
+								case 'searingsunrazesmash':
+								case 'moongeistbeam':
+								case 'menacingmoonrazemaelstrom':
+								case 'photongeyser':
+								case 'lightthatburnsthesky':
+								case 'gmaxdrumsolo':
+								case 'gmaxfireball':
+								case 'gmaxhydrosnipe':
+									return true;
+							}
+							if (move.flags['powder'] && foeActivePoke.hasType('Grass')) return false;
+							if (move.flags['bullet'] && foeActivePoke.hasAbility('Bulletproof')) return false;
+							if (move.flags['sound'] && foeActivePoke.hasAbility('Soundproof')) return false;
+							if (move.target !== 'self') {
+								switch (move.type) {
+									case 'Grass':
+										return !foeActivePoke.hasAbility(['sapsipper']);
+									case 'Fire':
+										return !foeActivePoke.hasAbility(['flashfire']);
+									case 'Water':
+										return !foeActivePoke.hasAbility(['stormdrain', 'waterabsorb', 'dryskin']);
+									case 'Electric':
+										return !foeActivePoke.hasAbility(['voltabsorb', 'motordrive', 'lightningrod']);
+								}
+							}
+							return true;
+						}
+						const movesHasPP = activePoke.getMoves().filter(movedata => !!movedata.pp).map(movedata => movedata.move);
+						const movesNotHeal = movesHasPP.filter(move => !Dex.moves.get(move).flags['heal']);
+						const movesNotImmune = movesNotHeal.filter(move => checkImmune(move))
+						if (!this.p1.isChoiceDone()) {
+							if (movesNotImmune.length > 0) {
+								this.p1.chooseMove(this.sample(movesNotImmune), 0, mega);
+							} else if (movesNotHeal.length) {
+								this.p1.chooseMove(this.sample(movesNotHeal), 0, mega);
+							} else if (movesHasPP.length > 0) {
+								this.p1.chooseMove(this.sample(movesHasPP), 0, mega);
 							}
 						}
-						let i = 0;
-						const validMoves = activePoke.getMoves().filter(movedata => {
-							return movedata.pp && !Dex.moves.get(movedata.move).flags['heal'];
-						}).map(movedata => movedata.move);
-						while (!botSide.isChoiceDone() && i < 20) {
-							botSide.chooseMove(this.sample(validMoves), 0, mega);
-							i++;
-						}
+						return this.p1.autoChoose();
 					}
 				}, 10);
 			};
 			this.add('html', `<div class="broadcast-green"><strong>训练家${userName}开始挑战${gymName}道馆!</strong></div>`);
 		},
 		onBattleStart() {
-			const gymName = userToGym[Dex.toID(this.sides[0].name)];
+			const gymName = userToGym[Dex.toID(this.p2.name)];
 			if (gymName) this.add('message', gymConfig[gymName]['msg']['start']);
 		},
 		onBeforeTurn() {
-			const gymName = userToGym[Dex.toID(this.sides[0].name)];
+			const gymName = userToGym[Dex.toID(this.p2.name)];
 			if (!gymName) return;
 			const gymSettings = gymConfig[gymName];
 			if (gymSettings['weather']) this.field.setWeather(gymSettings['weather']);
 			if (gymSettings['terrain']) this.field.setTerrain(gymSettings['terrain']);
 		},
 		onFaint(pokemon) {
-			const userId = Dex.toID(this.sides[0].name);
+			const userId = Dex.toID(this.p2.name);
 			const gymName = userToGym[userId];
 			const gymSettings = gymConfig[gymName];
 			if (!gymName) return;
 			switch (checkWin(pokemon, this.sides)) {
-				case 'p1':
+				case this.p2:
 					if (addBadge(userId, gymName)) {
 						this.add('html', `<div class="broadcast-green"><strong>恭喜您获得了 ${gymName}徽章 !</strong></div>`);
 						switch (gymSettings['bonus']) {
@@ -265,7 +311,7 @@ export const Rulesets: {[k: string]: FormatData} = {
 					this.add('message', gymSettings['msg']['win']);
 					delete userToGym[userId];
 					break;
-				case 'p2':
+				case this.p1:
 					this.add('message', gymSettings['msg']['lose']);
 					delete userToGym[userId];
 					break;
