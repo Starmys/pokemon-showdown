@@ -32,11 +32,7 @@ function getUserTeam(userid: string, maxLevel: number = 100): PokemonSet[] | nul
 
 export class RandomPSChinaPetModeTeams extends RandomTeams {
 
-	randomPetModeTeam(options: PlayerOptions) {
-		return getUserTeam(Dex.toID(options.name));
-	}
-
-	randomPetModeRestrictedTeam(options: PlayerOptions) {
+	randomPetModeBossBattleTeam(options: PlayerOptions) {
 		return getUserTeam(Dex.toID(options.name), 50);
 	}
 
