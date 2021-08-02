@@ -7,11 +7,12 @@ export const commands: Chat.ChatCommands = {
 			target = user.id;
 			popReply = true;
 		}
-		let targetUser = target.trim() || user.id;  // 等积分转移完成后改用toID()
+		let targetUser = target || user.id;
+		// @ts-ignore
 		let ladder = await Ladders("gen8ps").getLadder();
 		let msg = `未找到用户${targetUser}的PS国服积分记录`;
 		for (let [i, entry] of ladder.entries()) {
-			if (entry[2] === targetUser || toID(entry[2]) == targetUser) {
+			if (entry[2] === targetUser || toID(entry[2]) === toID(targetUser)) {
 				msg = `${targetUser}的PS国服积分是：${entry[1]}`;
 				return popReply ? this.popupReply(msg) : this.sendReply(msg);
 			}
