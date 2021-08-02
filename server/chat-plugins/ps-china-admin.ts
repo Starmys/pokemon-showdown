@@ -1,22 +1,56 @@
 import { FS } from '../../lib';
-import type { PartialModlogEntry } from '../modlog';
-import type { TournamentPlayer } from '../tournaments';
+import { Utils, addRandomEgg } from './ps-china-pet-mode';
 
-if (!FS('logs/modlog/iplog').existsSync()) FS('logs/modlog/iplog').mkdir();
+const TOURCONFIGPATH = 'config/ps-china/tour-config.json';
+const REPLAYHEADPATH = 'config/ps-china/replay/replay-head.txt';
+const REPLAYTAILPATH = 'config/ps-china/replay/replay-tail.txt';
 
-let userAlts: {[mainid: string]: {'alts': string[], 'ips': string[]}} = {};
-let altToMainId: {[altid: string]: string} = {};
-let ipToMainId: {[ip: string]: string} = {};
+const IPLOGDIR = 'logs/iplog';
+const IPMAPPATH = 'logs/ipmap.json';
+const TOURLOGDIR = 'logs/tour';
 
-function sleep(time: number) {
-	// @ts-ignore
-    return new Promise(resolve => setTimeout(resolve, time));
+if (!FS(IPLOGDIR).existsSync()) FS(IPLOGDIR).mkdir();
+if (!FS(TOURLOGDIR).existsSync()) FS(TOURLOGDIR).mkdir();
+
+let userAlts: { [userid: string]: string[] } = JSON.parse(FS(IPMAPPATH).readIfExistsSync() || '{}');
+
+function formatJSON(s: AnyObject) {
+	return JSON.stringify(s, null, '\t').replace(/\[\n\t\t/g, '[ ').replace(/\n\t\]/g, ' ]').replace(/,\n\t\t/g, ', ');
+}
+
+function searchTourTree(node: AnyObject): { [playerid: string]: string[] } {
+	const result: { [playerid: string]: string[] } = {};
+	const playerId = toID(node.team);
+	if (node.children) {
+		node.children.forEach((child: AnyObject) => {
+			const childResult = searchTourTree(child);
+			Object.assign(result, childResult);
+		});
+		const foeId = node.children.map((child: AnyObject) => toID(child.team)).find((childId: string) => childId !== playerId);
+		result[playerId].push(foeId);
+	} else {
+		result[playerId] = [];
+	}
+	return result;
+}
+
+function parseTourLog(bracket: AnyObject | null): AnyObject {
+	try {
+		const playerWins = searchTourTree(bracket!.rootNode);
+		const sortedPlayerWins: { [playerid: string]: string[] } = {};
+		const players = Object.keys(playerWins);
+		players.sort((p1, p2) => playerWins[p1].length > playerWins[p2].length ? 1 : -1);
+		players.forEach(player => sortedPlayerWins[player] = playerWins[player]);
+		return sortedPlayerWins;
+	} catch (err) {
+		return bracket || {};
+	}
 }
 
 function getTourFormat(): string | undefined {
 	try {
 		const date = new Date();
-		const tourConfig: {[hour: string]: string} = JSON.parse(FS('config/tour-config.json').readIfExistsSync())[date.getDay()];
+		const tourConfig: {[hour: string]: string} = JSON.parse(FS(TOURCONFIGPATH).readIfExistsSync())[date.getDay()];
 		for (let hour in tourConfig) {
 			const hourDiff = (date.getTime() - (parseInt(hour) - 8) * 1000 * 60 * 60) / (1000 * 60 * 60) % 24;
 			if (hourDiff < 1 || hourDiff > 23) return tourConfig[hour];
@@ -29,84 +63,132 @@ function getTourFormat(): string | undefined {
 function getScoreTourClass() {
 	return class ScoreTournament extends Tournaments.Tournament {
 
-		disqualifyUser(userid: ID, output: Chat.CommandContext | null = null, reason: string | null = null, isSelfDQ = false) {
-			const player = this.playerTable[userid];
-			// Find foe player
-			let foe: TournamentPlayer | undefined;
-			for (const playerFrom of this.players) {
-				const match = playerFrom.inProgressMatch;
-				if (match && match.to === player) foe = playerFrom;
+		onTournamentEnd() {
+			super.onTournamentEnd();
+			const bracketData = this.getBracketData();
+			const logDir = `${TOURLOGDIR}/${Utils.getDate()}`;
+			if (!FS(logDir).existsSync()) FS(logDir).mkdirSync();
+			const tourLog = parseTourLog(bracketData);
+			FS(`${logDir}/${toID(this.name)}.json`).safeWriteSync(formatJSON(tourLog));
+			updateUserAlts();
+			addTourScore(this.name, tourLog);
+			const winnerId = toID(bracketData?.rootNode?.team);
+			const mainId = addEggToMain(winnerId);
+			if (mainId) {
+				const winnerNote = mainId === winnerId ? '' : `的宠物系统账号 ${mainId} `;
+				adminPM(winnerId, `恭喜夺冠! 您${winnerNote}获得了一个蛋!`);
+				Rooms.get('staff')?.add(`|c|&|/log 自动奖品发放: ${winnerId} ${winnerNote}获得了一个蛋`).update();
+			} else {
+				Rooms.get('staff')?.add(`|c|&|/log 自动奖品发放: 未找到冠军 ${winnerId} 的宠物系统账号`).update();
 			}
-			foe = foe || player.inProgressMatch?.to;
-			foe = foe || player.pendingChallenge?.from || player.pendingChallenge?.to;
-			// Add score to foe
-			if (foe) {
-				foe.wins += 1;
-				addTourScore(this.name, foe.id, foe.wins);
-			}
-			return super.disqualifyUser(userid, output, reason, isSelfDQ);
-		}
-
-		onBattleWin(room: GameRoom, winnerid: ID) {
-			super.onBattleWin(room, winnerid);
-			addTourScore(this.name, winnerid, this.playerTable[winnerid].wins);
 		}
 
 	}
 }
 
-// function updateUserAlts(): string {
-
-// }
-
-export function getMainId(userid: string): string {
-	// Users.get(userid)?.ips
-	return userid;
+function updateUserAlts() {
+	const ipCount: { [ip: string]: { [userid: string]: number } } = {};
+	const idCount: { [userid: string]: number } = {};
+	FS(IPLOGDIR).readdirIfExistsSync().slice(-16).forEach(fileName => {
+		FS(`${IPLOGDIR}/${fileName}`).readIfExistsSync().split('\n').forEach(line => {
+			const entry = line.split(',');
+			if (entry.length !== 3) return;
+			const userid = toID(entry[0]);
+			const ip = entry[2];
+			if (ip === '127.0.0.1' || ['shared', 'proxy'].includes(IPTools.getHostType('', ip))) return;
+			if (!ipCount[ip]) ipCount[ip] = {};
+			if (!ipCount[ip][userid]) ipCount[ip][userid] = 0;
+			ipCount[ip][userid]++;
+			if (!idCount[userid]) idCount[userid] = 0;
+			idCount[userid]++;
+		});
+	});
+	const idEdges: { [userid: string]: { [userid: string]: number } } = {};
+	for (let ip in ipCount) {
+		for (let id1 in ipCount[ip]) {
+			for (let id2 in ipCount[ip]) {
+				if (!idEdges[id1]) idEdges[id1] = {};
+				if (!idEdges[id1][id2]) idEdges[id1][id2] = 0;
+				idEdges[id1][id2] += (ipCount[ip][id1] / idCount[id1]) * (ipCount[ip][id2] / idCount[id2]);
+			}
+		}
+	}
+	userAlts = {};
+	for (let userid in idEdges) {
+		userAlts[userid] = Object.keys(idEdges[userid]).sort((id1, id2) => idEdges[userid][id1] < idEdges[userid][id2] ? 1 : -1);
+	}
+	FS(IPMAPPATH).safeWriteSync(formatJSON(userAlts));
 }
 
-function addTourScore(tourname: string, userid: string, wins: number) {
-	let score = 0;
-	switch (wins) {
-		case 2:
-		case 3:
-		case 4:
-			score = 10;
-			break;
-		case 5:
-		case 6:
-			score = 20;
+export function getAlts(userid: string): string[] {
+	return userAlts[userid] || [];
+}
+
+export async function getMainId(userid: string): Promise<string> {
+	for (let id of [userid].concat(getAlts(userid))) {
+		if (!!(await addScore(id, 0))[0]) return id;
 	}
-	if (score > 0) {
-		addScoreToMain(userid, score, `{}在 ${tourname} 淘汰赛中连胜 ${wins} 轮`);
+	return '';
+}
+
+function addEggToMain(userid: string): string {
+	for (let id of [userid].concat(getAlts(userid))) {
+		if (addRandomEgg(id, '3v')) return id;
+	}
+	return '';
+}
+
+function addTourScore(tourname: string, tourLog: AnyObject) {
+	try {
+		Object.keys(tourLog).forEach((userId, i) => {
+			const wins = tourLog[userId].length;
+			let score = [0, 0, 10, 20, 30, 50, 70, 100][wins] || 0;
+			if (score > 0) {
+				setTimeout(() => {
+					addScoreToMain(userId, score, `{}在 ${tourname} 淘汰赛中连胜 ${wins} 轮`);
+				}, 100 * i);
+			}
+		})
+	} catch (err) {
+		Rooms.get('staff')?.add(`|c|&|/log ${tourname} 淘汰赛自动加分失败`).update();
 	}
 }
 
-export async function addScoreToMain(userid: string, score: number, msg: string) {
-	const mainId = getMainId(userid);
+function adminPM(userid: string, msg: string) {
+	const user = Users.get(userid);
+	if (!user || !user.connected) return;
+	user.send(`|pm|&|${user.tempGroup}${user.name}|/raw <div class="broadcast-green"><b>${msg}</b></div>`);
+}
+
+async function addScoreToMain(userid: string, score: number, msg: string) {
+	const mainId = await getMainId(userid);
 	const isMain = mainId === userid;
-	const userExists = !!(await addScore(mainId, 0))[0];
-	// Temp
-	if (!userExists) return Users.get(userid)?.popup(
-		`${msg.replace('{}', '您')}, 应获得国服积分 ${score} 分。由于未查到您的国服积分记录, 请联系管理员为您加分。`
-	);
-	const scores = await addScore(userid, score);
-	const logMsg = `${msg.replace('{}', userid)}国服积分: ${scores[0]} + ${score} = ${scores[1]}`;
-	const entry: PartialModlogEntry = {
-		action: logMsg,
-		isGlobal: true,
-		note: userExists ? '' : '新用户',
-	};
-	Rooms.global.modlog(entry);
-	Rooms.get('staff')?.send(`|modaction|${logMsg}`);
-	Users.get(userid)?.popup(
-		`${msg.replace('{}', '您')}, 获得国服积分 ${score} 分${isMain ? '' : `, 已发放到您的主账号 ${mainId} 上`}`
-	);
+
+	msg += ', ';
+	let noteMsg = msg.replace('{}', '您');
+	let logMsg = '自动定向加分: ' + msg.replace('{}', userid + ' ');
+	if (mainId) {
+		const scores = await addScore(mainId, score);
+		if (!isMain) {
+			noteMsg += `您的积分账号 ${mainId} `;
+			logMsg += `积分账号 ${mainId} `;
+		}
+		noteMsg += `获得国服积分 ${score} 分`;
+		logMsg += `获得国服积分: ${scores[0]} + ${score} = ${scores[1]}`;
+	} else {
+		noteMsg += `由于未查到您的积分记录, 请联系管理员为您发放国服积分 ${score} 分。`;
+		logMsg += `未查到积分记录, 请管理员核实账号后手动发放 ${score} 分。`
+	}
+
+	Rooms.global.modlog({ action: logMsg, isGlobal: true });
+	Rooms.get('staff')?.add(`|c|&|/log ${logMsg}`).update();
+	adminPM(userid, noteMsg);
 }
 
 let addingScore: boolean = false;
 
 export async function addScore(userid: string, score: number): Promise<number[]> {
-	while (addingScore) await sleep(1);
+	while (addingScore) await Utils.sleep(1);
 	addingScore = true;
 	// @ts-ignore
 	let ladder = await Ladders("gen8ps").getLadder();
@@ -164,13 +246,10 @@ export const commands: Chat.ChatCommands = {
 		const changeScore = await addScore(userid, parsedScore);
 		if (changeScore.length !== 2) return this.errorReply("错误：将造成负分。");
 
-		const CNUser = Users.get(userid);
-		if (CNUser?.connected) {
-			CNUser.popup(`您因为 ${reason} ${parsedScore > 0 ? '获得': '失去'}了 ${Math.abs(parsedScore)} 国服积分`);
-		}
+		adminPM(userid, `您因为 ${reason} ${parsedScore > 0 ? '获得': '失去'}了 ${Math.abs(parsedScore)} 国服积分`);
 		const message = `用户ID: ${userid}, PS国服积分: ` +
 			`${changeScore[0]} ${parsedScore < 0 ? "-" : "+"} ${Math.abs(parsedScore)} = ${changeScore[1]}, ` +
-			`原因:${reason}, 操作人:${user.name}.`;
+			`原因: ${reason}, 操作人: ${user.name}.`;
 		this.globalModlog(message);
 		this.addModAction(message);
 
@@ -189,27 +268,11 @@ export const commands: Chat.ChatCommands = {
 		}
 	},
 	pschinascorehelp: [
-		`/pschinascore [user], [score], [reason] - 给user用户的国服积分增加score分, 说明原因. Requires: & ~`,
-	],
-
-	'scorelog': 'pschinascorelog',
-	async pschinascorelog(target, room, user) {
-		const targets = target.split(',');
-		const userId = toID(targets[0]) || targets[0] || user.id;
-		if (userId !== user.id) this.checkCan('lock');
-		const limit = parseInt(targets[1]) || 20;
-		const logs = FS(`${SCORELOGDIR}/${userId}.txt`).readIfExistsSync();
-		if (!logs) return this.errorReply(`未查到用户 ${userId} 在2021年9月1日之后的国服积分记录`);
-		const lines = logs.trim().split('\n').slice(-limit).map(line => line.split(',').map(s => `&ensp;${s}&ensp;`));
-		this.sendReply(`用户 ${userId} 的最近${lines.length}条国服积分记录:`);
-		this.sendReply(`|html|${PetUtils.table([], ['日期', '积分', '原因'], lines, 'auto')}`);
-	},
-	pschinascoreloghelp: [
-		`/scorelog [user], [lines] - 查看user用户(默认为自己)的最近lines(默认为20)条国服积分记录`,
+		`/pschinascore user, score, reason - 给user用户的国服积分增加score分，说明原因. Requires: & ~`,
 	],
 
 	restorereplay(target, room, user) {
-		this.checkCan('lock');
+		this.checkCan('lockdown');
 		let params = target.split(',');
 		if (!params || params.length != 4) {
 			return this.parse('/restorereplayhelp');
@@ -225,7 +288,7 @@ export const commands: Chat.ChatCommands = {
 		let files = [];
 		try {
 			files = FS(dir).readdirSync();
-		} catch (err: any) {
+		} catch (err) {
 			if (err.code === 'ENOENT') {
 				return this.errorReply("Replay not found.");
 			}
@@ -242,7 +305,7 @@ export const commands: Chat.ChatCommands = {
 				foundReplay = true;
 				const htmlname = file.replace(".log.json", ".html");
 				FS(`config/avatars/static/${htmlname}`).safeWriteSync(rep_head + data.log.join('\n') + rep_tail);
-				this.sendReply(`${SERVER_URL}/avatars/static/${htmlname}`);
+				this.sendReply(`http://39.96.50.192:8000/avatars/static/${htmlname}`);
 			}
 		}
 		if (!foundReplay) {
@@ -256,8 +319,8 @@ export const commands: Chat.ChatCommands = {
 		if (!room || room.roomid !== 'skypillar') return this.errorReply("请在 Sky Pillar 房间举办积分淘汰赛");
 		if (room.tour) return this.errorReply("请等待正在进行的淘汰赛结束");
 		const formatid = getTourFormat();
-		if (!formatid) return this.errorReply("日程表中没有正要举行的比赛");		
-		this.parse(`/globaldeclare Sky Pillar房间 ${formatid} 淘汰赛将于5分钟后开始, 连胜第2、3、4轮时奖励10积分, 连胜第5、6轮时奖励20积分`);
+		if (!formatid) return this.errorReply("日程表中没有正要举行的比赛");
+		this.parse(`/globaldeclare Sky Pillar房间 ${formatid} 淘汰赛将于5分钟后开始, 连胜2、3、4、5、6轮分别奖励10、20、30、50、70积分, 冠军可获得宠物系统特殊奖励`);
 		this.parse(`/tour create ${formatid}, elimination`);
 		this.parse(`/tour playercap 64`);
 		this.parse(`/tour autostart 5`);
@@ -266,12 +329,21 @@ export const commands: Chat.ChatCommands = {
 		this.parse(`!formats ${formatid}`);
 		const tour = room.getGame(Tournaments.Tournament);
 		if (!tour) return this.errorReply("淘汰赛创建失败");
-		tour.onBattleWin = getScoreTourClass().prototype.onBattleWin;
-		tour.disqualifyUser = getScoreTourClass().prototype.disqualifyUser;
+		tour.onTournamentEnd = getScoreTourClass().prototype.onTournamentEnd;
 	},
 
-	async updatealts(target, room, user) {
-		return;
+	async updatealts() {
+		this.checkCan('gdeclare');
+		updateUserAlts();
+		this.sendReply('用户关系表更新完成');
+	},
+
+	async checkalts(target) {
+		this.checkCan('gdeclare');
+		const targetId = toID(target);
+		if (!userAlts[targetId]) return this.sendReply(`未找到用户 ${target} 的相关记录`);
+		this.sendReply(`用户 ${target} 的关联账号: ${getAlts(targetId).join(', ')}`);
+		this.sendReply(`用户 ${target} 的积分账号: ${await getMainId(targetId)}`);
 	},
 
 	// clearpetlogs() {
