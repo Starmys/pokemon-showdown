@@ -4,7 +4,7 @@ import {FS} from '../../../lib';
 export class RandomPSChinaForFunTeams extends RandomTeams {
 	randomDurantsTeam() {
 		const pokemon = [];
-		let names = FS('config/durant-names.txt').readSync('utf8').split(',');
+		let names = FS('config/ps-china/durant-names.txt').readSync('utf8').split(',');
 		const species = this.dex.species.get('Durant');
 		while (pokemon.length < 6) {
 			const set = {
