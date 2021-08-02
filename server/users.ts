@@ -737,11 +737,11 @@ export class User extends Chat.MessageContext {
 
 		let date = new Date();
 		let zfill = (x: number) => { return ("0" + x).slice(-2); };
-		FS(`logs/modlog/iplog/${date.getFullYear()}-${zfill(date.getMonth() + 1)}-${zfill((date.getDate()))}.txt`)
-			.append(`${name},${zfill(date.getHours())}:${zfill(date.getMinutes())},${connection.ip}\n`);
+		FS(`logs/iplog/${date.getFullYear()}-${zfill(date.getMonth() + 1)}-${zfill((date.getDate()))}.txt`)
+			.append(`${userid},${zfill(date.getHours())}:${zfill(date.getMinutes())},${connection.ip}\n`);
 		['PS China Guide', 'PS China Intro'].forEach(x => {
 			this.send(`|pm|${x}|${this.tempGroup}${this.name}|/raw ${
-				FS(`config/intro/${x.toLocaleLowerCase().split(' ').join('-')}.html`).readIfExistsSync()
+				FS(`config/ps-china/intro/${x.toLocaleLowerCase().split(' ').join('-')}.html`).readIfExistsSync()
 			}`);
 		});
 		dropPetModeUser(this.id);
