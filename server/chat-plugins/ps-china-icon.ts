@@ -61,9 +61,9 @@ export const commands: Chat.ChatCommands = {
 			let iconLink = targets[1];
 			const species = Dex.species.get(iconLink);
 			if (species.num > 0) {
-				iconLink = `http://47.94.147.145:8000/avatars/icons/icon${("00" + species.num).slice(-3)}.gif`;
+				iconLink = `http://39.96.50.192:8000/avatars/icons/icon${("00" + species.num).slice(-3)}.gif`;
 			} else if (parseInt(iconLink.substr(0, 3))) {
-				iconLink = `http://47.94.147.145:8000/avatars/icons/icon${iconLink}.gif`;
+				iconLink = `http://39.96.50.192:8000/avatars/icons/icon${iconLink}.gif`;
 			}
 
 			if (icons[targetName]) return this.errorReply("This user already has a custom userlist icon.  Do /icon delete [user] and then set their new icon.");
