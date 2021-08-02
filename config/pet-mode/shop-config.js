@@ -1,18 +1,18 @@
 exports.PetModeShopConfig = {
 	"ball": {
 		"Poke Ball": -1,
-		"Great Ball": 5,
-		"Ultra Ball": 10,
+		"Great Ball": 1,
+		"Ultra Ball": 2,
 		"Master Ball": 200
 	},
 	"draw": {
 		"Strawberry Sweet": 40,
-		// "Clover Sweet": 40,
-		// "Berry Sweet": 40,
-		// "Flower Sweet": 40,
-		// "Love Sweet": 40,
-		// "Ribbon Sweet": 40,
-		// "Star Sweet": 40,
+		"Clover Sweet": 40,
+		"Berry Sweet": 40,
+		"Flower Sweet": 40,
+		"Love Sweet": 40,
+		"Ribbon Sweet": 40,
+		"Star Sweet": 40,
 		"Chipped Pot": 40,
 		"Cracked Pot": 40,
 		"Deep Sea Scale": 40,
@@ -232,14 +232,14 @@ exports.PetModeShopConfig = {
 		"Rusted Sword": 50,
 		"Rusted Shield": 50,
 	},
-	'util': {
-		// 'Rusty Bottle Cap': 2,
-		'Rocket Bottle Cap': 10,
-		'Bottle Cap': 25,
-		'Gold Bottle Cap': 100,
-		'Ability Capsule': 25,
-		// 'Ability Patch': 100,
-		'Nature Mint': 50,
-		'Box': 50
+	"util": {
+		// "Rusty Bottle Cap": 2,
+		"Rocket Bottle Cap": 10,
+		"Bottle Cap": 25,
+		"Gold Bottle Cap": 100,
+		"Ability Capsule": 25,
+		// "Ability Patch": 100,
+		"Nature Mint": 50,
+		"Box": 50
 	}
 }

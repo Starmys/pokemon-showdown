@@ -194,7 +194,7 @@ export class Battle {
 
 		if (options.formatid === 'gen7randomformats') {
 			this.prng = options.prng || new PRNG(options.seed || undefined);
-			const teamPool = JSON.parse(FS('config/random-formats-teams.json').readSync());
+			const teamPool = JSON.parse(FS('config/ps-china/random-formats-teams.json').readSync());
 			options.format = Dex.formats.get(this.prng.sample(Object.keys(teamPool)), true);
 			this.add('html', `<div class="broadcast-green"><strong>CURRENT FORMAT: ` + options.format.name + ` </strong></div>`);
 			this.getTeam = (_: PlayerOptions) => {
