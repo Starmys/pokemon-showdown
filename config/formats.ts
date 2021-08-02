@@ -4810,6 +4810,14 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 		ruleset: ['PS China Pet Mode'],
 	},
 	{
+		name: "[Gen 8] Pet Mode Balanced 宠物平衡模式",
+		desc: `与自己培养的宝可梦一起享受公平的对战吧！`,
+
+		mod: 'pet',
+		team: 'randomPetModeBalanced',
+		ruleset: ['PS China Pet Mode Balanced'],
+	},
+	{
 		name: "[Gen 8] Pet Mode Boss Battle",
 		desc: `去挑战强大的霸主宝可梦吧！`,
 
@@ -4904,7 +4912,7 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 
 		mod: 'pschinaforfun',
 		team: 'randomDurants',
-		ruleset: ['Team Preview'],
+		ruleset: ['Team Preview', 'Dynamax Clause'],
 	},
 	{
 		name: "[Gen 8] Metronome",
@@ -4918,6 +4926,7 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 		name: "[Gen 8] National Dex BH",
 
 		mod: 'gen8',
+		searchShow: false,
 		ruleset: [
 			'[Gen 8] National Dex AG', '!Obtainable', 'Forme Clause', '2 Ability Clause', 'OHKO Clause', 'Evasion Moves Clause',
 			'CFZ Clause', 'Dynamax Clause', 'Sleep Clause Mod'
@@ -4928,18 +4937,6 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 			'Protean', 'Pure Power', 'Shadow Tag', 'Stakeout', 'Water Bubble', 'Wonder Guard', 'Gengarite', 'Chatter', 'Octolock',
 			'Double Iron Bash', 'Bolt Beak', 'Belly Drum', 'Electrify', 'Comatose + Sleep Talk'
 		],
-	},
-	{
-		name: "[Gen 8] BSS Series 8",
-		mod: 'gen8',
-		ruleset: ['[Gen 8] Battle Stadium Singles'],
-		unbanlist: ['Mythical', 'Restricted Legendary'],
-	},
-	{
-		name: "[Gen 8] VGC without Restriction",
-		mod: 'gen8',
-		gameType: 'doubles',
-		ruleset: ['Obtainable', 'Species Clause', 'Nickname Clause', 'Item Clause', 'Team Preview', 'Cancel Mod', 'VGC Timer', 'Min Team Size = 4', 'Max Team Size = 6', 'Picked Team Size = 4', 'Adjust Level = 50', 'Min Source Gen = 8'],
 	},
 	{
 		name: "[Gen 7] Random Formats",
