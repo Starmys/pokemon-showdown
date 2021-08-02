@@ -48,20 +48,20 @@
 				"Taillow": 0.15,
 				"Starly": 0.15
 			}
-		}
+		},
+		"boss": ["巴拉巴拉童装"]
 	},
 	"flowerparadise": {
 		"minlevel": 5,
 		"maxlevel": 10,
 		"lawn": {
 			"1号草丛": {
-				"Pichu": 0.15,
 				"Nidoran-F": 0.1,
-				"Azurill": 0.1,
+				"Azurill": 0.15,
 				"Sunkern": 0.35,
 				"Dunsparce": 0.15,
-				"Shroomish": 0.05,
-				"Slakoth": 0.1,
+				"Shroomish": 0.1,
+				"Slakoth": 0.15,
 			},
 			"2号草丛": {
 				"Paras": 0.2,
@@ -97,13 +97,10 @@
 				"Rattata-Alola": 0.3,
 				"Poliwag": 0.1,
 				"Magikarp": 0.25,
-				"Aipom": 0.05,
-				"Wingull": 0.05,
-				"Surskit": 0.08,
-				"Pansage": 0.05,
-				"Pansear": 0.05,
-				"Panpour": 0.05,
-				"Espurr": 0.02
+				"Aipom": 0.1,
+				"Wingull": 0.1,
+				"Surskit": 0.1,
+				"Espurr": 0.05
 			}
 		}
 	},
@@ -161,7 +158,8 @@
 				"Pachirisu": 0.1,
 				"Finneon": 0.2,
 			}
-		}
+		},
+		"boss": ["椰树牌椰汁"]
 	},
 	"neverused": {
 		"minlevel": 16,
@@ -216,7 +214,8 @@
 				"Voltorb": 0.3,
 				"Elekid": 0.2,
 			}
-		}
+		},
+		"boss": ["飞马牌香烟"]
 	},
 	"rarelyused": {
 		"minlevel": 21,
@@ -263,15 +262,15 @@
 				"Illumise": 0.2,
 			},
 			"6号草丛": {
-				"Plusle": 0.1,
-				"Minun": 0.1,
+				"Plusle": 0.15,
+				"Minun": 0.15,
 				"Barboach": 0.1,
-				"Pichu": 0.1,
 				"Diglett": 0.3,
 				"Diglett-Alola": 0.2,
 				"Tympole": 0.1
 			}
-		}
+		},
+		"boss": ["红日牌煤气灶"]
 	},
 	"underused": {
 		"minlevel": 26,
@@ -378,7 +377,7 @@
 			"5号草丛": {
 				"Snom": 0.1,
 				"Indeedee": 0.05,
-				"Indeedee-f":0.05,
+				"Indeedee-F":0.05,
 				"Seel": 0.2,
 				"Dewgong": 0.1,
 				"Bouffalant": 0.2,
@@ -396,7 +395,8 @@
 				"Morpeko": 0.1,
 				"Gastly": 0.05,
 			}
-		}
+		},
+		"boss": ["大渔牌雨衣"]
 	},
 	"ubers": {
 		"minlevel": 41,
@@ -437,7 +437,8 @@
 				"Basculin": 0.4,
 				"Minccino": 0.4,
 			}
-		}
+		},
+		"boss": ["心相印纸巾"]
 	},
 	"overused": {
 		"minlevel": 51,
@@ -523,47 +524,43 @@
 		"maxlevel": 80,
 		"lawn": {
 			"1号草丛": {
-				"Sableye": 0.05,
-				"Happiny": 0.65,
-				"Chansey": 0.1,
-				"Lapras": 0.2
+				"Lapras": 0.25,
+				"Stunfisk-Galar": 0.15,
+				"Kangaskhan": 0.6,
 			},
 			"2号草丛": {
-				"Mawile": 0.64,
-				"Drilbur": 0.2,
-				"Riolu": 0.01,
-				"Honedge": 0.05,
-				"Pawniard": 0.02,
-				"Axew": 0.02,
-				"Druddigon": 0.3,
+				"Sableye": 0.1,
+				"Pawniard": 0.35,
+				"Mawile": 0.3,
+				"Drilbur": 0.25,
 			},
 			"3号草丛": {
+				"Mareanie": 0.2,
+				"Honedge": 0.05,
 				"Doublade": 0.15,
-				"Bonsly": 0.5,
+				"Bonsly": 0.25,
 				"Sudowoodo": 0.1,
-				"Corsola-Galar": 0.1
+				"Corsola-Galar": 0.25
 			},
 			"4号草丛": {
-				"Stunfisk-Galar": 0.15,
-				"Farfetch'd-Galar": 0.15,
+				"Axew": 0.25,
+				"Druddigon": 0.35,
+				"Farfetch'd-Galar": 0.3,
 				"Darumaka-Galar": 0.1,
-				"Kangaskhan": 0.6
 			},
 			"5号草丛": {
-				"Mr. Mime": 0.65,
+				"Mr. Mime": 0.6,
 				"Mr. Mime-Galar": 0.15,
-				"Arrokuda": 0.15,
-				"Gothita": 0.01,
-				"Gothorita": 0.2,
-				"Gothitelle": 0.04,
+				"Gothita": 0.2,
+				"Gothorita": 0.04,
+				"Gothitelle": 0.01,
 			},
 			"6号草丛": {
-				"Mareanie": 0.3,
-				"Barraskewda": 0.005,
-				"Vulpix-Alola": 0.005,
-				"Munchlax": 0.74,
-				"Snorlax": 0.1
+				"Arrokuda": 0.3,
+				"Barraskewda": 0.5,
+				"Vulpix-Alola": 0.3,
 			}
 		}
 	}
 }
+
