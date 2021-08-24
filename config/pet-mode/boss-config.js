@@ -23,4 +23,8 @@ exports.PetModeBossConfig = {
 		'set': '巴拉巴拉童装|Eevee-Starter|boostedgear|destinyeve|totemeeveeattack|Naughty|252,252,,252,,252||||50|',
 		'bonus': 'Eevium Z'
 	},
+	// '凤凰牌自行车': {
+	// 	'set': '凤凰牌自行车|Fearow|elixirofimmortality|possessedbyphoenix|totemfearowattack|Jolly|252,252,252,,252,252||||50|',
+	// 	'bonus': 'Flyinium Z'
+	// },
 }
