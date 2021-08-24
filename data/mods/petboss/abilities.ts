@@ -348,6 +348,73 @@ export const Abilities: { [k: string]: ModdedAbilityData } = {
 		rating: 3.5,
 		num: 192,
 	},
+	/*----------大嘴雀-------*/
+	possessedbyphoenix: {
+		isPermanent: true,
+		isBreakable: false,
+		onStart(pokemon) {
+			pokemon.addVolatile('dynamax2');
+		},
+		onImmunity(type, pokemon) {
+			if (type === 'frz') return false;
+			if (type === 'slp') return false;
+			if (type === 'par') return false;
+			if (type === 'tox') return false;
+			if (type === 'psn') return false;
+			if (type === 'brn') return false;
+		},
+		onModifyMove(move) {
+			if (move.id === 'sacredfire') move.ignoreAbility = true;
+			delete move.flags['contact'];
+			move.drain = [1, 2]
+			if (move.secondaries) {
+				this.debug('doubling secondary chance');
+				for (const secondary of move.secondaries) {
+					if (secondary.chance) secondary.chance *= 2;
+				}
+			}
+			if (move.self?.chance) move.self.chance *= 2;
+		},
+		onResidualOrder: 26,
+		onResidualSubOrder: 1,
+		onResidual(pokemon) {
+			if (pokemon.storedStats.atk < 105) pokemon.storedStats.atk = 105;
+			if (pokemon.storedStats.def < 81) pokemon.storedStats.def = 81;
+			if (pokemon.storedStats.spd < 81) pokemon.storedStats.spd = 81;
+		},
+		onSourceBasePowerPriority: 19,
+		onSourceBasePower(basePower, attacker, defender, move) {
+			if (move.type === 'Fire' || move.type==='Ice') {
+					return this.chainModify(0.5);
+			}
+		},
+		onTryHit(pokemon, target, move) {
+			if (move.ohko) {
+				this.add('-immune', pokemon, '[from] ability: Sturdy');
+				return null;
+			}
+		},
+		onDamagePriority: -30,
+		onDamage(damage, target, source, effect) {
+			if (target.hp === target.maxhp && damage >= target.hp && effect && effect.effectType === 'Move') {
+				this.add('-ability', target, 'Sturdy');
+				return target.hp - 1;
+			}
+		},
+		onModifyDamage(relayVar, source, target, move) {
+			if (move.type === 'Fire') {
+				return this.chainModify(1.5);
+			}
+		},
+		onChargeMove(pokemon, target, move) {
+			this.debug('Possessed By Phoenix - remove charge turn for ' + move.id);
+			this.attrLastMove('[still]');
+			this.addMove('-anim', pokemon, move.name, target);
+			return false; // skip charge turn
+		},
+		name: 'Possessed By Phoenix',
+		rating: 2,
+	},
 	/*------others---------*/
 	minus: {
 		inherit: true,
