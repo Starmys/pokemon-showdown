@@ -1,5 +1,5 @@
 import { FS } from '../../lib';
-import { Utils, addRandomEgg } from './ps-china-pet-mode';
+import { PetUtils, getUser } from './ps-china-pet-mode';
 
 const TOURCONFIGPATH = 'config/ps-china/tour-config.json';
 const REPLAYHEADPATH = 'config/ps-china/replay/replay-head.txt';
@@ -8,14 +8,18 @@ const REPLAYTAILPATH = 'config/ps-china/replay/replay-tail.txt';
 const IPLOGDIR = 'logs/iplog';
 const IPMAPPATH = 'logs/ipmap.json';
 const TOURLOGDIR = 'logs/tour';
+const SCORELOGDIR = 'logs/score';
 
 if (!FS(IPLOGDIR).existsSync()) FS(IPLOGDIR).mkdir();
 if (!FS(TOURLOGDIR).existsSync()) FS(TOURLOGDIR).mkdir();
+if (!FS(SCORELOGDIR).existsSync()) FS(SCORELOGDIR).mkdir();
 
 let userAlts: { [userid: string]: string[] } = JSON.parse(FS(IPMAPPATH).readIfExistsSync() || '{}');
 
-function formatJSON(s: AnyObject) {
-	return JSON.stringify(s, null, '\t').replace(/\[\n\t\t/g, '[ ').replace(/\n\t\]/g, ' ]').replace(/,\n\t\t/g, ', ');
+function adminPM(userid: string, msg: string) {
+	const user = Users.get(userid);
+	if (!user || !user.connected) return;
+	user.send(`|pm|&|${user.tempGroup}${user.name}|/raw <div class="broadcast-green"><b>${msg}</b></div>`);
 }
 
 function searchTourTree(node: AnyObject): { [playerid: string]: string[] } {
@@ -66,10 +70,10 @@ function getScoreTourClass() {
 		onTournamentEnd() {
 			super.onTournamentEnd();
 			const bracketData = this.getBracketData();
-			const logDir = `${TOURLOGDIR}/${Utils.getDate()}`;
+			const logDir = `${TOURLOGDIR}/${PetUtils.getDate()}`;
 			if (!FS(logDir).existsSync()) FS(logDir).mkdirSync();
 			const tourLog = parseTourLog(bracketData);
-			FS(`${logDir}/${toID(this.name)}.json`).safeWriteSync(formatJSON(tourLog));
+			FS(`${logDir}/${toID(this.name)}.json`).safeWriteSync(PetUtils.formatJSON(tourLog));
 			updateUserAlts();
 			addTourScore(this.name, tourLog);
 			const winnerId = toID(bracketData?.rootNode?.team);
@@ -109,7 +113,7 @@ function updateUserAlts() {
 			for (let id2 in ipCount[ip]) {
 				if (!idEdges[id1]) idEdges[id1] = {};
 				if (!idEdges[id1][id2]) idEdges[id1][id2] = 0;
-				idEdges[id1][id2] += (ipCount[ip][id1] / idCount[id1]) * (ipCount[ip][id2] / idCount[id2]);
+				idEdges[id1][id2] += ipCount[ip][id1] * ipCount[ip][id2];
 			}
 		}
 	}
@@ -117,32 +121,35 @@ function updateUserAlts() {
 	for (let userid in idEdges) {
 		userAlts[userid] = Object.keys(idEdges[userid]).sort((id1, id2) => idEdges[userid][id1] < idEdges[userid][id2] ? 1 : -1);
 	}
-	FS(IPMAPPATH).safeWriteSync(formatJSON(userAlts));
+	FS(IPMAPPATH).safeWriteSync(PetUtils.formatJSON(userAlts));
 }
 
-export function getAlts(userid: string): string[] {
-	return userAlts[userid] || [];
+export function getAlts(userid: string): string[] | undefined {
+	return userAlts[userid];
 }
 
 export async function getMainId(userid: string): Promise<string> {
-	for (let id of [userid].concat(getAlts(userid))) {
-		if (!!(await addScore(id, 0))[0]) return id;
+	for (let id of getAlts(userid) || [userid]) {
+		if (!!(await getScore(id))) return id;
 	}
 	return '';
 }
 
 function addEggToMain(userid: string): string {
-	for (let id of [userid].concat(getAlts(userid))) {
-		if (addRandomEgg(id, '3v')) return id;
-	}
-	return '';
+	return (getAlts(userid) || [userid]).find(id => {
+		const petUser = getUser(id);
+		if (petUser.addRandomEgg('3v')) {
+			petUser.save();
+			return true;
+		}
+	}) || '';
 }
 
 function addTourScore(tourname: string, tourLog: AnyObject) {
 	try {
 		Object.keys(tourLog).forEach((userId, i) => {
 			const wins = tourLog[userId].length;
-			let score = [0, 0, 10, 20, 30, 50, 70, 100][wins] || 0;
+			let score = [0, 5, 10, 20, 30, 50, 70, 100][wins] || 0;
 			if (score > 0) {
 				setTimeout(() => {
 					addScoreToMain(userId, score, `{}在 ${tourname} 淘汰赛中连胜 ${wins} 轮`);
@@ -154,13 +161,7 @@ function addTourScore(tourname: string, tourLog: AnyObject) {
 	}
 }
 
-function adminPM(userid: string, msg: string) {
-	const user = Users.get(userid);
-	if (!user || !user.connected) return;
-	user.send(`|pm|&|${user.tempGroup}${user.name}|/raw <div class="broadcast-green"><b>${msg}</b></div>`);
-}
-
-async function addScoreToMain(userid: string, score: number, msg: string) {
+async function addScoreToMain(userid: string, score: number, msg: string = '') {
 	const mainId = await getMainId(userid);
 	const isMain = mainId === userid;
 
@@ -168,7 +169,7 @@ async function addScoreToMain(userid: string, score: number, msg: string) {
 	let noteMsg = msg.replace('{}', '您');
 	let logMsg = '自动定向加分: ' + msg.replace('{}', userid + ' ');
 	if (mainId) {
-		const scores = await addScore(mainId, score);
+		const scores = await addScore(mainId, score, msg.replace('{}', ''));
 		if (!isMain) {
 			noteMsg += `您的积分账号 ${mainId} `;
 			logMsg += `积分账号 ${mainId} `;
@@ -185,10 +186,21 @@ async function addScoreToMain(userid: string, score: number, msg: string) {
 	adminPM(userid, noteMsg);
 }
 
+async function getScore(userid: string): Promise<number> {
+	// @ts-ignore
+	let ladder = await Ladders("gen8ps").getLadder();
+	for (let entry of ladder) {
+		if (toID(userid) ? (toID(entry[2]) === toID(userid)) : (entry[2] === userid)) {
+			return entry[1];
+		}
+	}
+	return 0;
+}
+
 let addingScore: boolean = false;
 
-export async function addScore(userid: string, score: number): Promise<number[]> {
-	while (addingScore) await Utils.sleep(1);
+export async function addScore(userid: string, score: number, reason: string = ''): Promise<number[]> {
+	while (addingScore) await PetUtils.sleep(1);
 	addingScore = true;
 	// @ts-ignore
 	let ladder = await Ladders("gen8ps").getLadder();
@@ -227,23 +239,32 @@ export async function addScore(userid: string, score: number): Promise<number[]>
 
 	// @ts-ignore
 	Ladders("gen8ps").save();
+	FS(`${SCORELOGDIR}/${toID(userid) || userid}.txt`)
+		.appendSync(`${PetUtils.getDate()},${oldScore}${score < 0 ? "-" : "+"}${Math.abs(score)}=${newScore},${reason}\n`);
 	addingScore = false;
 	return [oldScore, newScore];
 }
 
 export const commands: Chat.ChatCommands = {
+	async score(target, room, user) {
+		let targetUser = target.replace('!', '') || user.id;
+		const score = await getScore(targetUser);
+		let msg = score ? `${targetUser} 的PS国服积分是：${score}` : `未找到用户 ${targetUser} 的PS国服积分记录`;
+		return target.includes('!') ? PetUtils.popup(user, msg) : score ? this.sendReply(msg) : this.errorReply(msg);
+	},
+
 	async pschinascore(target, room, user) {
 		this.checkCan('lock');
 		if (!room || !room.settings.staffRoom) return this.errorReply("在 Staff 房间更新PS国服积分");
 
-		const userid = target.split(',')[0]?.trim();  // 等积分转移完成后改用toID()
+		const userid = target.split(',')[0]?.trim();
 		const score = target.split(',')[1]?.trim();
 		const reason = target.split(',')[2]?.trim();
 		if (!userid || !score || !reason || isNaN(parseInt(score))) {
 			return this.parse("/pschinascorehelp");
 		}
 		const parsedScore = parseInt(score);
-		const changeScore = await addScore(userid, parsedScore);
+		const changeScore = await addScore(userid, parsedScore, reason);
 		if (changeScore.length !== 2) return this.errorReply("错误：将造成负分。");
 
 		adminPM(userid, `您因为 ${reason} ${parsedScore > 0 ? '获得': '失去'}了 ${Math.abs(parsedScore)} 国服积分`);
@@ -254,7 +275,7 @@ export const commands: Chat.ChatCommands = {
 		this.addModAction(message);
 
 		if (changeScore[0] === 0) {
-			const alts = AdminUtils.getAlts(toID(userid));
+			const alts = getAlts(toID(userid));
 			if (!alts) {
 				room.add(`|html|<b>注意: 未找到用户 ${userid} 的登录记录</b>`);
 				return;
@@ -262,20 +283,36 @@ export const commands: Chat.ChatCommands = {
 			const content: (string | number)[][] = alts.map(alt => [alt]);
 			for (let [i, alt] of alts.entries()) {
 				content[i].push('&ensp;积分:&ensp;');
-				content[i].push(alt === toID(userid) ? 0 : await AdminUtils.getScore(alt));
+				content[i].push(alt === toID(userid) ? 0 : await getScore(alt));
 			}
 			room.add(`|html|<b>注意: ${userid} 此前没有国服积分, 关联账号:</b><br>${PetUtils.table([], [], content, 'auto')}`);
 		}
 	},
 	pschinascorehelp: [
-		`/pschinascore user, score, reason - 给user用户的国服积分增加score分，说明原因. Requires: & ~`,
+		`Usage: /pschinascore user, score, reason - 给user用户的国服积分增加score分, 说明原因. Requires: & ~`,
+	],
+
+	'scorelog': 'pschinascorelog',
+	async pschinascorelog(target, room, user) {
+		const targets = target.split(',');
+		const userId = toID(targets[0]) || targets[0] || user.id;
+		if (userId !== user.id) this.checkCan('lock');
+		const limit = parseInt(targets[1]) || 20;
+		const logs = FS(`${SCORELOGDIR}/${userId}.txt`).readIfExistsSync();
+		if (!logs) return this.errorReply(`未查到用户 ${userId} 在2021年9月1日之后的国服积分记录`);
+		const lines = logs.trim().split('\n').slice(-limit).map(line => line.split(',').map(s => `&ensp;${s}&ensp;`));
+		this.sendReply(`用户 ${userId} 的最近${lines.length}条国服积分记录:`);
+		this.sendReply(`|html|${PetUtils.table([], ['日期', '积分', '原因'], lines, 'auto')}`);
+	},
+	pschinascoreloghelp: [
+		`Usage: /scorelog user, lines - 查看user用户(默认为自己)的最近lines(默认为20)条国服积分记录`
 	],
 
 	restorereplay(target, room, user) {
 		this.checkCan('lockdown');
 		let params = target.split(',');
 		if (!params || params.length != 4) {
-			return this.parse('/restorereplayhelp');
+			return this.sendReply('Usage: /restorereplay player1, player2, format, year-month-date');
 		}
 		let p1 = params[0].toLowerCase().replace(/[^\w\d\s]/g, '').replace(/\s+/g, '');
 		let p2 = params[1].toLowerCase().replace(/[^\w\d\s]/g, '').replace(/\s+/g, '');
@@ -288,7 +325,7 @@ export const commands: Chat.ChatCommands = {
 		let files = [];
 		try {
 			files = FS(dir).readdirSync();
-		} catch (err) {
+		} catch (err: any) {
 			if (err.code === 'ENOENT') {
 				return this.errorReply("Replay not found.");
 			}
@@ -320,7 +357,7 @@ export const commands: Chat.ChatCommands = {
 		if (room.tour) return this.errorReply("请等待正在进行的淘汰赛结束");
 		const formatid = getTourFormat();
 		if (!formatid) return this.errorReply("日程表中没有正要举行的比赛");
-		this.parse(`/globaldeclare Sky Pillar房间 ${formatid} 淘汰赛将于5分钟后开始, 连胜2、3、4、5、6轮分别奖励10、20、30、50、70积分, 冠军可获得宠物系统特殊奖励`);
+		this.parse(`/globaldeclare Sky Pillar房间 ${formatid} 淘汰赛将于5分钟后开始, 获胜1、2、3、4、5、6轮分别奖励5、10、20、30、50、70积分, 冠军可获得宠物系统特殊奖励`);
 		this.parse(`/tour create ${formatid}, elimination`);
 		this.parse(`/tour playercap 64`);
 		this.parse(`/tour autostart 5`);
@@ -341,12 +378,10 @@ export const commands: Chat.ChatCommands = {
 	async checkalts(target) {
 		this.checkCan('gdeclare');
 		const targetId = toID(target);
-		if (!userAlts[targetId]) return this.sendReply(`未找到用户 ${target} 的相关记录`);
-		this.sendReply(`用户 ${target} 的关联账号: ${getAlts(targetId).join(', ')}`);
+		if (!targetId) return this.sendReply('Usage: /checkalts user - 查看user用户的关联账号');
+		const alts = getAlts(targetId);
+		if (!alts) return this.sendReply(`未找到用户 ${target} 的登录记录`);
+		this.sendReply(`用户 ${target} 的关联账号: ${alts.join(', ')}`);
 		this.sendReply(`用户 ${target} 的积分账号: ${await getMainId(targetId)}`);
 	},
-
-	// clearpetlogs() {
-	// 	this.parse(`/bash rm -r logs/*/*petmodepschina*/*; df -h`);
-	// },
 };
