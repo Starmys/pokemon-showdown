@@ -1,45 +1,37 @@
-[
-	
+[	
 	{
-		"13": "[Gen 8] NU",
-		"16": "[Gen 8] PU",
-		"20": "[Gen 8] OU",
-		"22": "[Gen 7] OU"
+		"13": "[Gen 7] OU",
+		"20": "[Gen 7] OU",
+		"22": "[Gen 8] OU"
 	},
 	{
 		"13": "[Gen 8] VGC 2021 Series 10",
-		"16": "[Gen 8] Ubers",
-		"20": "[Gen 8] OU",
-		"22": "[Gen 2] OU"
+		"20": "[Gen 1] OU",
+		"22": "[Gen 8] Ubers"
 	},
 	{
 		"13": "[Gen 8] PU",
-		"16": "[Gen 8] UU",
-		"20": "[Gen 8] OU",
-		"22": "[Gen 3] OU"
+		"20": "[Gen 2] OU",
+		"22": "[Gen 8] UU"
 	},
 	{
 		"13": "[Gen 8] LC",
-		"16": "[Gen 8] RU",
-		"20": "[Gen 8] OU",
-		"22": "[Gen 4] OU"
+		"20": "[Gen 3] OU",
+		"22": "[Gen 8] RU"
 	},
 	{
 		"13": "[Gen 8] Monotype",
-		"16": "[Gen 8] VGC 2021 Series 10",
-		"20": "[Gen 8] OU",
-		"22": "[Gen 5] OU"
+		"20": "[Gen 4] OU",
+		"22": "[Gen 8] NU"
 	},
 	{
 		"13": "[Gen 8] Doubles OU",
-		"16": "[Gen 8] NU",
-		"20": "[Gen 8] OU",
-		"22": "[Gen 6] OU"
+		"22": "[Gen 5] OU",
+		"20": "[Gen 8] OU"
 	},
 	{
-		"13": "[Gen 8] Doubles OU",
-		"16": "[Gen 8] LC",
-		"20": "[Gen 8] OU",
-		"22": "[Gen 7] OU"
+		"13": "[Gen 8] OU",
+		"20": "[Gen 6] OU",
+		"22": "[Gen 8] OU"
 	}
 ]
