@@ -739,12 +739,12 @@ export class User extends Chat.MessageContext {
 		let zfill = (x: number) => { return ("0" + x).slice(-2); };
 		FS(`logs/iplog/${date.getFullYear()}-${zfill(date.getMonth() + 1)}-${zfill((date.getDate()))}.txt`)
 			.append(`${userid},${zfill(date.getHours())}:${zfill(date.getMinutes())},${connection.ip}\n`);
-		['PS China Guide', 'PS China Intro'].forEach(x => {
+		if (this.id.startsWith('guest')) ['PS China Guide', 'PS China Intro'].forEach(x => {
 			this.send(`|pm|${x}|${this.tempGroup}${this.name}|/raw ${
 				FS(`config/ps-china/intro/${x.toLocaleLowerCase().split(' ').join('-')}.html`).readIfExistsSync()
 			}`);
 		});
-		dropPetModeUser(this.id);
+		else dropPetModeUser(this.id);
 
 		if (!name) name = '';
 		if (!/[a-zA-Z]/.test(name)) {
