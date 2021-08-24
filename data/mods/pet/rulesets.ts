@@ -336,4 +336,25 @@ export const Rulesets: {[k: string]: FormatData} = {
 		}
 	},
 
+	pschinagymauramode: {
+		name: 'PS China Gym Aura Mode',
+		ruleset: ['[Gen 8] National Dex'],
+		banlist: ['Assault Vest'],
+		onBeforeTurn() {
+			const allTypes: string[] = [];
+			this.p1.pokemon.concat(this.p2.pokemon).forEach(pokemon => {
+				if (['multitype', 'rkssystem'].includes(pokemon.ability)) return;
+				pokemon.types.forEach(type => allTypes.push(type));
+			});
+			Dex.types.names().filter(type => allTypes.filter(t => t === type).length > 3).forEach(type => {
+				switch (type) {
+					case 'Poison': this.field.setWeather("Acid Rain"); break;
+					case 'Steel': this.field.setTerrain("Steel Terrain"); break;
+					case 'Grass': this.field.addPseudoWeather("Mercy Aura"); break;
+					case 'Electric': this.field.addPseudoWeather("Ball Aura"); break;
+					case 'Dragon': this.field.addPseudoWeather("Dragon's Majesty"); break;
+				}
+			});
+		},
+	}
 };

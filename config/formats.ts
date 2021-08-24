@@ -4818,6 +4818,13 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 		ruleset: ['PS China Pet Mode Balanced'],
 	},
 	{
+		name: "[Gen 8] National Dex (Gym Aura Mod 道馆场地模式)",
+		desc: `双方共携带≥4个对应属性的精灵开启对应属性的道馆场地，不可以使用突击背心`,
+
+		mod: 'pet',
+		ruleset: ['PS China Gym Aura Mode'],
+	},
+	{
 		name: "[Gen 8] Pet Mode Boss Battle",
 		desc: `去挑战强大的霸主宝可梦吧！`,
 
@@ -4943,6 +4950,15 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 		desc: `Randomized competitive lower tiers teams of mutiple generations.`,
 
 		team: 'random',
+	},
+	{
+		name: "[Gen 8] VGC without Restriction",
+		mod: 'gen8',
+		gameType: 'doubles',
+		ruleset: [
+			'Obtainable', 'Species Clause', 'Nickname Clause', 'Item Clause', 'Team Preview', 'Cancel Mod', 'VGC Timer',
+			'Min Team Size = 4', 'Max Team Size = 6', 'Picked Team Size = 4', 'Adjust Level = 50', 'Min Source Gen = 8'
+		],
 	},
 	{
 		name: "[Gen 7] Battle Tree 3v3",

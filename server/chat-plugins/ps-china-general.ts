@@ -1,28 +1,9 @@
 import {Utils} from '../../lib';
 
 export const commands: Chat.ChatCommands = {
-	async score (target, room, user) {
-		let popReply = false;
-		if (target === 'pop') {
-			target = user.id;
-			popReply = true;
-		}
-		let targetUser = target || user.id;
-		// @ts-ignore
-		let ladder = await Ladders("gen8ps").getLadder();
-		let msg = `未找到用户${targetUser}的PS国服积分记录`;
-		for (let [i, entry] of ladder.entries()) {
-			if (entry[2] === targetUser || toID(entry[2]) === toID(targetUser)) {
-				msg = `${targetUser}的PS国服积分是：${entry[1]}`;
-				return popReply ? this.popupReply(msg) : this.sendReply(msg);
-			}
-		}
-		return popReply ? this.popupReply(msg) : this.errorReply(msg);
-	},
-
 	bp33 (target, room, user, connection, cmd, message) {
 		this.checkBroadcast();
-		if (target.replace(/gen[1-8]/i, "") == "") {
+		if (target.replace(/gen[1-8]/i, "") === "") {
 			let toParse = message[0] + "randpoke 11";
 			if (target.length > 0) {
 				let gen = parseInt(target[3]);
