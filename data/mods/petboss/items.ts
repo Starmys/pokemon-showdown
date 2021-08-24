@@ -110,6 +110,29 @@ export const Items: { [k: string]: ModdedItemData } = {
 		gen: 4,
 		num: 210,
 	},
+	/*----------大嘴雀-------*/
+	elixirofimmortality: {
+		name: "Elixir of Immortality",
+		spritenum: 22,
+		fling: {
+			basePower: 30,
+		},
+		desc:'f',
+		onDamage(damage, pokemon, source) {
+			if (Math.random() <damage / pokemon.maxhp) {
+				pokemon.getItem().desc = 't';
+			}
+		},
+		onUpdate(pokemon) {
+			if (pokemon.getItem().desc === 't') {
+				if (this.runEvent('TryHeal', pokemon) && pokemon.useItem()) {
+					this.heal(pokemon.maxhp);
+				}
+			}
+		},
+		num: 43,
+		gen: 2,
+	},
 	/*------others---------*/
 	stickybarb: {
 		inherit: true,

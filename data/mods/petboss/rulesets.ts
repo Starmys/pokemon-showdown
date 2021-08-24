@@ -126,7 +126,7 @@ export const Rulesets: {[k: string]: FormatData} = {
 				this.p2.pokemonLeft--;
 				break;
 			}
-			if (pokemon.side === this.p1 && bossConfig[pokemon.name] && this.sides.slice(1).find(side => side.active.length > 0 && !side.active[0].fainted)) {
+			if (pokemon.side === this.p1 && bossConfig[pokemon.name] && this.sides.slice(1).some(side => side.pokemon.some(x => !x.fainted))) {
 				this.sides.slice(1).forEach(side => giveBonus(Dex.toID(side.name), pokemon.name));
 				this.add('html', `<div class="broadcast-green"><strong>${pokemon.name}逃走了!</strong></div>`);
 				this.add('html', `<div class="broadcast-green"><strong>您获得了${pokemon.name}掉落的道具! 快去盒子查看吧!</strong></div>`);
