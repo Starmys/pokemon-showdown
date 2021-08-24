@@ -1661,16 +1661,15 @@ export class GlobalRoomState {
 			Chat.runHandlers('onBattleStart', player, room);
 		}
 
-		if (toID(room.format) !== 'gen8ou') return;
-		let reportToWCOP = true;
+		const showFormats = ['gen2ou', 'gen3ou', 'gen4ou', 'gen5ou', 'gen6ou', 'gen7ou', 'gen8ou', 'gen8ub', 'gen8uu', 'gen8ru', 'gen8nu'];
+		if (!showFormats.includes(toID(room.format))) return;
+		let reportToWCOP = false;
 		let aboutWCOP = false;
 		const WCOPRoom = Rooms.get('wcop');
 		for (const player of players) {
 			const playerAuthInWCOP = WCOPRoom?.auth?.get(player.id);
-			if (playerAuthInWCOP !== " ") {
-			// 	aboutWCOP = true;
-			// } else {
-			// 	reportToWCOP = false;
+			if (playerAuthInWCOP && playerAuthInWCOP !== ' ') {
+				aboutWCOP = true;
 				reportToWCOP = true;
 			}
 		}
@@ -1679,7 +1678,8 @@ export class GlobalRoomState {
 			room.settings.modjoin = null;
 		}
 		if (reportToWCOP) {
-			WCOPRoom?.add(`|html|<a href='${room.roomid}'>${room.game.title} started: ${room.title}<a>`).update();
+			// WCOPRoom?.add(`|html|<a href='${room.roomid}'>${room.game.title} started: ${room.title}<a>`).update();
+			FS('logs/wcoproom.txt').appendSync(`${new Date().toString()}, ${room.game.title}, ${room.title}\n`);
 		}
 	}
 
