@@ -649,6 +649,89 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 		type: "Ground",
 		contestType: "Tough",
 	},
+	/*----------大嘴雀-------*/
+	totemfearowattack: {
+		accuracy: true,
+		basePower: 0,
+		category: "Status",
+		name: "Totem Fearow Attack",
+		pp: 160,
+		priority: 0,
+		multihit: 3,
+		flags: {},
+		onTryMove() {
+			this.attrLastMove('[still]');
+		},
+		onHit(target, source, effect) {
+			const validTargets = this.sides.slice(1).map(side => side.active[0]).filter(pokemon => !pokemon.fainted);
+
+			const moves = ['totemmindblown', 'skyattack', 'totemfacade', 'sacredfire'];
+
+			if (validTargets.length > 0) {
+				this.actions.useMove(
+					this.prng.sample(moves),
+					this.p1.active[0],
+					this.prng.sample(validTargets)
+				);
+			}
+		},
+		secondary: null,
+		target: "self",
+		type: "Normal",
+		contestType: "Cute",
+	},
+	totemmindblown: {
+		/*num: 720,*/
+		accuracy: 100,
+		basePower: 150,
+		category: "Physical",
+		name: "Totom Mind Blown",
+		pp: 5,
+		priority: 0,
+		flags: { protect: 1, mirror: 1 },
+		//mindBlownRecoil: true,
+		onPrepareHit(target, source) {
+			this.add('-anim', source, 'Mind Blown');
+		},
+		onTryMove() {
+			this.attrLastMove('[still]');
+		},
+		onAfterMove(pokemon, target, move) {
+			this.damage(pokemon.baseMaxhp/2, pokemon, pokemon, this.dex.conditions.get('Mind Blown'),true);
+		},
+		onEffectiveness(typeMod, target, type) {
+			if (typeMod < 0) return 0;
+		},
+		secondary: null,
+		target: "allAdjacent",
+		type: "Fire",
+		contestType: "Cool",
+	},
+	totemfacade: {
+		num: 263,
+		accuracy: 100,
+		basePower: 140,
+		category: "Physical",
+		name: "Totem Facade",
+		pp: 20,
+		priority: 0,
+		flags: { contact: 1, protect: 1, mirror: 1 },
+		onPrepareHit(target, source) {
+			this.add('-anim', source, 'Facade', target);
+		},
+		onTryMove() {
+			this.attrLastMove('[still]');
+		},
+		onHit(target, source) {
+			for (const pokemon of this.getAllActive().filter(pokemon => pokemon.side !== this.p1)) {
+				this.boost({ spe: -1 }, pokemon);
+			}
+		},
+		secondary: null,
+		target: "normal",
+		type: "Normal",
+		contestType: "Cute",
+	},
 	/*-----others--------*/
 	lightscreen: {
 		inherit: true,
