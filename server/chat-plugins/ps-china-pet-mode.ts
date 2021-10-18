@@ -7,8 +7,8 @@
 	p2. pet box: Chat.ChatCommands -> Chat.PageTable
 	p1. 联盟
 	p1. 爬虫: 赛事报名列表
-	p0. 修RF
 	p0. 修modlog
+	p0. 论坛Awards
 */
 
 import * as OS from "os";
@@ -132,6 +132,10 @@ export class PetUtils {
 	static getDate(date: Date = new Date(), shift: number = 0): string {
 		if (shift) date = new Date(date.setDate(date.getDate() + shift));
 		return `${date.getFullYear()}-${this.zfill(date.getMonth() + 1)}-${this.zfill((date.getDate()))}`;
+	}
+
+	static getTime(date: Date = new Date()): string {
+		return `${this.zfill(date.getHours())}:${this.zfill(date.getMinutes())}:${this.zfill(date.getSeconds())}`;
 	}
 
 	static getDay(): number {
