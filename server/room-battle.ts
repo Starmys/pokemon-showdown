@@ -47,7 +47,7 @@ const STARTING_TIME_CHALLENGE = 300;
 const STARTING_GRACE_TIME = 60;
 const MAX_TURN_TIME_CHALLENGE = 300;
 
-const DISCONNECTION_TIME = 60;
+const DISCONNECTION_TIME = 180;
 const DISCONNECTION_BANK_TIME = 300;
 
 // time after a player disabling the timer before they can re-enable it
