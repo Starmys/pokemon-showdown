@@ -132,10 +132,11 @@ export class LadderStore {
 		const formatid = this.formatid;
 		const name = Dex.formats.get(formatid).name;
 		const ladder = await this.getLadder();
-		let buf = `<h3>${name} Top 100</h3>`;
+		let buf = `<h3>${name} Top 200</h3>`;
 		buf += `<table>`;
 		buf += `<tr><th>` + ['', 'Username', '<abbr title="Elo rating">Elo</abbr>', 'W', 'L', 'T'].join(`</th><th>`) + `</th></tr>`;
 		for (const [i, row] of ladder.entries()) {
+			if (i >= 200) break;
 			if (prefix && !row[0].startsWith(prefix)) continue;
 			buf += `<tr><td>` + [
 				i + 1, row[2], `<strong>${Math.round(row[1])}</strong>`, row[3], row[4], row[5],
@@ -168,7 +169,8 @@ export class LadderStore {
 	/**
 	 * Internal method. Update the Elo rating of a user.
 	 */
-	updateRow(row: LadderRow, score: number, foeElo: number) {
+	updateRow(row: LadderRow, score: number, foeElo: number, name: string) {
+		row[2] = name;
 		let elo = row[1];
 
 		elo = this.calculateElo(elo, score, foeElo);
@@ -211,8 +213,8 @@ export class LadderStore {
 			let p2index = this.indexOfUser(p2name, true);
 			const p2elo = ladder[p2index][1];
 
-			this.updateRow(ladder[p1index], p1score, p2elo);
-			this.updateRow(ladder[p2index], p2score, p1elo);
+			this.updateRow(ladder[p1index], p1score, p2elo, p1name);
+			this.updateRow(ladder[p2index], p2score, p1elo, p2name);
 
 			p1newElo = ladder[p1index][1];
 			p2newElo = ladder[p2index][1];

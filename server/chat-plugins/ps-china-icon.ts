@@ -5,13 +5,7 @@
 import {FS} from '../../lib';
 let https = require("https");
 
-let icons = FS("config/icons.json").readIfExistsSync();
-
-if (icons !== "") {
-	icons = JSON.parse(icons);
-} else {
-	icons = {};
-}
+let icons: {[username: string]: string} = JSON.parse(FS("config/icons.json").readIfExistsSync() || '{}');
 
 function reloadCSS() {
 	let req = https.get('https://play.pokemonshowdown.com/customcss.php?server=' + (Config.serverid), () => {});
