@@ -199,11 +199,11 @@ async function getScore(userid: string): Promise<number> {
 
 let addingScore: boolean = false;
 
-export async function addScore(userid: string, score: number, reason: string = ''): Promise<number[]> {
+export async function addScore(userid: string, score: number, reason: string = '', formatid: string = 'gen8ps'): Promise<number[]> {
 	while (addingScore) await PetUtils.sleep(1);
 	addingScore = true;
 	// @ts-ignore
-	let ladder = await Ladders("gen8ps").getLadder();
+	let ladder: (string | number)[][] = await Ladders(formatid).getLadder();
 	let userIndex = ladder.length;
 	for (let [i, entry] of ladder.entries()) {
 		if (toID(userid) ? (toID(entry[2]) === toID(userid)) : (entry[2] === userid)) {
@@ -212,7 +212,7 @@ export async function addScore(userid: string, score: number, reason: string = '
 		}
 	}
 	if (userIndex === ladder.length) ladder.push([userid, 0, userid, 0, 0, 0, '']);
-	let oldScore = ladder[userIndex][1];
+	let oldScore = +ladder[userIndex][1];
 	if (score === 0) {
 		addingScore = false;
 		return [oldScore, oldScore];
@@ -238,9 +238,11 @@ export async function addScore(userid: string, score: number, reason: string = '
 	ladder.splice(lastIndex + 1, ladder.length);
 
 	// @ts-ignore
-	Ladders("gen8ps").save();
-	FS(`${SCORELOGDIR}/${toID(userid) || userid}.txt`)
-		.appendSync(`${PetUtils.getDate()},${oldScore}${score < 0 ? "-" : "+"}${Math.abs(score)}=${newScore},${reason}\n`);
+	await Ladders(formatid).save();
+	if (formatid === 'gen8ps') {
+		const logMsg = `${PetUtils.getDate()},${oldScore}${score < 0 ? "-" : "+"}${Math.abs(score)}=${newScore},${reason}\n`;
+		FS(`${SCORELOGDIR}/${toID(userid) || userid}.txt`).appendSync(logMsg);
+	}
 	addingScore = false;
 	return [oldScore, newScore];
 }
