@@ -366,8 +366,9 @@ class Ladder extends LadderStore {
 		}
 
 		searchRange += elapsed / 300; // +1 every .3 seconds
-		if (searchRange > 300) searchRange = 300 + (searchRange - 300) / 10; // +1 every 3 sec after 300
-		if (searchRange > 600) searchRange = 600;
+		// if (searchRange > 300) searchRange = 300 + (searchRange - 300) / 10; // +1 every 3 sec after 300
+		// if (searchRange > 600) searchRange = 600;
+		if (searchRange > 200) searchRange = 200;
 		const ratings = matches.map(([search]) => search.rating);
 		if (Math.max(...ratings) - Math.min(...ratings) > searchRange) return false;
 
