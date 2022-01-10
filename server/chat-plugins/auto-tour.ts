@@ -5,6 +5,7 @@ type TourRules = {
 	playercap?: number,
 	autostart?: number,
 	forcetimer?: boolean,
+	allowscouting?: boolean,
 	autodq?: number,
 };
 
@@ -69,8 +70,8 @@ function formatInfo(format: Format): string {
 		if (format.restricted?.length) {
 			rules.push(`<b>Restricted</b> - ${Utils.escapeHTML(format.restricted.join(", "))}`);
 		}
-		if (rules.length > 0) {
-			rulesetHtml = `<details><summary>Banlist/Ruleset</summary>${rules.join("<br />")}</details>`;
+		if (rules.length) {
+			rulesetHtml = `<details><summary>Banlist/Ruleset</summary>${rules.join("<br/>")}</details>`;
 		} else {
 			rulesetHtml = `No ruleset found for ${format.name}`;
 		}
@@ -79,13 +80,13 @@ function formatInfo(format: Format): string {
 	formatType = formatType.charAt(0).toUpperCase() + formatType.slice(1).toLowerCase();
 	if (!format.desc && !format.threads) {
 		if (format.effectType === 'Format') {
-			return `No description found for this ${formatType} ${format.section} format.<br />${rulesetHtml}`;
+			return `No description found for this ${formatType} ${format.section} format.<br/>${rulesetHtml}`;
 		} else {
-			return `No description found for this rule.<br />${rulesetHtml}`;
+			return `No description found for this rule.<br/>${rulesetHtml}`;
 		}
 	}
 	const descHtml = [...(format.desc ? [format.desc] : []), ...(format.threads || [])];
-	return `${descHtml.join("<br />")}<br />${rulesetHtml}`;
+	return `${format.name}<div>${descHtml.join("<br/>")}<br/>${rulesetHtml}</div>`;
 }
 
 class BroadcastContext {
@@ -102,12 +103,20 @@ class BroadcastContext {
 	errorReply(data: string): void {
 		this.room.add(`|html|<strong class="message-error">[${this.info}] ${data.replace(/\n/ig, '<br />')}</strong>`).update();
 	}
+	modlog(
+		action: string,
+		user: string | User | null = null,
+		note: string | null = null,
+		options: Partial<{noalts: any, noip: any}> = {}
+	) {
+		this.room.modlog({ action: action, isGlobal: false });
+	}
 }
 
 class TourQueue {
 	private roomid: string;
 	private schedule: TourStatus[];
-	private timeout: number | undefined;
+	private timeout: NodeJS.Timeout | undefined;
 
 	constructor(roomid: string, config: TourSettings[] = []) {
 		this.roomid = roomid;
@@ -118,20 +127,37 @@ class TourQueue {
 			};
 		});
 		this.schedule.sort((t1, t2) => +t1.nexttime - +t2.nexttime);
-		this.start();
-	}
-
-	start() {
-		return
+		this.longWatcher();
 	}
 
 	stop() {
-		clearTimeout(this.timeout);
+		if (this.timeout) {
+			clearTimeout(this.timeout);
+		}
 	}
 
-	restart() {
-		this.stop();
-		this.start();
+	longWatcher() {
+		const waiting = +this.schedule[0].nexttime - Date.now() - 500;
+		if (waiting > 0) {
+			this.timeout = setTimeout(() => {
+				this.shortWatcher();
+			}, waiting);
+		} else {
+			this.shortWatcher();
+		}
+	}
+
+	shortWatcher() {
+		if (Date.now() < +this.schedule[0].nexttime) {
+			this.timeout = setTimeout(() => {
+				this.shortWatcher();
+			}, 10);
+		} else {
+			this.createTour();
+			this.schedule[0].nexttime = calcNextTime(this.schedule[0].settings.timing);
+			this.schedule.sort((t1, t2) => +t1.nexttime - +t2.nexttime);
+			this.longWatcher();
+		}
 	}
 
 	createTour() {
@@ -139,12 +165,25 @@ class TourQueue {
 		if (room?.type !== 'chat') return;
 		const tourStatus = this.schedule[0];
 		const format = Dex.formats.get(tourStatus.settings.format);
-		if (!format.exists) return;
-		if (!room.settings.tournaments) room.settings.tournaments = {};
-		room.settings.tournaments.autostart = tourStatus.settings.rules.autostart;
-		room.settings.tournaments.forceTimer = tourStatus.settings.rules.forcetimer;
-		room.settings.tournaments.autodq = tourStatus.settings.rules.autodq;
 		const broadcastContext = new BroadcastContext(room, 'Auto Tour');
+		if (!format.exists) {
+			broadcastContext.errorReply(`Config error: the format ${tourStatus.settings.format} does not exist.`);
+			return;
+		}
+		if (room.game) {
+			room.game.destroy();
+			broadcastContext.sendReply('Destroyed the current game to create a new tournament.');
+		}
+		broadcastContext.sendReply(`Creating ${format.name} tournament...`);
+		if (!room.settings.tournaments) room.settings.tournaments = {};
+		room.settings.tournaments.forceTimer = tourStatus.settings.rules.forcetimer;
+		room.settings.tournaments.allowScouting = tourStatus.settings.rules.allowscouting;
+		if (tourStatus.settings.rules.autostart) {
+			room.settings.tournaments.autostart = tourStatus.settings.rules.autostart * 60 * 1000;
+		}
+		if (tourStatus.settings.rules.autodq) {
+			room.settings.tournaments.autodq = tourStatus.settings.rules.autodq * 60 * 1000;
+		}
 		const tour = Tournaments.createTournament(
 			room,
 			format.id,
@@ -156,16 +195,15 @@ class TourQueue {
 			//@ts-ignore
 			broadcastContext
 		)
-		if (tour) broadcastContext.sendReply(formatInfo(format));
+		if (tour) {
+			broadcastContext.sendReply(formatInfo(format));
+		} else {
+			broadcastContext.errorReply('Failed to create a tournament.');
+		}
 	}
 
 	check() {
-		if (this.schedule.length === 0) {
-			return 'There is no auto tour configured in this room.';
-		} else {
-			const tourStatus = this.schedule[0];
-			return `Next tour: ${tourStatus.settings.format} at ${tourStatus.nexttime.toString()}`;
-		}
+		return `Next tour: ${this.schedule[0].settings.format} at ${this.schedule[0].nexttime.toString()}`;
 	}
 }
 
@@ -186,7 +224,9 @@ function applyTourConfig() {
 	Object.values(tourQueues).forEach((tourQueue) => tourQueue.stop());
 	tourQueues = {};
 	Object.entries(tourConfig).forEach(([roomid, roomTourConfig]) => {
-		tourQueues[roomid] = new TourQueue(roomid, roomTourConfig);
+		if (roomTourConfig.length) {
+			tourQueues[roomid] = new TourQueue(roomid, roomTourConfig);
+		}
 	});
 }
 
@@ -235,10 +275,7 @@ export const commands: Chat.ChatCommands = {
 				const roomTourConfig = tmpTourConfig[user.id] || tourConfig[roomid] || [];
 				if (roomTourConfig.length) {
 					buf += '<table style="border-spacing: 5px;">';
-					let header = ['Format', 'Time', 'Rules'];
-					if (canEdit) {
-						header.push('Operations');
-					}
+					let header = ['Format', 'Time'];
 					buf += '<tr>' + header.map(s => `<th style="text-align: center">${s}</th>`).join('') + '</tr>';
 					roomTourConfig.forEach((tourSettings, index) => {
 						const formatName = tourSettings.format;
@@ -254,15 +291,12 @@ export const commands: Chat.ChatCommands = {
 							timing += 'XX';
 						}
 						timing += ':' + ('0' + tourSettings.timing.minutes).slice(-2);
-						let rules = Object.entries(tourSettings.rules).map(([key, value]) => `${key}: ${value}`).join('<br/>');
-						let row = [formatName, timing, rules];
+						let buttons = button(`/autotour config rules ${index}`, 'Rules');
 						if (canEdit) {
-							let buttons = '';
 							buttons += button(`/autotour config edit ${index}`, 'Edit');
-							buttons += '<br/>';
-							buttons += button(`/autotour config edit ${index} delete`, 'Delete');
-							row.push(buttons);
+							buttons += button(`/autotour config edit ${index},delete`, 'Delete');
 						}
+						let row = [formatName, timing, buttons];
 						buf += '<tr>' + row.map(s => `<td style="text-align: center">${s}</td>`).join('') + '</tr>';
 					});
 					buf += '</table>';
@@ -277,6 +311,46 @@ export const commands: Chat.ChatCommands = {
 					buf += '</p>';
 				}
 				this.sendReply(buf);
+			},
+			rules(target, room, user) {
+				this.requireRoom();
+				const roomid = room!.roomid;
+				const roomTourConfig = tmpTourConfig[user.id] || tourConfig[roomid] || [];
+				const index = parseInt(target);
+				if (index >= 0 && index < roomTourConfig.length) {
+					const tourRules = roomTourConfig[index].rules;
+					const allowScouting = tourRules.allowscouting === undefined || tourRules.allowscouting;
+					const forceTimer = !!tourRules.forcetimer;
+					const lines = [];
+					lines.push(`<b>Capacity: ${tourRules.playercap || 'Unset'}</b>`);
+					if (tourRules.playercap) {
+						lines.push(`A maximum of ${tourRules.playercap} players can take part in the tournament.`);
+					} else {
+						lines.push('There is no upper limit on the number of participants.');
+					}
+					lines.push(`<b>Scouting: ${allowScouting ? 'Allowed' : 'Banned'}</b>`);
+					lines.push(`Players ${allowScouting ? 'can' : 'can\'t'} watch other tournament battles.`);
+					lines.push(`<b>Force Timer: ${forceTimer ? 'ON' : 'OFF'}</b>`);
+					if (forceTimer) {
+						lines.push('All battles will be timed.');
+					} else {
+						lines.push('The timer is opt-in.');
+					}
+					lines.push(`<b>Auto-start: ${tourRules.autostart || 'Unset'}</b>`);
+					if (tourRules.autostart) {
+						lines.push(`The tournament will automatically start in ${tourRules.autostart} minute(s).`);
+					} else {
+						lines.push('The tournament will not automatically started.');
+					}
+					lines.push(`<b>Auto-disqualify: ${tourRules.autodq || 'Unset'}</b>`);
+					if (tourRules.autodq) {
+						lines.push(`Inactive players will be disqualified in ${tourRules.autodq} minute(s).`);
+					} else {
+						lines.push('Inactive players will not be automatically disqualified.');
+					}
+					lines.push(button('/autotour config', 'Back'));
+					return this.sendReply(`|uhtml|auto-tour-config|${lines.join('<br/>')}`);
+				}
 			},
 			save(target, room, user) {
 				this.requireRoom();
@@ -322,7 +396,11 @@ export const commands: Chat.ChatCommands = {
 							}
 							return this.parse(`/autotour config edit ${index}`);
 						case 'forcetimer':
-							tourSettings.rules.forcetimer = !tourSettings.rules.forcetimer;
+						case 'allowscouting':
+							if (tourSettings.rules[command] === undefined) {
+								tourSettings.rules[command] = { 'forcetimer': false, 'allowscouting': true }[command];
+							}
+							tourSettings.rules[command] = !tourSettings.rules[command];
 							return this.parse(`/autotour config edit ${index}`);
 						case 'playercap':
 						case 'autostart':
@@ -336,7 +414,7 @@ export const commands: Chat.ChatCommands = {
 						case 'minutes':
 						case 'hours':
 						case 'day':
-							const cycle = {'minutes': 60, 'hours': 24, 'day': 7}[command];
+							const cycle = { 'minutes': 60, 'hours': 24, 'day': 7 }[command];
 							if (Number.isInteger(num) && num >= 0) {
 								tourSettings.timing[command] = num % cycle;
 							} else if (command !== 'minutes') {
@@ -346,26 +424,32 @@ export const commands: Chat.ChatCommands = {
 						default:
 							let buf = '|uhtml|auto-tour-config|';
 							const cmdPrefix = `/msgroom ${room!.roomid}, /autotour config edit ${index}`;
+							const allowScouting = tourSettings.rules.allowscouting === undefined || tourSettings.rules.allowscouting;
+							const forceTimer = !!tourSettings.rules.forcetimer;
 							buf += `<b>Format</b><br/>`;
 							buf += `<form data-submitsend="${cmdPrefix},format,{autotour-format}">`;
 							buf += `<input name="autotour-format" placeholder="${tourSettings.format}" style="width: 200px"/>`;
 							buf += `<button class="button" type="submit">OK</button>`;
 							buf += `</form>`;
+							buf += `<b>Allow Scouting</b><br/>`;
+							buf += conditionalButton(allowScouting, `${cmdPrefix},allowscouting`, 'On');
+							buf += conditionalButton(!allowScouting, `${cmdPrefix},allowscouting`, 'Off');
+							buf += '<br/>';
 							buf += `<b>Force Timer</b><br/>`;
-							buf += conditionalButton(!!tourSettings.rules.forcetimer, `${cmdPrefix},forcetimer`, 'On');
-							buf += conditionalButton(!tourSettings.rules.forcetimer, `${cmdPrefix},forcetimer`, 'Off');
+							buf += conditionalButton(forceTimer, `${cmdPrefix},forcetimer`, 'On');
+							buf += conditionalButton(!forceTimer, `${cmdPrefix},forcetimer`, 'Off');
 							buf += '<br/>';
 							buf += `<b>Player Capacity</b><br/>`;
 							buf += `<form data-submitsend="${cmdPrefix},playercap,{autotour-playercap}">`;
 							buf += `<input name="autotour-playercap" placeholder="${tourSettings.rules.playercap}" style="width: 200px"/>`;
 							buf += `<button class="button" type="submit">OK</button>`;
 							buf += `</form>`;
-							buf += `<b>Auto Start (in Minutes)</b><br/>`;
+							buf += `<b>Auto-start (in Minutes)</b><br/>`;
 							buf += `<form data-submitsend="${cmdPrefix},autostart,{autotour-autostart}">`;
 							buf += `<input name="autotour-autostart" placeholder="${tourSettings.rules.autostart}" style="width: 200px"/>`;
 							buf += `<button class="button" type="submit">OK</button>`;
 							buf += `</form>`;
-							buf += `<b>Auto Disqualify (in Minutes)</b><br/>`;
+							buf += `<b>Auto-disqualify (in Minutes)</b><br/>`;
 							buf += `<form data-submitsend="${cmdPrefix},autodq,{autotour-autodq}">`;
 							buf += `<input name="autotour-autodq" placeholder="${tourSettings.rules.autodq}" style="width: 200px"/>`;
 							buf += `<button class="button" type="submit">OK</button>`;
@@ -393,7 +477,7 @@ export const commands: Chat.ChatCommands = {
 					tmpTourConfig[user.id][index] = {
 						format: '[Gen 8] OU',
 						rules: tmpTourConfig[user.id][0]?.rules || {},
-						timing: {minutes: 0, hours: 20}
+						timing: { 'minutes': 0, 'hours': 20 }
 					}
 					this.parse('/autotour config');
 				} else {
