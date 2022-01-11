@@ -285,7 +285,7 @@ export const commands: Chat.ChatCommands = {
 						} else {
 							timing = 'Everyday ';
 						}
-						if (tourSettings.timing.hours) {
+						if (tourSettings.timing.hours !== undefined) {
 							timing += ('0' + tourSettings.timing.hours).slice(-2);
 						} else {
 							timing += 'XX';
@@ -476,7 +476,7 @@ export const commands: Chat.ChatCommands = {
 				} else if (index === tmpTourConfig[user.id].length) {
 					tmpTourConfig[user.id][index] = {
 						format: '[Gen 8] OU',
-						rules: tmpTourConfig[user.id][0]?.rules || {},
+						rules: tmpTourConfig[user.id][tmpTourConfig[user.id].length - 1]?.rules || {},
 						timing: { 'minutes': 0, 'hours': 20 }
 					}
 					this.parse('/autotour config');
