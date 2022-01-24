@@ -189,11 +189,11 @@ export class PetUtils {
 
 	static parseStatPosition(target: string): statPosition | undefined {
 		if (!target) return;
-		const targets = target.split(',').map(x => x.trim());
-		if (targets.length !== 2 || (targets[0] !== 'ivs' && targets[0] !== 'evs')) return;
-		const index = targets[1];
+		const args = target.split(',').map(x => x.trim());
+		if (args.length !== 2 || (args[0] !== 'ivs' && args[0] !== 'evs')) return;
+		const index = args[1];
 		if (index !== 'hp' && index !== 'atk' && index !== 'def' && index !== 'spa' && index !== 'spd' && index !== 'spe') return;
-		return {'type': targets[0], 'index': index};
+		return {'type': args[0], 'index': index};
 	}
 
 	static table(
@@ -390,15 +390,15 @@ class Pet {
 	}
 
 	static genPokeByDesc(target: string): string {
-		const targets = target.split(',');
-		const species = Dex.species.get(targets[0]);
+		const args = target.split(',');
+		const species = Dex.species.get(args[0]);
 		if (!species.exists) return '';
 		let level = 50;
 		let fullivs = 0;
 		let hidden = 0;
 		let shiny = 0;
 		let egg = false;
-		targets.slice(1).forEach(arg => {
+		args.slice(1).forEach(arg => {
 			arg = toID(arg);
 			if (arg.startsWith('l')) {
 				level = PetUtils.restrict(parseInt(arg.slice(1)) || 70, 1, 100);
@@ -503,11 +503,11 @@ class Pet {
 		}).filter(x => x.length === 2);
 	}
 
-	static evo(set: PokemonSet, targetSpecies: string, item: boolean): PokemonSet {		
+	static evo(set: PokemonSet, argspecies: string, item: boolean): PokemonSet {		
 		if (item) set.item = '';
-		if (toID(set.species) === toID(set.name)) set.name = targetSpecies;
+		if (toID(set.species) === toID(set.name)) set.name = argspecies;
 		// Ability does not change
-		set.species = targetSpecies;
+		set.species = argspecies;
 		return set;
 	}
 
@@ -1015,10 +1015,10 @@ class PetUser {
 	parsePosition(target: string, ignoreEgg: boolean = false): petPosition | undefined {
 		if (!this.property) return;
 		if (!target) return;
-		const targets = target.split(',').map(x => x.trim());
-		if (targets.length !== 2) return;
-		const posType: 'bag' | 'box' = targets[0] === 'bag' ? 'bag' : 'box';
-		const index = parseInt(targets[1]);
+		const args = target.split(',').map(x => x.trim());
+		if (args.length !== 2) return;
+		const posType: 'bag' | 'box' = args[0] === 'bag' ? 'bag' : 'box';
+		const index = parseInt(args[1]);
 		if (index === NaN || index < 0 || index >= this.property[posType].length) return;
 		if (ignoreEgg && !Pet.validPet(this.property[posType][index])) return;
 		return {'type': posType, 'index': index};
@@ -1122,12 +1122,12 @@ class PetUser {
 		return Pet.validEvos(set);
 	}
 
-	evo(position: petPosition, targetSpecies: string, item: boolean): boolean {
+	evo(position: petPosition, argspecies: string, item: boolean): boolean {
 		if (!this.property) return false;
 		const pet = this.property[position['type']][position['index']]
 		let set = Pet.parseSet(pet);
 		if (!set) return false;
-		set = Pet.evo(set, targetSpecies, item);
+		set = Pet.evo(set, argspecies, item);
 		this.property[position['type']][position['index']] = Teams.pack([Pet.restoreAbility(set, pet)]);
 		if (set.species === 'Ninjask') {
 			set.species = 'Shedinja';
@@ -1747,18 +1747,18 @@ export const commands: Chat.ChatCommands = {
 				const petUser = getUser(user.id);
 				if (!petUser.property) return PetUtils.popup(user, "您还未领取最初的伙伴!");
 				petUser.operation = undefined;
-				const targets = target.split('<=>').map(x => x.trim());
-				if (targets.length !== 2) return user.sendTo(
+				const args = target.split('<=>').map(x => x.trim());
+				if (args.length !== 2) return user.sendTo(
 					room.roomid,
 					"|uhtml|pet-tmp|<code>/pet box move [bag|box],index1<=>[bag|box],index2</code>"
 				);
-				const pos1 = petUser.parsePosition(targets[0]);
-				const pos2 = petUser.parsePosition(targets[1]);
+				const pos1 = petUser.parsePosition(args[0]);
+				const pos2 = petUser.parsePosition(args[1]);
 				if (!pos1 || !pos2) return PetUtils.popup(user, `位置不存在!`);
 				petUser.load();
 				if (petUser.movePet(pos1, pos2)) {
 					petUser.save();
-					this.parse(`/pet box show ${targets[1]}`);
+					this.parse(`/pet box show ${args[1]}`);
 				} else {
 					PetUtils.popup(user, `背包里不能没有可以战斗的宝可梦!`);
 				}
@@ -1772,9 +1772,9 @@ export const commands: Chat.ChatCommands = {
 				// [选择进化型]: petUser.operation = evo{goal},
 				//              /pet box show = 确认(/pet box evo {target}=>{goal}) | 取消(/pet box evo {target})
 				// [确认]: petUser.operation = undefined, /pet box show = 进化(/pet box evo {target})
-				const targets = target.split('=>').map(x => x.trim());
-				target = targets[0];
-				const goal = targets[1];
+				const args = target.split('=>').map(x => x.trim());
+				target = args[0];
+				const goal = args[1];
 				const position = petUser.parsePosition(target, true);
 				if (!position) return PetUtils.popup(user, '位置不存在!');
 				const availableEvos = petUser.checkEvo(position);
@@ -1782,7 +1782,7 @@ export const commands: Chat.ChatCommands = {
 					return PetUtils.popup(user, '不满足进化条件!');
 				}
 				if (petUser.operation?.indexOf('evo') === 0) {
-					if (targets.length !== 2) {
+					if (args.length !== 2) {
 						petUser.operation = undefined;
 					} else {
 						const index = availableEvos.map(x => x[0]).indexOf(goal);
@@ -1810,14 +1810,14 @@ export const commands: Chat.ChatCommands = {
 				if (!room) return PetUtils.popup(user, "请在房间里使用宠物系统");
 				const petUser = getUser(user.id);
 				if (!petUser.property) return PetUtils.popup(user, "您还未领取最初的伙伴!");
-				const targets = target.split('=>').map(x => x.trim());
-				target = targets[0];
+				const args = target.split('=>').map(x => x.trim());
+				target = args[0];
 				const position = petUser.parsePosition(target, true);
 				if (!position) return PetUtils.popup(user, '位置不存在!');
 				if (petUser.operation) return PetUtils.popup(user, '不能在进行其他操作的过程中更换道具!');
 
 				petUser.load();
-				if (petUser.setItem(position, targets[1])) petUser.save();
+				if (petUser.setItem(position, args[1])) petUser.save();
 
 				this.parse(`/pet box show ${target}`);
 			},
@@ -1847,8 +1847,8 @@ export const commands: Chat.ChatCommands = {
 				const petUser = getUser(user.id);
 				if (!petUser.property) return PetUtils.popup(user, "您还未领取最初的伙伴!");
 				user.sendTo(room.roomid, `|uhtmlchange|pet-box-show|`);
-				const targets = target.split('=>').map(x => x.trim());
-				target = targets[0];
+				const args = target.split('=>').map(x => x.trim());
+				target = args[0];
 				const position = petUser.parsePosition(target, true);
 				if (!position) return PetUtils.popup(user, '位置不存在!');
 				petUser.load();
@@ -1871,7 +1871,7 @@ export const commands: Chat.ChatCommands = {
 					PetUtils.button(`/pet box addmove ${target}=>${move}`, move, `${Pet.moveIcons[move]} width: 180px;`)
 				).join('<br>');
 				const buttons = PetUtils.boolButtons(`/pet box setmoves ${target}!`, `/pet box setmoves ${target}`);
-				if (targets.length === 1) {
+				if (args.length === 1) {
 					user.sendTo(room.roomid, `|uhtml|pet-moves-show|<b>请选择招式:</b><br>${div(valid)}`);
 					user.sendTo(room.roomid, `|uhtml|pet-moves-select|${div(`${selected}<br>${buttons}`)}`);
 				} else {
@@ -1880,19 +1880,19 @@ export const commands: Chat.ChatCommands = {
 			},
 
 			addmove(target, room, user) {
-				const targets = target.split('=>');
-				if (targets.length !== 2) return PetUtils.popup(user, '请先指定需要更改招式的宝可梦');
+				const args = target.split('=>');
+				if (args.length !== 2) return PetUtils.popup(user, '请先指定需要更改招式的宝可梦');
 				const petUser = getUser(user.id);
 				if (!petUser.property) return PetUtils.popup(user, "您还未领取最初的伙伴!");
 				if (!petUser.onChangeMoves) return PetUtils.popup(user, '请先指定需要更改招式的宝可梦');
-				const selectedIndex = petUser.onChangeMoves['selected'].indexOf(targets[1]);
+				const selectedIndex = petUser.onChangeMoves['selected'].indexOf(args[1]);
 				if (selectedIndex >= 0) {
 					petUser.onChangeMoves['selected'].splice(selectedIndex, 1);
 					return this.parse(`/pet box moves ${target}`);
 				}
-				const validIndex = petUser.onChangeMoves['valid'].indexOf(targets[1]);
+				const validIndex = petUser.onChangeMoves['valid'].indexOf(args[1]);
 				if (validIndex >= 0 && petUser.onChangeMoves['selected'].length < 4) {
-					petUser.onChangeMoves['selected'].push(targets[1]);
+					petUser.onChangeMoves['selected'].push(args[1]);
 					return this.parse(`/pet box moves ${target}`);
 				}
 			},
@@ -1901,10 +1901,10 @@ export const commands: Chat.ChatCommands = {
 				if (!room) return PetUtils.popup(user, "请在房间里使用宠物系统");
 				const petUser = getUser(user.id);
 				if (!petUser.property) return PetUtils.popup(user, "您还未领取最初的伙伴!");
-				const targets = target.split('!').map(x => x.trim());
+				const args = target.split('!').map(x => x.trim());
 				petUser.load();
-				target = targets[0];
-				if (targets.length === 2 && petUser.onChangeMoves && petUser.onChangeMoves['selected'].length > 0) {
+				target = args[0];
+				if (args.length === 2 && petUser.onChangeMoves && petUser.onChangeMoves['selected'].length > 0) {
 					const position = petUser.parsePosition(target, true);
 					if (!position) return PetUtils.popup(user, '位置不存在!');
 					if (petUser.changeMoves(position)) petUser.save();
@@ -1917,8 +1917,8 @@ export const commands: Chat.ChatCommands = {
 				if (!room) return PetUtils.popup(user, "请在房间里使用宠物系统");
 				const petUser = getUser(user.id);
 				if (!petUser.property) return PetUtils.popup(user, "您还未领取最初的伙伴!");
-				const targets = target.split('!').map(x => x.trim());
-				target = targets[0];
+				const args = target.split('!').map(x => x.trim());
+				target = args[0];
 				petUser.load();
 				const position = petUser.parsePosition(target, true);
 				if (!position) return PetUtils.popup(user, '位置不存在!');
@@ -1926,7 +1926,7 @@ export const commands: Chat.ChatCommands = {
 				if (!set) return PetUtils.popup(user, '位置是空的!');
 				if (petUser.operation === 'drop' + target) {
 					petUser.operation = undefined;
-					if (targets.length === 2) {
+					if (args.length === 2) {
 						if (petUser.removePet(position, set.item)) {
 							petUser.save();
 						} else {
@@ -2321,12 +2321,12 @@ export const commands: Chat.ChatCommands = {
 				petUser.chatRoomId = room.roomid;
 				this.parse('/pet box clear new');
 				this.parse(`/pet shop clear ${target}`);
-				const targets = target.split('=>');
-				const goodtype = Shop.types[targets[0]] ? targets[0] : 'ball';
-				const goodname = targets[1];
+				const args = target.split('=>');
+				const goodtype = Shop.types[args[0]] ? args[0] : 'ball';
+				const goodname = args[1];
 				let title = Object.keys(Shop.types).map(x => PetUtils.button(`/pet shop show ${x}`, Shop.types[x])).join('');
 				let content = '';
-				switch (targets[0]) {
+				switch (args[0]) {
 				case 'sell':
 					content = Shop.itemButtons(petUser);
 					if (goodname && petUser.hasItem(goodname)) {
@@ -2340,10 +2340,10 @@ export const commands: Chat.ChatCommands = {
 				case 'revive':
 					const userItems = Object.keys(petUser.property['items']);
 					const availableMons = Object.keys(Pet.fossilMons).filter(s => Pet.fossilMons[s].every(x => userItems.includes(x)));
-					if (availableMons.includes(targets[1])) {
-						const fossils = Pet.fossilMons[targets[1]].map(fossil => `1个 ${fossil} `).join('和');
-						content = `<b>确认使用${fossils}复活 ${targets[1]} ? </b>` +
-							PetUtils.boolButtons(`/pet box revive ${targets[1]}`, '/pet shop show revive');
+					if (availableMons.includes(args[1])) {
+						const fossils = Pet.fossilMons[args[1]].map(fossil => `1个 ${fossil} `).join('和');
+						content = `<b>确认使用${fossils}复活 ${args[1]} ? </b>` +
+							PetUtils.boolButtons(`/pet box revive ${args[1]}`, '/pet shop show revive');
 					} else if (availableMons.length) {
 						content = `<b>请选择要复活的化石宝可梦: </b>` + availableMons.map(species => PetUtils.button(
 							`/pet shop show revive=>${species}`, '&emsp;', PetUtils.iconStyle(species)
@@ -2364,8 +2364,8 @@ export const commands: Chat.ChatCommands = {
 							`<b>您的彩票</b>`,
 							`HP=${nums[0]} 攻击=${nums[1]} 防御=${nums[2]} 特攻=${nums[3]} 特防=${nums[4]} 速度=${nums[5]}`
 						].join('<br>')
-					} else if (targets[1] && !['edit', 'close', 'clear'].includes(targets[1])) {
-						const nums = targets[1].split(',').map(x => parseInt(x));
+					} else if (args[1] && !['edit', 'close', 'clear'].includes(args[1])) {
+						const nums = args[1].split(',').map(x => parseInt(x));
 						if (nums.length !== 6 || nums.some(x => !(x >= 0 && x <= 31))) {
 							this.parse('/pet shop show lottery');
 							return PetUtils.popup(user, '请输入6个0到31之间的整数!');
@@ -2374,7 +2374,7 @@ export const commands: Chat.ChatCommands = {
 							`<b>购买彩票</b>`,
 							`确认花费5积分购买以下数值的彩票?`,
 							`HP=${nums[0]} 攻击=${nums[1]} 防御=${nums[2]} 特攻=${nums[3]} 特防=${nums[4]} 速度=${nums[5]}`,
-							PetUtils.boolButtons(`/pet shop buylottery ${targets[1]}`, '/pet shop show lottery')
+							PetUtils.boolButtons(`/pet shop buylottery ${args[1]}`, '/pet shop show lottery')
 						].join('<br>')
 					} else {
 						buyUI = `<b>购买彩票</b><br>` + [
@@ -2405,7 +2405,7 @@ export const commands: Chat.ChatCommands = {
 					];
 					if (ltConfig['host'].includes(user.id)) {
 						lines.push(``);
-						switch (targets[1]) {
+						switch (args[1]) {
 						case 'edit':
 							lines.push(`<b>设置彩票</b><br>` + [
 								`<form data-submitsend="/msgroom ${room.roomid}, /pet shop setlottery {s}|{e}|{1}|{2}|{3}|{4}|{5}|{6}">`,
@@ -2480,15 +2480,15 @@ export const commands: Chat.ChatCommands = {
 				if (!room) return PetUtils.popup(user, "请在房间里使用宠物系统");
 				const petUser = getUser(user.id);
 				if (!petUser.property) return PetUtils.popup(user, "您还未领取最初的伙伴!");
-				const targets = target.split('=>');
-				if (targets.length !== 2) return user.sendTo(
+				const args = target.split('=>');
+				if (args.length !== 2) return user.sendTo(
 					room.roomid,
 					"|uhtml|pet-tmp|<code>/pet shop buy 商品种类=>商品名</code>"
 				);
-				const goodtype = targets[0];
+				const goodtype = args[0];
 				if (!Shop.shopConfig[goodtype]) return PetUtils.popup(user, `没有名为 ${goodtype} 的商品种类`);
 				const goods = Shop.shopConfig[goodtype];
-				let goodname = targets[1];
+				let goodname = args[1];
 				const goodnames = goodname.split('!');
 				goodname = goodnames[0];
 				let num = goodnames.length > 1 ? 5 : 1;
@@ -2595,18 +2595,18 @@ export const commands: Chat.ChatCommands = {
 
 			setlottery(target, room, user) {
 				if (!Shop.lotteryConfig['host'].includes(user.id)) return PetUtils.popup(user, '您没有权限设置彩票!');
-				const targets = target.split('|');
-				if (targets.length !== 8) return PetUtils.popup(user, '格式错误!');
+				const args = target.split('|');
+				if (args.length !== 8) return PetUtils.popup(user, '格式错误!');
 				Shop.editLottery({
-					'start': targets[0],
-					'end': targets[1],
+					'start': args[0],
+					'end': args[1],
 					'awards': {
-						'1v': targets[2],
-						'2v': targets[3],
-						'3v': targets[4],
-						'4v': targets[5],
-						'5v': targets[6],
-						'6v': targets[7]
+						'1v': args[2],
+						'2v': args[3],
+						'3v': args[4],
+						'4v': args[5],
+						'5v': args[6],
+						'6v': args[7]
 					}
 				});
 				PetUtils.popup(user, '设置成功!');
@@ -2616,12 +2616,12 @@ export const commands: Chat.ChatCommands = {
 			closelottery(target, room, user) {
 				if (!room) return PetUtils.popup(user, "请在房间里使用宠物系统");
 				if (!Shop.lotteryConfig['host'].includes(user.id)) return PetUtils.popup(user, '您没有权限开奖!');
-				const targets = target.split('|');
-				if (targets.length !== 2 || !Dex.species.get(targets[0]).exists) return PetUtils.popup(user, '格式错误!');
-				const nums = targets[1].split(',').map(x => parseInt(x));
+				const args = target.split('|');
+				if (args.length !== 2 || !Dex.species.get(args[0]).exists) return PetUtils.popup(user, '格式错误!');
+				const nums = args[1].split(',').map(x => parseInt(x));
 				if (nums.length !== 6 || nums.some(x => !(x >= 0 && x <= 31))) return PetUtils.popup(user, '格式错误!');
 				this.parse(`/pet shop show lottery`);
-				Shop.closeLottery(targets[0], nums).forEach((line, i) => {
+				Shop.closeLottery(args[0], nums).forEach((line, i) => {
 					room.addRaw(`<div class='broadcast-green'><b>${line}</b></div>`);
 				});
 			},
@@ -2650,9 +2650,9 @@ export const commands: Chat.ChatCommands = {
 				if (!room) return PetUtils.popup(user, "请在房间里使用宠物系统");
 				user.sendTo(room.roomid, `|uhtmlchange|pet-edit|`);
 				if (target === 'x') return;
-				const targets = target.split('=>');
-				target = targets.slice(1).join('=>');
-				const petUser = getUser(toID(targets[0] || user.id));
+				const args = target.split('=>');
+				target = args.slice(1).join('=>');
+				const petUser = getUser(toID(args[0] || user.id));
 				if (!petUser.property) return PetUtils.popup(user, `${petUser.id}还未领取最初的伙伴!`);
 				petUser.load();
 				if (target) {
@@ -2732,10 +2732,10 @@ export const commands: Chat.ChatCommands = {
 
 			editgym(target, room, user) {
 				this.checkCan('bypassall');
-				const targets = target.split('=>');
-				if (targets.length !== 2) return this.sendReply('/editgym 道馆名=>队伍');
-				if (!PetBattle.gymConfig[targets[0]]) return PetUtils.popup(user, `没有名为 ${targets[0]} 的道馆!`)
-				PetBattle.gymConfig[targets[0]]['botteam'] = targets[1];
+				const args = target.split('=>');
+				if (args.length !== 2) return this.sendReply('/editgym 道馆名=>队伍');
+				if (!PetBattle.gymConfig[args[0]]) return PetUtils.popup(user, `没有名为 ${args[0]} 的道馆!`)
+				PetBattle.gymConfig[args[0]]['botteam'] = args[1];
 				FS('config/pet-mode/gym-config.js').safeWriteSync(
 					'exports.PetModeGymConfig = ' + JSON.stringify(PetBattle.gymConfig, null, '\t')
 				);
@@ -2744,18 +2744,18 @@ export const commands: Chat.ChatCommands = {
 
 			genpoke(target, room, user) {
 				if (!room) return PetUtils.popup(user, "请在房间里使用宠物系统");
-				const targets = target.split('=>');
-				if (targets[1]) this.checkCan('bypassall');
-				const set = toID(targets[0]) === 'egg' ? Shop.randomEgg('4v') : Pet.genPokeByDesc(targets[0]);
+				const args = target.split('=>');
+				if (args[1]) this.checkCan('bypassall');
+				const set = toID(args[0]) === 'egg' ? Shop.randomEgg('4v') : Pet.genPokeByDesc(args[0]);
 				if (!set) return user.sendTo(room.roomid, `|uhtml|pet-tmp|<code>/genpoke Pikachu, L10, 3V, S, H</code>`);
-				if (targets[1]) {
+				if (args[1]) {
 					const petUser = getUser(user.id);
 					if (!petUser.property) return PetUtils.popup(user, "您还未领取最初的伙伴!");
 					if (petUser.property['bag'][0]) return PetUtils.popup(user, "为便于赠送, 请先移走背包中的第一只宝可梦!");
 					petUser.addPet(set);
 					petUser.save();
 					petUser.onPosition = {'type': 'bag', 'index': 0};
-					this.parse(`/gift ${targets[1]} !`);
+					this.parse(`/gift ${args[1]} !`);
 				} else {
 					this.sendReply(set);
 				}
@@ -2766,17 +2766,17 @@ export const commands: Chat.ChatCommands = {
 				const petUser = getUser(user.id);
 				if (!petUser.property) return PetUtils.popup(user, "您还未领取最初的伙伴!");
 				if (!target) { petUser.operation = 'gift'; return this.parse('/pet box showat'); }
-				const targets = target.split('!');
-				if (!checkUser(targets[0])) return PetUtils.popup(user, `未找到用户 ${targets[0]} !`);
-				if (targets.length === 1) {
+				const args = target.split('!');
+				if (!checkUser(args[0])) return PetUtils.popup(user, `未找到用户 ${args[0]} !`);
+				if (args.length === 1) {
 					petUser.operation = `gift${target}`;
 				} else {
-					const rcverId = toID(targets[0]);
+					const rcverId = toID(args[0]);
 					const gift = new PetUser(rcverId, GIFTPATH);
 					if (!gift.property) gift.init();
-					if (targets[1]) {
-						const item = Dex.items.get(targets[1]);
-						if (!item.exists) return PetUtils.popup(user, `不存在名为 ${targets[1]} 的道具!`);
+					if (args[1]) {
+						const item = Dex.items.get(args[1]);
+						if (!item.exists) return PetUtils.popup(user, `不存在名为 ${args[1]} 的道具!`);
 						gift.addItem(item.name, 1);
 						PetUtils.popup(
 							Users.get(rcverId),
@@ -2799,7 +2799,7 @@ export const commands: Chat.ChatCommands = {
 					gift.save();
 					delete petUser.operation;
 				}
-				if (!targets[1]) this.parse(`/pet box showat`);
+				if (!args[1]) this.parse(`/pet box showat`);
 			},
 
 			updateuserdata(target, room, user) {
