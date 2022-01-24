@@ -75,6 +75,7 @@ pip-log.txt
 # PS China
 *.zip
 !/config/ps-china
+/config/ps-china/team-db
 !/config/pet-mode
 /config/pet-mode/user-properties
 /config/pet-mode/user-gifts
