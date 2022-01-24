@@ -29,7 +29,8 @@ export class AdminUtils {
 				if (entry.length !== 3) return;
 				const userid = toID(entry[0]);
 				const ip = entry[2];
-				if (ip === '127.0.0.1' || ['shared', 'proxy'].includes(IPTools.getHostType('', ip))) return;
+				if (['0.0.0.0', '127.0.0.1'].includes(ip) || ip.startsWith('192.168.')) return;
+				if (['shared', 'proxy'].includes(IPTools.getHostType('', ip))) return;
 				if (!ipCount[ip]) ipCount[ip] = {};
 				if (!ipCount[ip][userid]) ipCount[ip][userid] = 0;
 				ipCount[ip][userid]++;
@@ -158,7 +159,7 @@ export const commands: Chat.ChatCommands = {
 	async score(target, room, user) {
 		let targetUser = target.replace('!', '') || user.id;
 		const score = await AdminUtils.getScore(targetUser);
-		let msg = score ? `${targetUser} 的PS国服积分是：${score}` : `未找到用户 ${targetUser} 的PS国服积分记录`;
+		let msg = score ? `${targetUser} 的PS国服积分是: ${score}` : `未找到用户 ${targetUser} 的PS国服积分记录`;
 		return target.includes('!') ? PetUtils.popup(user, msg) : score ? this.sendReply(msg) : this.errorReply(msg);
 	},
 
@@ -174,7 +175,7 @@ export const commands: Chat.ChatCommands = {
 		}
 		const parsedScore = parseInt(score);
 		const changeScore = await AdminUtils.addScore(userid, parsedScore, reason);
-		if (changeScore.length !== 2) return this.errorReply("错误：将造成负分。");
+		if (changeScore.length !== 2) return this.errorReply("错误: 将造成负分。");
 
 		AdminUtils.adminPM(userid, `您因为 ${reason} ${parsedScore > 0 ? '获得': '失去'}了 ${Math.abs(parsedScore)} 国服积分`);
 		const message = `用户ID: ${userid}, PS国服积分: ` +
