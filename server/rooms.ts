@@ -1661,26 +1661,29 @@ export class GlobalRoomState {
 			Chat.runHandlers('onBattleStart', player, room);
 		}
 
-		const showFormats = ['gen2ou', 'gen3ou', 'gen4ou', 'gen5ou', 'gen6ou', 'gen7ou', 'gen8ou', 'gen8ub', 'gen8uu', 'gen8ru', 'gen8nu'];
-		if (!showFormats.includes(toID(room.format))) return;
-		let reportToWCOP = false;
-		let aboutWCOP = false;
-		const WCOPRoom = Rooms.get('wcop');
-		for (const player of players) {
-			const playerAuthInWCOP = WCOPRoom?.auth?.get(player.id);
-			if (playerAuthInWCOP && playerAuthInWCOP !== ' ') {
-				aboutWCOP = true;
-				reportToWCOP = true;
-			}
-		}
-		if (aboutWCOP) {
-			room.setPrivate('hidden');
-			room.settings.modjoin = null;
-		}
-		if (reportToWCOP) {
-			// WCOPRoom?.add(`|html|<a href='${room.roomid}'>${room.game.title} started: ${room.title}<a>`).update();
-			FS('logs/wcoproom.txt').appendSync(`${new Date().toString()}, ${room.game.title}, ${room.title}\n`);
-		}
+		// const showFormats = ['gen2ou', 'gen3ou', 'gen4ou', 'gen5ou', 'gen6ou', 'gen7ou', 'gen8ou', 'gen8ub', 'gen8uu', 'gen8ru', 'gen8nu'];
+		// const showFormats = ['gen8ou'];
+		// if (!showFormats.includes(toID(room.format))) return;
+		// let reportToWCOP = true;
+		// let aboutWCOP = false;
+		// const WCOPRoom = Rooms.get('wcop');
+		// for (const player of players) {
+		// 	const playerAuthInWCOP = WCOPRoom?.auth?.get(player.id);
+		// 	if (playerAuthInWCOP && playerAuthInWCOP !== ' ') {
+		// 		aboutWCOP = true;
+		// 	} else {
+		// 		reportToWCOP = false;
+		// 	}
+		// }
+		// if (aboutWCOP) {
+		// 	room.setPrivate('hidden');
+		// 	room.settings.modjoin = null;
+		// }
+		// if (reportToWCOP) {
+		// 	WCOPRoom?.add(`|html|<a href='${room.roomid}'>${room.game.title} started: ${room.title}<a>`).update();
+		// 	// WCOPRoom?.add(`|b|${room.roomid}|${players[0].getIdentity()}|${players[1].getIdentity()}`).update();
+		// 	FS('logs/wcoproom.txt').appendSync(`${new Date().toString()}, ${room.game.title}, ${room.title}\n`);
+		// }
 	}
 
 	deregisterChatRoom(id: string) {
