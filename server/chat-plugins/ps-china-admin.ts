@@ -1,5 +1,5 @@
 import { FS } from '../../lib';
-import { PetUtils, getUser } from './ps-china-pet-mode';
+import { SERVER_URL, PetUtils, getUser as getPetUser } from './ps-china-pet-mode';
 
 const REPLAYHEADPATH = 'config/ps-china/replay/replay-head.txt';
 const REPLAYTAILPATH = 'config/ps-china/replay/replay-tail.txt';
@@ -65,7 +65,7 @@ export class AdminUtils {
 	}
 	static addEggToMain(userid: string): string {
 		return (this.getAlts(userid) || [userid]).find(id => {
-			const petUser = getUser(id);
+			const petUser = getPetUser(id);
 			if (petUser.addRandomEgg('3v')) {
 				petUser.save();
 				return true;
@@ -162,6 +162,9 @@ export const commands: Chat.ChatCommands = {
 		let msg = score ? `${targetUser} 的PS国服积分是: ${score}` : `未找到用户 ${targetUser} 的PS国服积分记录`;
 		return target.includes('!') ? PetUtils.popup(user, msg) : score ? this.sendReply(msg) : this.errorReply(msg);
 	},
+	scorehelp: [
+		`/score [user] - 查看user用户(默认为自己)的国服积分`,
+	],
 
 	async pschinascore(target, room, user) {
 		this.checkCan('lock');
@@ -199,7 +202,7 @@ export const commands: Chat.ChatCommands = {
 		}
 	},
 	pschinascorehelp: [
-		`Usage: /pschinascore user, score, reason - 给user用户的国服积分增加score分, 说明原因. Requires: & ~`,
+		`/pschinascore [user], [score], [reason] - 给user用户的国服积分增加score分, 说明原因. Requires: & ~`,
 	],
 
 	'scorelog': 'pschinascorelog',
@@ -215,14 +218,14 @@ export const commands: Chat.ChatCommands = {
 		this.sendReply(`|html|${PetUtils.table([], ['日期', '积分', '原因'], lines, 'auto')}`);
 	},
 	pschinascoreloghelp: [
-		`Usage: /scorelog user, lines - 查看user用户(默认为自己)的最近lines(默认为20)条国服积分记录`
+		`/scorelog [user], [lines] - 查看user用户(默认为自己)的最近lines(默认为20)条国服积分记录`,
 	],
 
 	restorereplay(target, room, user) {
-		this.checkCan('lockdown');
+		this.checkCan('lock');
 		let params = target.split(',');
 		if (!params || params.length != 4) {
-			return this.sendReply('Usage: /restorereplay player1, player2, format, year-month-date');
+			return this.parse('/restorereplayhelp');
 		}
 		let p1 = params[0].toLowerCase().replace(/[^\w\d\s]/g, '').replace(/\s+/g, '');
 		let p2 = params[1].toLowerCase().replace(/[^\w\d\s]/g, '').replace(/\s+/g, '');
@@ -252,27 +255,33 @@ export const commands: Chat.ChatCommands = {
 				foundReplay = true;
 				const htmlname = file.replace(".log.json", ".html");
 				FS(`config/avatars/static/${htmlname}`).safeWriteSync(rep_head + data.log.join('\n') + rep_tail);
-				this.sendReply(`http://39.96.50.192:8000/avatars/static/${htmlname}`);
+				this.sendReply(`${SERVER_URL}/avatars/static/${htmlname}`);
 			}
 		}
 		if (!foundReplay) {
 			return this.errorReply("Replay not found.");
 		}
 	},
+	restorereplayhelp: [
+		`/restorereplay [player1], [player2], [format], [year]-[month]-[date]`,
+	],
 
 	async updatealts() {
-		this.checkCan('gdeclare');
+		this.checkCan('lock');
 		AdminUtils.updateUserAlts();
 		this.sendReply('用户关系表更新完成');
 	},
 
-	async checkalts(target) {
-		this.checkCan('gdeclare');
-		const targetId = toID(target);
-		if (!targetId) return this.sendReply('Usage: /checkalts user - 查看user用户的关联账号');
-		const alts = AdminUtils.getAlts(targetId);
-		if (!alts) return this.sendReply(`未找到用户 ${target} 的登录记录`);
-		this.sendReply(`用户 ${target} 的关联账号: ${alts.join(', ')}`);
-		this.sendReply(`用户 ${target} 的积分账号: ${await AdminUtils.getMainId(targetId)}`);
+	async checkalts(target, room, user) {
+		const userId = toID(target) || user.id;
+		const userName = target || user.name;
+		if (userId !== user.id) this.checkCan('lock');
+		const alts = AdminUtils.getAlts(userId);
+		if (!alts) return this.sendReply(`未找到用户 ${userName} 的登录记录`);
+		this.sendReply(`用户 ${userName} 的关联账号: ${alts.join(', ')}`);
+		this.sendReply(`用户 ${userName} 的积分账号: ${await AdminUtils.getMainId(userId)}`);
 	},
+	checkaltshelp: [
+		'/checkalts [user] - 查看user用户(默认为自己)的关联账号'
+	],
 };
