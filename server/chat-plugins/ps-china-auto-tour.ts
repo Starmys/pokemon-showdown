@@ -13,7 +13,7 @@ type TourRules = {
 
 type TourTiming = {
 	minutes: number,
-	hours?: number,
+	hours: number,
 	day?: number,
 };
 
@@ -209,7 +209,7 @@ class TourQueue {
 		if (tour) {
 			if (tourStatus.settings.rules.bonus) {
 				tour.onTournamentEnd = ScoreTourUtils.getScoreTourClass().prototype.onTournamentEnd;
-				let msg = `<b>${room}房间 ${format.name} 淘汰赛`;
+				let msg = `<b>${room.title} 房间 ${format.name} 淘汰赛`;
 				if (tourStatus.settings.rules.autostart) {
 					msg += `将于${tourStatus.settings.rules.autostart}分钟后开始!</b>`;
 				} else {
@@ -235,7 +235,7 @@ class TourQueue {
 	}
 
 	check() {
-		return `Next tour: ${this.schedule[0].settings.format} at ${this.schedule[0].nexttime.toString()}`;
+		return `<b>Next tour:</b> ${this.schedule[0].settings.format} at ${this.schedule[0].nexttime.toString()}`;
 	}
 
 	static calcNextTime(timing: TourTiming): Date {
@@ -325,19 +325,7 @@ if (!FS(AUTO_TOUR_CONFIG_FILE).existsSync()) saveTourConfig();
 loadTourConfig();
 applyTourConfig();
 
-let tmpTourConfig: {[userid: string]: TourSettings[]} = {};
-
-function button(command: string, desc: string) {
-	return `<button class="button" name="send" value="${command}">${desc}</button>`;
-}
-
-function disabledButton(desc: string) {
-	return `<button class="button disabled" style="font-weight:bold;color:#575757;background:#d3d3d3">${desc}</button>`;
-}
-
-function conditionalButton(condition: boolean, command: string, desc: string) {
-	return condition ? disabledButton(desc) : button(command, desc);
-}
+let tmpTourConfig: {[cfgid: string]: TourSettings[]} = {};
 
 export const commands: Chat.ChatCommands = {
 	autotour: {
@@ -346,14 +334,12 @@ export const commands: Chat.ChatCommands = {
 			this.requireRoom();
 			const roomid = room!.roomid;
 			if (tourQueues[roomid]) {
-				this.sendReply(tourQueues[roomid].check());
-				this.sendReply(`|uhtml|auto-tour-config|${button('/autotour config', 'View all configured tours')}`);
+				let buf = `|uhtml|auto-tour-config|`;
+				buf += `<p>${tourQueues[roomid].check()}</p><br/>`;
+				buf += PetUtils.button('/autotour config', 'View all configured tours');
+				this.sendReply(buf);
 			} else {
-				if (Users.Auth.hasPermission(user, 'roommod', null, room)) {
-					this.parse(`/autotour config`);
-				} else {
-					this.sendReply('There is no auto tour configured in this room.');
-				}
+				this.parse(`/autotour config`);
 			}
 		},
 		config: {
@@ -363,8 +349,8 @@ export const commands: Chat.ChatCommands = {
 				const roomid = room!.roomid;
 				const canEdit = Users.Auth.hasPermission(user, 'roommod', null, room);
 				let buf = '|uhtml|auto-tour-config|';
-				let notSaved = !!tmpTourConfig[user.id];
-				const roomTourConfig = tmpTourConfig[user.id] || tourConfig[roomid] || [];
+				let notSaved = !!tmpTourConfig[`${room!.roomid}-${user.id}`];
+				const roomTourConfig = tmpTourConfig[`${room!.roomid}-${user.id}`] || tourConfig[roomid] || [];
 				if (roomTourConfig.length) {
 					buf += '<table style="border-spacing: 5px;">';
 					let header = ['Format', 'Time'];
@@ -383,34 +369,32 @@ export const commands: Chat.ChatCommands = {
 							timing += 'XX';
 						}
 						timing += ':' + ('0' + tourSettings.timing.minutes).slice(-2);
-						let buttons = button(`/autotour config rules ${index}`, 'Rules');
+						let buttons = PetUtils.button(`/autotour config rules ${index}`, 'Rules');
 						if (canEdit) {
-							buttons += button(`/autotour config edit ${index}`, 'Edit');
-							buttons += button(`/autotour config edit ${index},delete`, 'Delete');
+							buttons += PetUtils.button(`/autotour config edit ${index}`, 'Edit');
+							buttons += PetUtils.button(`/autotour config edit ${index},delete`, 'Delete');
 						}
 						let row = [formatName, timing, buttons];
 						buf += '<tr>' + row.map(s => `<td style="text-align: center">${s}</td>`).join('') + '</tr>';
 					});
-					if (canEdit) {
-						let row = [button(`/autotour config edit ${roomTourConfig.length}`, 'Add'), '', ''];
-						buf += '<tr>' + row.map(s => `<td style="text-align: center">${s}</td>`).join('') + '</tr>';
+					const lastRow = ['', '', PetUtils.button(`/autotour config exit`, 'Exit')];
+					if (canEdit) lastRow[0] = PetUtils.button(`/autotour config edit ${roomTourConfig.length}`, 'Add');
+					if (notSaved) {
+						lastRow[2] = PetUtils.button(`/autotour config save`, 'Confirm') +
+							PetUtils.button(`/autotour config cancel`, 'Cancel');
 					}
+					buf += '<tr>' + lastRow.map(s => `<td style="text-align: center">${s}</td>`).join('') + '</tr>';
 					buf += '</table>';
 				} else {
-					buf += '<p>There is no auto tour configured in this room.</p>';
-				}
-				if (notSaved) {
-					buf += '<p>';
-					buf += button(`/autotour config save`, 'Confirm & Save');
-					buf += button(`/autotour config cancel`, 'Cancel');
-					buf += '</p>';
+					buf += 'There is no auto tour configured in this room. ';
+					if (canEdit) buf += PetUtils.button(`/autotour config edit ${roomTourConfig.length}`, 'Add');
 				}
 				this.sendReply(buf);
 			},
 			rules(target, room, user) {
 				this.requireRoom();
 				const roomid = room!.roomid;
-				const roomTourConfig = tmpTourConfig[user.id] || tourConfig[roomid] || [];
+				const roomTourConfig = tmpTourConfig[`${room!.roomid}-${user.id}`] || tourConfig[roomid] || [];
 				const index = parseInt(target);
 				if (index >= 0 && index < roomTourConfig.length) {
 					const tourRules = roomTourConfig[index].rules;
@@ -454,48 +438,52 @@ export const commands: Chat.ChatCommands = {
 						lines.push(`<b>Description:</b>`);
 						lines.push(roomTourConfig[index].desc);
 					}
-					lines.push(button('/autotour config', 'Back'));
+					lines.push(PetUtils.button('/autotour config', 'Back'));
 					return this.sendReply(`|uhtml|auto-tour-config|${lines.join('<br/>')}`);
 				}
 			},
 			save(target, room, user) {
 				this.requireRoom();
 				this.checkCan('roommod', null, room!);
-				if (tmpTourConfig[user.id]) {
-					if (tmpTourConfig[user.id].length) {
-						tourConfig[room!.roomid] = tmpTourConfig[user.id];
+				if (tmpTourConfig[`${room!.roomid}-${user.id}`]) {
+					if (tmpTourConfig[`${room!.roomid}-${user.id}`].length) {
+						tourConfig[room!.roomid] = tmpTourConfig[`${room!.roomid}-${user.id}`];
 					} else {
 						delete tourConfig[room!.roomid];
 					}
 					saveTourConfig();
 					applyTourConfig();
-					delete tmpTourConfig[user.id];
+					delete tmpTourConfig[`${room!.roomid}-${user.id}`];
 				}
-				this.sendReply('|uhtml|auto-tour-config|');
 				this.parse('/autotour config');
 				this.sendReply('Auto tour config updated.');
 			},
 			cancel(target, room, user) {
 				this.requireRoom();
 				this.checkCan('roommod', null, room!);
-				delete tmpTourConfig[user.id];
-				this.sendReply('|uhtml|auto-tour-config|');
+				delete tmpTourConfig[`${room!.roomid}-${user.id}`];
 				this.parse('/autotour config');
+			},
+			exit(target, room, user) {
+				this.requireRoom();
+				this.sendReply('|uhtmlchange|auto-tour-config|');
 			},
 			edit(target, room, user) {
 				this.requireRoom();
 				this.checkCan('roommod', null, room!);
-				if (!tmpTourConfig[user.id]) {
-					tmpTourConfig[user.id] = JSON.parse(JSON.stringify(tourConfig[room!.roomid] || []));
+				if (!tmpTourConfig[`${room!.roomid}-${user.id}`]) {
+					tmpTourConfig[`${room!.roomid}-${user.id}`] = JSON.parse(JSON.stringify(tourConfig[room!.roomid] || []));
 				}
 				const [indexStr, command, args] = target.replace(/\s+/g, '').split(',');
 				const index = parseInt(indexStr);
 				const num = parseInt(args);
-				if (index >= 0 && index < tmpTourConfig[user.id].length) {
-					const tourSettings = tmpTourConfig[user.id][index];
+				if (index >= 0 && index < tmpTourConfig[`${room!.roomid}-${user.id}`].length) {
+					const tourSettings = tmpTourConfig[`${room!.roomid}-${user.id}`][index];
+					const rules = tourSettings.rules;
+					const timing = tourSettings.timing;
 					switch (command) {
 						case 'delete':
-							tmpTourConfig[user.id].splice(index, 1);
+							tmpTourConfig[`${room!.roomid}-${user.id}`].splice(index, 1);
 							return this.parse('/autotour config');
 						case 'desc':
 							tourSettings.desc = target.split('desc')[1].slice(1);
@@ -509,96 +497,117 @@ export const commands: Chat.ChatCommands = {
 						case 'bonus':
 						case 'forcetimer':
 						case 'allowscouting':
-							if (tourSettings.rules[command] === undefined) {
-								tourSettings.rules[command] = command === 'allowscouting';
+							if (rules[command] === undefined) {
+								rules[command] = command === 'allowscouting';
 							}
-							tourSettings.rules[command] = !tourSettings.rules[command];
+							if (command !== 'bonus' || room!.roomid === 'skypillar') {
+								rules[command] = !rules[command];
+							}
 							return this.parse(`/autotour config edit ${index}`);
 						case 'playercap':
 						case 'autostart':
 						case 'autodq':
 							if (Number.isInteger(num) && num >= (command === 'playercap' ? 2 : 0)) {
-								tourSettings.rules[command] = num;
+								rules[command] = num;
 							} else {
-								delete tourSettings.rules[command];
+								delete rules[command];
 							}
 							return this.parse(`/autotour config edit ${index}`);
-						case 'minutes':
-						case 'hours':
+						case 'time':
+							const hours = Math.floor(num / 100) % 24;
+							const minutes = Math.floor(num) % 100;
+							if (hours >= 0 && minutes >= 0 && minutes < 60) {
+								timing['hours'] = hours;
+								timing['minutes'] = minutes;
+							}
+							return this.parse(`/autotour config edit ${index}`);
 						case 'day':
-							const cycle = { 'minutes': 60, 'hours': 24, 'day': 7 }[command];
-							if (Number.isInteger(num) && num >= 0) {
-								tourSettings.timing[command] = num % cycle;
-							} else if (command !== 'minutes') {
-								delete tourSettings.timing[command];
+							if (Number.isInteger(num) && num >= 0 && num < 7) {
+								timing[command] = num;
+							} else {
+								delete timing[command];
 							}
 							return this.parse(`/autotour config edit ${index}`);
 						default:
 							let buf = '|uhtml|auto-tour-config|';
 							const cmdPrefix = `/msgroom ${room!.roomid}, /autotour config edit ${index}`;
-							const allowScouting = tourSettings.rules.allowscouting === undefined || tourSettings.rules.allowscouting;
-							const forceTimer = !!tourSettings.rules.forcetimer;
-							const bonus = !!tourSettings.rules.bonus;
+							const allowScouting = rules.allowscouting === undefined || rules.allowscouting;
+							const forceTimer = !!rules.forcetimer;
+							const bonus = !!rules.bonus;
 							buf += `<b>Format</b><br/>`;
 							buf += `<form data-submitsend="${cmdPrefix},format,{autotour-format}">`;
-							buf += `<input name="autotour-format" placeholder="${tourSettings.format}" style="width: 200px"/>`;
+							buf += `<input name="autotour-format" placeholder="${tourSettings.format}" style="width: 300px"/>`;
 							buf += `<button class="button" type="submit">OK</button>`;
-							buf += `</form>`;
+							buf += `</form><br/>`;
 							buf += `<b>Bonus</b><br/>`;
-							buf += conditionalButton(bonus, `${cmdPrefix},bonus`, 'On');
-							buf += conditionalButton(!bonus, `${cmdPrefix},bonus`, 'Off');
-							buf += '<br/>';
-							buf += `<b>Player Capacity</b><br/>`;
-							buf += `<form data-submitsend="${cmdPrefix},playercap,{autotour-playercap}">`;
-							buf += `<input name="autotour-playercap" placeholder="${tourSettings.rules.playercap}" style="width: 200px"/>`;
-							buf += `<button class="button" type="submit">OK</button>`;
-							buf += `</form>`;
-							buf += `<b>Allow Scouting</b><br/>`;
-							buf += conditionalButton(allowScouting, `${cmdPrefix},allowscouting`, 'On');
-							buf += conditionalButton(!allowScouting, `${cmdPrefix},allowscouting`, 'Off');
-							buf += '<br/>';
-							buf += `<b>Force Timer</b><br/>`;
-							buf += conditionalButton(forceTimer, `${cmdPrefix},forcetimer`, 'On');
-							buf += conditionalButton(!forceTimer, `${cmdPrefix},forcetimer`, 'Off');
-							buf += '<br/>';
-							buf += `<b>Auto-start (in Minutes)</b><br/>`;
-							buf += `<form data-submitsend="${cmdPrefix},autostart,{autotour-autostart}">`;
-							buf += `<input name="autotour-autostart" placeholder="${tourSettings.rules.autostart}" style="width: 200px"/>`;
-							buf += `<button class="button" type="submit">OK</button>`;
-							buf += `</form>`;
-							buf += `<b>Auto-disqualify (in Minutes)</b><br/>`;
-							buf += `<form data-submitsend="${cmdPrefix},autodq,{autotour-autodq}">`;
-							buf += `<input name="autotour-autodq" placeholder="${tourSettings.rules.autodq}" style="width: 200px"/>`;
-							buf += `<button class="button" type="submit">OK</button>`;
-							buf += `</form>`;
-							buf += `<b>Timing: Day</b><br/>`;
-							buf += conditionalButton(tourSettings.timing.day === undefined, `${cmdPrefix},day,undefined`, 'Everyday');
-							buf += DAYS.map((day, i) => {
-								return conditionalButton(tourSettings.timing.day === i, `${cmdPrefix},day,${i}`, day);
-							}).join('');
-							buf += '<br/>'
-							buf += `<b>Timing: Hours</b><br/>`;
-							buf += `<form data-submitsend="${cmdPrefix},hours,{autotour-hours}">`;
-							buf += `<input name="autotour-hours" placeholder="${tourSettings.timing.hours}" style="width: 200px"/>`;
-							buf += `<button class="button" type="submit">OK</button>`;
-							buf += `</form>`;
-							buf += `<b>Timing: Minutes</b><br/>`;
-							buf += `<form data-submitsend="${cmdPrefix},minutes,{autotour-minutes}">`;
-							buf += `<input name="autotour-minutes" placeholder="${tourSettings.timing.minutes}" style="width: 200px"/>`;
-							buf += `<button class="button" type="submit">OK</button>`;
-							buf += `</form>`;
+							buf += PetUtils.conditionalButton(bonus, `${cmdPrefix},bonus`, 'On');
+							buf += PetUtils.conditionalButton(!bonus, `${cmdPrefix},bonus`, 'Off');
+							buf += `<br/><br/>`;
+							buf += `<details open><summary><b>Rules</b></summary>`;
+							buf += PetUtils.table(
+								['Player Capacity', 'Allow Scouting', 'Force Timer', 'Auto-start', 'Auto-disqualify'],
+								[],
+								[
+									`<form data-submitsend="${cmdPrefix},playercap,{autotour-playercap}">` +
+									`<input name="autotour-playercap" placeholder="${rules.playercap}" style="width: 60px"/>` +
+									`<button class="button" type="submit">OK</button>` +
+									`</form>`,
+									PetUtils.conditionalButton(allowScouting, `${cmdPrefix},allowscouting`, 'On') +
+									PetUtils.conditionalButton(!allowScouting, `${cmdPrefix},allowscouting`, 'Off'),
+									PetUtils.conditionalButton(forceTimer, `${cmdPrefix},forcetimer`, 'On') +
+									PetUtils.conditionalButton(!forceTimer, `${cmdPrefix},forcetimer`, 'Off'),
+									`<form data-submitsend="${cmdPrefix},autostart,{autotour-autostart}">` +
+									`<input name="autotour-autostart" placeholder="${rules.autostart}" style="width: 60px"/>` +
+									`<button class="button" type="submit">OK</button>` +
+									`</form>`,
+									`<form data-submitsend="${cmdPrefix},autodq,{autotour-autodq}">` +
+									`<input name="autotour-autodq" placeholder="${rules.autodq}" style="width: 60px"/>` +
+									`<button class="button" type="submit">OK</button>` +
+									`</form>`
+								].map(s => [s]),
+								'350px',
+								'left',
+								'right'
+							);
+							buf += `</details><br/>`;
+							buf += `<details open><summary><b>Timing</b></summary>`;
+							buf += PetUtils.table(
+								['Day', 'Time'],
+								[],
+								[
+									PetUtils.conditionalButton(
+										timing.day === undefined,
+										`${cmdPrefix},day,undefined`,
+										'Everyday',
+									) + DAYS.map((day, i) => PetUtils.conditionalButton(
+										timing.day === i,
+										`${cmdPrefix},day,${i}`,
+										day,
+									)).join(''),
+									`<form data-submitsend="${cmdPrefix},time,{autotour-hours}{autotour-minutes}">` +
+									`<input name="autotour-hours" placeholder="${timing.hours}" style="width: 60px"/>` +
+									`&ensp;:&ensp;` +
+									`<input name="autotour-minutes" placeholder="${timing.minutes}" style="width: 60px"/>` +
+									`<button class="button" type="submit">OK</button>` +
+									`</form>`
+								].map(s => [s]),
+								'350px',
+								'left',
+								'right'
+							)
+							buf += `</details><br/>`;
 							buf += `<b>Description (Optional):</b> ${tourSettings.desc}<br/>`;
 							buf += `<form data-submitsend="${cmdPrefix},desc,{autotour-desc}">`;
-							buf += `<input name="autotour-desc" placeholder="${Utils.escapeHTML(tourSettings.desc || 'undefined')}" style="width: 200px"/>`;
+							buf += `<input name="autotour-desc" placeholder="${Utils.escapeHTML(tourSettings.desc || 'undefined')}" style="width: 300px"/>`;
 							buf += `<button class="button" type="submit">OK</button>`;
-							buf += `</form>`;
-							buf += button(`/autotour config`, 'Confirm & Back');
+							buf += `</form><br/>`;
+							buf += PetUtils.button(`/autotour config`, 'Confirm & Back');
 							this.sendReply(buf);
 					}
-				} else if (index === tmpTourConfig[user.id].length) {
-					tmpTourConfig[user.id][index] = {
+				} else if (index === tmpTourConfig[`${room!.roomid}-${user.id}`].length) {
+					tmpTourConfig[`${room!.roomid}-${user.id}`][index] = {
 						format: '[Gen 8] OU',
-						rules: tmpTourConfig[user.id][tmpTourConfig[user.id].length - 1]?.rules || {},
+						rules: tmpTourConfig[`${room!.roomid}-${user.id}`][tmpTourConfig[`${room!.roomid}-${user.id}`].length - 1]?.rules || {},
 						timing: { 'minutes': 0, 'hours': 20 }
 					}
 					this.parse('/autotour config');
