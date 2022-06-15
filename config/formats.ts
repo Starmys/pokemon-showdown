@@ -4930,7 +4930,7 @@ export const Formats: FormatList = [
 	},
 	{
 		name: "[Gen 8] PS 国服积分",
-		desc: `用于国服论坛积分显示，天梯对战不计分。`,
+		desc: `用于国服论坛积分显示, 天梯对战不计分。`,
 
 		mod: 'gen8',
 		team: 'random',
@@ -4941,8 +4941,18 @@ export const Formats: FormatList = [
 		rated: false,
 		ruleset: ['PotD', 'Obtainable', 'Sleep Clause Mod', 'HP Percentage Mod', 'Cancel Mod'],
 		onBegin() {
-			this.add('html', `<div class="broadcast-red"><strong>本分级仅用于国服论坛积分显示，天梯对战不计分。具体积分规则见<a href="http://chinapsim.org./topic/63/">国服积分说明帖</a>.</strong></div>`);
+			this.add('html', `<div class="broadcast-red"><strong>本分级仅用于国服论坛积分显示, 天梯对战不计分。具体积分规则见<a href="http://chinapsim.org./topic/63/">国服积分说明帖</a>.</strong></div>`);
 		},
+	},
+	{
+		name: "[Gen 8] Rouge Mod",
+		desc: `出发, 去往未知洞穴里探险`,
+
+		challengeShow: false,
+		// tournamentShow: false,
+
+		mod: 'rouge',
+		ruleset: ['Dynamax Clause'],
 	},
 	{
 		name: "[Gen 8] Pet Mode 宠物模式",
@@ -4962,7 +4972,7 @@ export const Formats: FormatList = [
 	},
 	{
 		name: "[Gen 8] National Dex (Gym Aura Mod 道馆场地模式)",
-		desc: `双方共携带≥4个对应属性的精灵开启对应属性的道馆场地，不可以使用突击背心`,
+		desc: `双方共携带≥4个对应属性的精灵开启对应属性的道馆场地, 不可以使用突击背心`,
 
 		mod: 'pet',
 		ruleset: ['PS China Gym Aura Mode'],
@@ -5009,51 +5019,113 @@ export const Formats: FormatList = [
 		},
 	},
 	{
-		name: "[Gen 8] OU (4P 2v2)",
-		desc: `4-Player 2v2 OU`,
+		name: "[Gen 8] Shinx OU 2v2",
+		desc: `4-Player 2v2 OU for Shinx`,
 		mod: 'gen8',
 		tournamentShow: false,
 		rated: false,
 		gameType: 'multi',
-		ruleset: ['OU'],
+		timer: { starting: 300, addPerTurn: 45, maxPerTurn: 300, maxFirstTurn: 300, grace: 300 },
+		ruleset: ['Obtainable', 'Team Preview', 'Gravity Sleep Clause', 'Species Clause', 'Nickname Clause', 'OHKO Clause', 'Evasion Moves Clause', 'Endless Battle Clause', 'HP Percentage Mod', 'Cancel Mod', 'Dynamax Clause'],
+		banlist: ['Jirachi', 'Kartana', 'Melmetal', 'swagger', 'Uber', 'AG', 'Arena Trap', 'Moody', 'Power Construct', 'Sand Veil', 'Shadow Tag', 'Snow Cloak',
+			'Bright Powder', 'King\'s Rock', 'Lax Incense', 'Baton Pass',],
+		onModifyMove(move, pokemon, target) {
+			if (move.id === 'defog') {
+				move.onHit = (target, source, move) => {
+					let success = false;
+					if (!target.volatiles['substitute'] || move.infiltrates) success = !!this.boost({ evasion: -1 });
+					const removeTarget = [
+						'reflect', 'lightscreen', 'auroraveil', 'safeguard', 'mist', 'spikes', 'toxicspikes', 'stealthrock', 'stickyweb', 'gmaxsteelsurge',
+					];
+					const removeAll = [
+						'spikes', 'toxicspikes', 'stealthrock', 'stickyweb', 'gmaxsteelsurge',
+					];
+					for (const targetCondition of removeTarget) {
+						if (target.side.removeSideCondition(targetCondition)) {
+							if (!removeAll.includes(targetCondition)) continue;
+							this.add('-sideend', target.side, this.dex.conditions.get(targetCondition).name, '[from] move: Defog', '[of] ' + source);
+							success = true;
+						}
+					}
+					for (const side of this.sides.filter(x => x != target.side)) {
+						for (const sideCondition of removeAll) {
+							if (side.removeSideCondition(sideCondition)) {
+								this.add('-sideend', source.side, this.dex.conditions.get(sideCondition).name, '[from] move: Defog', '[of] ' + source);
+								success = true;
+							}
+						}
+					}
+					this.field.clearTerrain();
+					return success;
+				}
+			}
+		},
+
 	},
 	{
-		name: "[Gen 7] OU (4P 2v2)",
-		desc: `4-Player 2v2 Gen7 OU`,
+		name: "[Gen 7] Shinx OU 2v2",
+		desc: `4-Player 2v2 Gen 7 OU for Shinx`,
 		mod: 'gen7',
 		tournamentShow: false,
 		rated: false,
 		gameType: 'multi',
-		ruleset: ['[Gen 7] OU'],
-	},
-	{
-		name: "[Gen 8] Runamax",
-		desc: 
-			"1. 在Gen8 OU规则的基础上，允许RU及以下分级的精灵极巨化; " +
-			"2. 以下精灵和极巨化不共存: 波克基斯, 巨牙鲨, 多边兽Z, 龙卷云; " +
-			"3. 以下特性和极巨化不共存: 变身者, 优游自如, 叶绿素, 太阳之力; " +
-			"4. 不允许超极巨化。"
-		,
-
-		mod: 'gen8',
-		ruleset: ['Standard'],
-		banlist: ['Uber', 'AG', 'Arena Trap', 'Moody', 'Power Construct', 'Shadow Tag', 'Baton Pass'],
-		onValidateSet(set) {
-			if (set.gigantamax) {
-				return [
-					`您的${set.species}是超极巨化个体，但Runamax分级不允许超极巨化。`
-				];
-			}
-		},
-		onBegin() {
-			for (const pokemon of this.getAllPokemon()) {
-				if (["RUBL", "UU", "UUBL", "OU"].indexOf(pokemon.species.tier) >= 0 || 
-					["Togekiss", "Sharpedo", "Porygon-Z", "Tornadus"].indexOf(pokemon.species.baseSpecies) >= 0 ||
-					["imposter", "swiftswim", "chlorophyll", "solarpower"].indexOf(this.toID(pokemon.ability)) >= 0) {
-					pokemon.getDynamaxRequest = (skipChecks?: boolean)  => { return undefined; };
+		timer: { starting: 300, addPerTurn: 45, maxPerTurn: 300, maxFirstTurn: 300, grace: 300 },
+		ruleset: ['Obtainable', 'Team Preview', 'Gravity Sleep Clause','Species Clause', 'Nickname Clause', 'OHKO Clause', 'Moody Clause', 'Evasion Moves Clause', 'Endless Battle Clause', 'HP Percentage Mod', 'Cancel Mod'],
+		banlist: ['Jirachi', 'Magearna', 'Snorlax', 'swagger', 'Uber', 'Arena Trap', 'Power Construct', 'Shadow Tag', 'Baton Pass'],
+		onModifyMove(move, pokemon, target) {
+			if (move.id === 'defog') {
+				move.onHit = (target, source, move) => {
+					let success = false;
+					if (!target.volatiles['substitute'] || move.infiltrates) success = !!this.boost({ evasion: -1 });
+					const removeTarget = [
+						'reflect', 'lightscreen', 'auroraveil', 'safeguard', 'mist', 'spikes', 'toxicspikes', 'stealthrock', 'stickyweb', 'gmaxsteelsurge',
+					];
+					const removeAll = [
+						'spikes', 'toxicspikes', 'stealthrock', 'stickyweb', 'gmaxsteelsurge',
+					];
+					for (const targetCondition of removeTarget) {
+						if (target.side.removeSideCondition(targetCondition)) {
+							if (!removeAll.includes(targetCondition)) continue;
+							this.add('-sideend', target.side, this.dex.conditions.get(targetCondition).name, '[from] move: Defog', '[of] ' + source);
+							success = true;
+						}
+					}
+					for (const side of this.sides.filter(x => x != target.side)) {
+						for (const sideCondition of removeAll) {
+							if (side.removeSideCondition(sideCondition)) {
+								this.add('-sideend', source.side, this.dex.conditions.get(sideCondition).name, '[from] move: Defog', '[of] ' + source);
+								success = true;
+							}
+						}
+					}
+					return success;
 				}
 			}
-			this.add('rule', 'Runamax模式规则: http://47.94.147.145/topic/1146/runamax-cup-%E6%8A%A5%E5%90%8D%E5%B8%96');
+		},
+
+	},
+	{
+		name: "[Gen 8] 70 Acc-Cup",
+		desc:
+			"所有技能的命中率*70%",
+
+		mod: 'gen8',
+		ruleset: ['Standard', 'Dynamax Clause'],
+		banlist: ['Uber', 'AG', 'Arena Trap', 'Moody', 'Power Construct', 'Shadow Tag', 'Baton Pass', 'Zoom Lens', 'Wide Lens', 'Victory Star', 'Compound Eyes', 'Wonder Skin','No Guard'],
+		onModifyMove(move, pokemon, target) {
+			if ((typeof move.accuracy) === "number") {
+				move.accuracy = move.accuracy as number * 0.7;
+			}
+			if (move.accuracy === true) {
+				move.accuracy = 70;
+			}
+		},
+		onTryHit(target, source, move) {
+			if (move.target === "self" || move.target === "all" || move.target === "foeSide" || move.target === "allySide") {
+				if (this.prng.next(100) + 1 > 70 * (3 + Math.max(0, source.boosts.accuracy)) / (3 + Math.min(0, source.boosts.accuracy))) {
+					return false;
+				}
+			}
 		},
 	},
 	{
@@ -5071,159 +5143,186 @@ export const Formats: FormatList = [
 		ruleset: ['Team Preview', 'Picked Team Size = 1'],
 	},
 	{
-		name: "[Gen 8] National Dex BH",
-
-		mod: 'gen8',
-		searchShow: false,
-		ruleset: [
-			'[Gen 8] National Dex AG', '!Obtainable', 'Forme Clause', '2 Ability Clause', 'OHKO Clause', 'Evasion Moves Clause',
-			'CFZ Clause', 'Dynamax Clause', 'Sleep Clause Mod'
-	    ],
-		banlist: [
-			'Nonexistent', 'Groudon-Primal', 'Rayquaza-Mega', 'Zacian-Crowned', 'Shedinja', 'Arena Trap', 'Contrary', 'Gorilla Tactics',
-			'Huge Power', 'Illusion', 'Innards Out', 'Intrepid Sword', 'Libero', 'Magnet Pull', 'Moody', 'Neutralizing Gas', 'Parental Bond',
-			'Protean', 'Pure Power', 'Shadow Tag', 'Stakeout', 'Water Bubble', 'Wonder Guard', 'Gengarite', 'Chatter', 'Octolock',
-			'Double Iron Bash', 'Bolt Beak', 'Belly Drum', 'Electrify', 'Comatose + Sleep Talk'
-		],
-	},
-	{
 		name: "[Gen 7] Random Formats",
 		desc: `Randomized competitive lower tiers teams of mutiple generations.`,
 
 		team: 'random',
 	},
 	{
-		name: "[Gen 8] VGC without Restriction",
-		mod: 'gen8',
-		gameType: 'doubles',
+		name: "[Gen 5] PokeMMO",
+
+		rated: false,
+		mod: 'mmo',
 		ruleset: [
-			'Obtainable', 'Species Clause', 'Nickname Clause', 'Item Clause', 'Team Preview', 'Cancel Mod', 'VGC Timer',
-			'Min Team Size = 4', 'Max Team Size = 6', 'Picked Team Size = 4', 'Adjust Level = 50', 'Min Source Gen = 8'
+			'Species Clause', 'Sleep Clause Mod', 'Adjust Level = 50', 'Team Preview',
+			'HP Percentage Mod', 'Cancel Mod', 'Endless Battle Clause',
 		],
 	},
 	{
-		name: "[Gen 7] Battle Tree 3v3",
+		name: "[Gen 5] PokeMMO Test",
 
+		rated: true,
+		mod: 'mmo',
+		ruleset: [
+			'Species Clause', 'Sleep Clause Mod', 'Adjust Level = 50', 'Team Preview',
+			'HP Percentage Mod', 'Cancel Mod', 'Endless Battle Clause',
+			'Obtainable Abilities', 'Obtainable Formes', 'EV Limit = Auto',
+		],
+		banlist: ['Unreleased', 'Unobtainable', 'Past', 'Future', 'LGPE', 'CAP', 'Custom'],
+	},
+	{
+		name: "[Gen 7] PokeOne",
+
+		rated: true,
 		mod: 'gen7',
-		searchShow: false,
-		ruleset: ['Obtainable', 'Standard', 'Min Team Size = 3', 'Max Team Size = 3', 'Picked Team Size = 3'],
-		banlist: ['Uber', 'Power Construct'],
+		ruleset: ['Standard'],
+		banlist: [
+			'Uber', 'Arena Trap', 'Power Construct', 'Shadow Tag', 'Baton Pass', 'Greninja-Ash', 'Magearna', 'Tapu Fini', 'Tapu koko', 'Tapu bulu', 'Tapu lele',
+			'Manaphy', 'Victini', 'Kartana', 'Blacephalon', 'Xurkitree', 'Celesteela', 'Nihilego', 'Buzzwole', 'Stakataka', 'Weavile', 'Gastrodon', 'Aegislash', 'Volcanion',
+			'Hoopa', 'Ribombee', 'Toxapex', 'Silvally', 'Type: Null', 'Zeraora', `King's Rock`, `Kyurem-Black`, `Kyurem`, 'fusion Bolt', 'Blue Flare', 'Bolt Strike', 'Glaciate',
+			'Fusion Flare', 'Quick Claw', 'Shaymin'
+		],
+		onValidateSet(set) {
+			if (Dex.items.get(set.item).megaStone || Dex.items.get(set.item).zMove)
+				return [set.item + " is banned"];
+			let pokemon = set.species || set.name;
+			if (this.toID(pokemon) === 'landorus' && this.toID(set.ability) === 'sheerforce') {
+				return [pokemon + `'s ` + set.ability + " is banned"];
+			}
+
+		},
+		unbanlist: [
+			'Normal Gem', 'Bug Gem', 'Dark Gem', 'Dragon Gem', 'Electric Gem', 'Fairy Gem', 'Fighting Gem', 'Fire Gem', 'Flying Gem', 'Ghost Gem', 'Grass Gem', 'Ground Gem',
+			'Ice Gem', 'Poison Gem', 'Psychic Gem', 'Rock Gem', 'Steel Gem', 'Water Gem', 'Landorus'
+		]
 	},
+	////////////////////   奈亚子杯
 	{
-		name: "[Gen 8] VGC Nation Dex limit 2 Restricted",
+		name: "[Gen 8] VGC 2021 Series 9",
 
 		mod: 'gen8',
 		gameType: 'doubles',
-		ruleset: ['Flat Rules', '!! Adjust Level = 50', 'VGC Timer', '+Unobtainable', '+Past', 'Limit Two Restricted'],
-		restricted: ['Restricted Legendary'],
-		onValidateSet(set) {
-			if (set.species === 'Necrozma-Dusk-Mane' && set.moves.includes('swordsdance')) {
-				return [`携带剑舞的奈克洛兹玛-黄昏之鬃在该分级下不可用。`];
-			}
-			if (set.item === 'Red Orb' && (set.moves.includes('swordsdance') || set.moves.includes('rockpolish'))) {
-				return [`携带剑舞和岩切的原始固拉多在该分级下不可用。`];
-			}
-		},
-		
+		ruleset: ['Flat Rules', '!! Adjust Level = 50', 'Min Source Gen = 8', 'VGC Timer'],
 	},
 	{
-		name: "[Gen 9] Infinite Fusion Random Battle 无限融合",
-		desc: `将（几乎）任意两只精灵融合成新精灵！<br/>\
-			<details><summary>具体规则（点击展开）</summary>\
-			&bullet; 正常选择精灵作为融合的<strong>身体</strong>部分，在昵称栏写上一只精灵的英文名，由它组成<strong>头部</strong><br/>\
-			&bullet; 融合后精灵的ＨＰ、特攻、特防种族 = 头部对应种族的 2 / 3 + 身体对应种族的 1 / 3<br/>\
-			&bullet; 融合后精灵的攻击、防御、速度种族 = 头部对应种族的 1 / 3 + 身体对应种族的 2 / 3<br/>\
-			&bullet; 融合后精灵的属性为头部精灵的第一属性 + 身体精灵的第二属性（如没有则为第一属性）<br/>\
-			&bullet; 融合后精灵的特性池包含头部精灵的第一特性、身体精灵的第二特性，以及头部精灵的隐藏特性<br/>\
-			&bullet; 融合后精灵的技能池为头身精灵技能池之和<br/>\
-			&bullet; 禁止选择任何特殊形态作为融合组件，如：胡帕-解放形态<br/>\
-			&bullet; 有部分精灵间存在特殊融合，如：酋雷姆 + 雷希拉姆 = 焰白酋雷姆<br/>\
-			</details><br/>\
-			Fusion (almost) any two Pok&eacute;mon together!<br/>\
-			<details><summary>Fusion Mechanism (Click to Show)</summary>\
-			&bullet; Choose a Pok&eacute;mon as usual to be the <strong>Body Part</strong>, while giving it the name of a Pok&eacute;mon as nickname which is to be the <strong>Head Part</strong> of the fusioned Pok&eacute;mon<br/>\
-			&bullet; Fusioned Pok&eacute;mon's base stats of H P, SpA, SpD = That base stats of Head * 2 / 3 + That base stats of Body * 1 / 3<br/>\
-			&bullet; Fusioned Pok&eacute;mon's base stats of Atk, Def, Spe = That base stats of Head * 1 / 3 + That base stats of Body * 2 / 3<br/>\
-			&bullet; Fusioned Pok&eacute;mon's Types includes: First Type of Head + Second (or First if no Second) Type of Body<br/>\
-			&bullet; Fusioned Pok&eacute;mon's Abilities includes: First Ability of Head, Second Ability of Body, and Hidden Ability of Head<br/>\
-			&bullet; Fusioned Pok&eacute;mon's Moves includes: ALL moves learnt by Head and Body<br/>\
-			&bullet; Pok&eacute;mon in Formes cannot be used in fusion. E.g. Hoopa-Unbound<br/>\
-			&bullet; There are several special Fusions. E.g. Kyurem + Reshiram = Kyurem-White</details>`,
-		threads: [
-			`&bullet; <a href="https://infinitefusion.fandom.com/wiki/Pok%C3%A9mon_Infinite_Fusion_Wiki">Infinite Fusion Wiki</a>`,
-			`&bullet; <a href="https://aegide.github.io/">Infinite Fusion Calculator</a>`,
-		],
+		name: "[Gen 8] VGC 2021 Series 10",
 
-		mod: 'infinitefusion',
-		ruleset: [
-			'Obtainable',   '!!EV Limit = 1020', 'Species Clause','infinitefusion',
-			'HP Percentage Mod', 'Cancel Mod', 'Endless Battle Clause', 'Sketch Post-Gen 7 Moves', 'Dynamax Clause', 
-			'OHKO Clause', 'Evasion Moves Clause',// 'Setup Clause = 2','Team Species Preview',
-		],
-		
-		team: 'random',
-		
+		mod: 'gen8',
+		gameType: 'doubles',
+		ruleset: ['Flat Rules', '!! Adjust Level = 50', 'Min Source Gen = 8', 'VGC Timer', 'Limit One Restricted', 'Dynamax Clause'],
+		restricted: ['Restricted Legendary'],
 	},
-	//////////////////非对战分级
 	{
-		section: "PSChina Not to play",
+		name: "[Gen 8] VGC 2021 Series 11",
+
+		mod: 'gen8',
+		gameType: 'doubles',
+		ruleset: ['Flat Rules', '!! Adjust Level = 50', 'Min Source Gen = 8', 'VGC Timer', 'Limit One Restricted'],
+		restricted: ['Restricted Legendary'],
+	},
+	////////////////////   每月特殊分级
+	{
+		section: "PSChina Special Of The Mouth",
 		column: 1,
 	},
+	////////////////////   每月特殊分级
 	{
-		name: "[Gen 8] PS 国服积分",
-		desc: `用于国服论坛积分显示, 天梯对战不计分。`,
+		name: "[Gen 8] OU Of 24 Team Size",
+		desc:"每个队伍可以携带最多24只精灵,any team can have max 24 pokemon",
+		mod: 'gen8',
+		debug: true,
+
+		// no restrictions, for serious (other than team preview)
+		ruleset: ['Standard', 'Dynamax Clause', 'Max Team Size = 24'],
+		banlist: [
+			'Uber', 'AG', 'Arena Trap', 'Moody', 'Power Construct', 'Sand Veil', 'Shadow Tag', 'Snow Cloak',
+			'King\'s Rock', 'Baton Pass','Beat Up',
+		],
+	},
+	{
+		name: "[Gen 8] Tier Shift Ubers",
+		desc:"低于ub分级的宝可梦除血量外所有种族值,OU/UUBL +10, UU/RUBL +20,RU/NUBL +30,NU/PUBL +40,PU及以下 +50。Pok&eacute;mon below Uber get their stats, excluding HP, boosted. OU/UUBL get + 10,UU/RUBL get +20, RU/NUBL get +30, NU/PUBL get +40, and PU or lower get +50.",
 
 		mod: 'gen8',
-		team: 'random',
-		challengeShow: false,
-		rated: false,
-		ruleset: ['PotD', 'Obtainable', 'Sleep Clause Mod', 'HP Percentage Mod', 'Cancel Mod'],
+		ruleset: ['Standard', 'Dynamax Clause', 'Overflow Stat Mod'],
+		banlist: ['Shadow Tag', 'Baton Pass'],
 		onBegin() {
-			this.add('html', `<div class="broadcast-red"><strong>本分级仅用于国服论坛积分显示, 天梯对战不计分。具体积分规则见<a href="http://chinapsim.org./topic/63/">国服积分说明帖</a>.</strong></div>`);
+			this.add('rule', 'Tier Shift Mod: Pok\u00e9mon get stat buffs depending on their tier, excluding HP.');
 		},
+		onModifySpecies(species, target, source, effect) {
+			if (!species.baseStats) return;
+			const boosts: { [tier: string]: number } = {
+				ou:10,
+				uubl: 10,
+				uu: 20,
+				rubl: 20,
+				ru: 30,
+				nubl: 30,
+				nu: 40,
+				publ: 40,
+				pu: 50,
+				nfe: 50,
+				lc: 50,
+			};
+			let tier: string = this.toID(species.tier);
+			if (!(tier in boosts)) return;
+			// Non-Pokemon bans in lower tiers
+			if (target) {
+				if (target.set.item === 'lightclay') return;
+				if (['drizzle', 'drought', 'snowwarning'].includes(target.set.ability) && boosts[tier] > 20) tier = 'nubl';
+			}
+			const pokemon = this.dex.deepClone(species);
+			pokemon.bst = pokemon.baseStats['hp'];
+			const boost = boosts[tier];
+			let statName: StatID;
+			for (statName in pokemon.baseStats as StatsTable) {
+				if (statName === 'hp') continue;
+				pokemon.baseStats[statName] = this.clampIntRange(pokemon.baseStats[statName] + boost, 1, 255);
+				pokemon.bst += pokemon.baseStats[statName];
+			}
+			return pokemon;
+		},
+		
 	},
 	{
-		name: "[Gen 9] Rouge Mod",
-		desc: `出发, 去往未知洞穴里探险`,
+		name: "[Gen 8] VGC Nation Dex",
 
-		challengeShow: false,
-
-		mod: 'rouge',
-		ruleset: ['Dynamax Clause', 'Standard NatDex'],
-	},
-	{
-		name: "[Gen 9] Pet Mode 宠物模式",
-		desc: `与自己培养的宝可梦并肩作战吧！`,
-
-		mod: 'pet',
-		team: 'randomPetMode',
-		ruleset: ['PS China Pet Mode'],
-	},
-	{
-		name: "[Gen 9] Pet Mode Balanced 宠物平衡模式",
-		desc: `与自己培养的宝可梦一起享受公平的对战吧！`,
-
-		mod: 'pet',
-		team: 'randomPetModeBalanced',
-		ruleset: ['PS China Pet Mode Balanced'],
-	},
-	{
-		name: "[Gen 8] National Dex (Gym Aura Mod 道馆场地模式)",
-		desc: `双方共携带≥4个对应属性的精灵开启对应属性的道馆场地, 不可以使用突击背心`,
-
-		mod: 'pet',
-		ruleset: ['PS China Gym Aura Mode'],
-	},
-	{
-		name: "[Gen 9] Pet Mode Boss Battle",
-		desc: `去挑战强大的霸主宝可梦吧！`,
-
+		mod: 'gen8',
+		gameType: 'doubles',
 		searchShow: false,
-		challengeShow: false,
+		ruleset: ['Flat Rules', '!! Adjust Level = 50', 'VGC Timer', '+Unobtainable',	'+Past', 'Sketch Gen 8 Moves'],
+		onValidateSet(set) {
+			// These Pokemon are still unobtainable
+			const unobtainables = [
+				'Eevee-Starter', 'Floette-Eternal', 'Pichu-Spiky-eared',
+				'Pikachu-Belle', 'Pikachu-Cosplay', 'Pikachu-Libre',
+				'Pikachu-PhD', 'Pikachu-Pop-Star', 'Pikachu-Rock-Star',
+				'Pikachu-Starter', 'Eternatus-Eternamax',
+			];
+			const species = this.dex.species.get(set.species);
+			if (unobtainables.includes(species.name)) {
+				if (this.ruleTable.has(`+pokemon:${species.id}`)) return;
+				return [`${set.name || set.species} does not exist in the National Dex.`];
+			}
+			if (species.tier === "Unreleased") {
+				const basePokemon = this.toID(species.baseSpecies);
+				if (this.ruleTable.has(`+pokemon:${species.id}`) ||
 
-		mod: 'petboss',
-		gameType: 'multi',
-		team: 'randomPetModeBossBattle',
-		ruleset: ['PS China Pet Mode Boss'],
+					this.ruleTable.has(`+basepokemon:${basePokemon}`)) {
+					return;
+				}
+				return [`${set.name || set.species} does not exist in the National Dex.`];
+			}
+			// Items other than Z-Crystals and Pokémon-specific items should be illegal
+			if (!set.item) return;
+			const item = this.dex.items.get(set.item);
+			if (!item.isNonstandard) return;
+			if (['Past', 'Unobtainable'].includes(item.isNonstandard) && !
+
+				item.zMove && !item.itemUser && !item.forcedForme) {
+				if (this.ruleTable.has(`+item:${item.id}`)) return;
+				return [`${set.name}'s item ${item.name} does not exist in Gen ${this.dex.gen}.`];
+			}
+		},
 	},
 ];
