@@ -76,9 +76,14 @@ pip-log.txt
 *.zip
 !/config/ps-china
 /config/ps-china/team-db
+/config/ps-china/auto-chess/*.json
 !/config/pet-mode
 /config/pet-mode/user-properties
 /config/pet-mode/user-gifts
 /config/pet-mode/deposit
 /config/pet-mode/trade-log
 /config/pet-mode/lottery-log
+/config/pet-mode/hyper-config.json
+!/config/rouge
+/config/rouge/test.json
+/config/rouge/user-properties
