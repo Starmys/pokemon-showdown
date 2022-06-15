@@ -7,6 +7,8 @@ const TEAM_DATABASE_DIR = 'config/ps-china/team-db/gen8ou';
 const SIGNIFICANT_POKES_FILE = `${TEAM_DATABASE_DIR}/pokes.json`;
 const REPLAY_URLS_FILE = `${TEAM_DATABASE_DIR}/replay-urls.txt`;
 const TEAM_DATABASE_FILE = `${TEAM_DATABASE_DIR}/teams.json`;
+const SAMPLE_TEAM = ['Tapu Lele', 'Weavile', 'Corviknight', 'Toxapex', 'Landorus-Therian', 'Slowking-Galar'];
+const SEARCH_CD = 10000;
 
 if (!FS(TEAM_DATABASE_DIR).existsSync()) FS(TEAM_DATABASE_DIR).mkdirpSync();
 if (!FS(TEAM_DATABASE_FILE).existsSync()) FS(TEAM_DATABASE_FILE).writeSync('[]');
@@ -151,15 +153,28 @@ function showTeam(team: string[]): string {
 	return team.map(speciesId => `<psicon pokemon="${speciesId}"/>`).join('');
 }
 
+const userLastSearch: {[userid: string]: number} = {};
+
 export const commands: Chat.ChatCommands = {
 	tdbs(target, room, user) {
 		this.parse(`/teamdb search ${target}`);
 	},
 	teamdb: {
+		'': 'guide',
+		guide(target, room, user) {
+			this.requireRoom();
+			let buf = `<b>欢迎使用 PS China [Gen 8] OU 队伍数据库</b>`;
+			buf += `<form data-submitsend="/msgroom ${room!.roomid}, /teamdb search {p1},{p2},{p3},{p4},{p5},{p6};{s4},{s5}">`;
+			buf += SAMPLE_TEAM.map((x, i) => `<p>位置 ${i + 1} <input name="p${i + 1}" value="${x}"/></p>`).join('');
+			buf += `<p>模糊匹配: <input name="s4" type="checkbox" value="+"/>4&emsp;`;
+			buf += `<input name="s5" type="checkbox" value="+" checked/>5</p>`;
+			buf += `<button class="button" type="submit">搜索</button></form></details>`;
+			user.sendTo(room!.roomid, `|uhtml|teamdb-search|${buf}`);
+		},
 		async update(target, room, user) {
 			this.requireRoom();
 			this.checkCan('lockdown');
-			if (room!.roomid !== 'wcop') return this.errorReply('Access denied.');
+			// if (room!.roomid !== 'wcop') return this.errorReply('Access denied.');
 			if (!FS(REPLAY_URLS_FILE).existsSync()) {
 				this.errorReply('Replay URL file not found.');
 			} else {
@@ -182,15 +197,23 @@ export const commands: Chat.ChatCommands = {
 		},
 		async search(target, room, user) {
 			this.requireRoom();
-			if (room!.roomid !== 'wcop') return this.errorReply('Access denied.');
-			target = target.replace(/,/g, '/');
-			const args = target.split('/').map(toID);
+			if (userLastSearch[user.id] && Date.now() - userLastSearch[user.id] < SEARCH_CD) {
+				this.parse('/teamdb guide');
+				return this.errorReply(`您的查询频率过高, 请稍候再来`);
+			}
+			// if (room!.roomid !== 'wcop') return this.errorReply('Access denied.');
+			let [teamStr, optionStr] = target.split(';');
+			optionStr ||= '{s4}';
+			teamStr = teamStr.replace(/,/g, '/');
+			const args = teamStr.split('/').map((x, i) => toID(x) || toID(SAMPLE_TEAM[i]));
 			if (args.length !== 6 || args.some(x => !Dex.species.get(x).exists)) {
-				return this.errorReply('Please input 6 legal species.');
+				this.parse('/teamdb guide');
+				return this.errorReply('请输入6只合法的宝可梦');
 			}
 			let buf = `<p>Teams similar to ${showTeam(args)}</p>`;
 			const similarTeams = findSimilarTeams(getTeamCode(args));
 			for (let i = 2; i >= 0; i--) {
+				if (optionStr.includes(`{s${i + 4}}`)) continue;
 				buf += `<details title="Click to view teams">`;
 				buf += `<summary>${i + 4} hits: ${similarTeams[i].length} team${similarTeams[i][1] ? 's' : ''}</summary>`;
 				if (similarTeams[i].length > 0) {
@@ -212,7 +235,7 @@ export const commands: Chat.ChatCommands = {
 								]);
 							});
 						});
-						buf += PetUtils.table([], ['Player', 'Replay'], replayTable);
+						buf += PetUtils.table([], ['Player', 'Replay'], replayTable, '100%', 'left', 'left', true);
 						buf += `</details>`;
 					});
 				} else {
@@ -221,6 +244,7 @@ export const commands: Chat.ChatCommands = {
 				buf += `</details>`;
 			}
 			user.sendTo(room!.roomid, `|uhtml|teamdb-search|${buf}`);
+			userLastSearch[user.id] = Date.now();
 		}
 	}
 }
