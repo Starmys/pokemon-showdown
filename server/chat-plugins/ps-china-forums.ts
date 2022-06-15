@@ -3,27 +3,21 @@ import { NetRequest } from "../../lib/net";
 import { escapeHTML } from "../../lib/utils";
 import { PetUtils } from "./ps-china-pet-mode";
 
-const FORUMS_URL = 'https://pschina.one';
-const TOPIC_KEYS = ['中国队', '报名', '公开赛', '地域赛', '联赛', '大联盟', '大满贯', '锦标赛', '季赛', 'PL', 'Shinx', 'Suspect'];
+const FORUMS_URL = 'http://47.94.147.145';
+const TOPIC_KEYS = ['中国队', '报名', '公开赛', '地域赛', '联赛', '大联盟', '大满贯', '锦标赛', '季赛', 'PL', 'ShinxCup', 'Suspect'];
 const INTRO_FOLDER = 'config/ps-china/intro';
-const INTRO_MSG_TYPES = ['PS China Intro'];
+const INTRO_MSG_TYPES = ['PS China Guide', 'PS China Intro', 'PS China BGM'];
 const NEWS_EDIT_CD = 60000;
-
-let lastEditTime = -1;
-let currentEditor = '';
-let currentCursor = -1;
-let newsTable: string[][] = [];
 
 export const loginMsgs: {[msgType: string]: string} = {};
 INTRO_MSG_TYPES.forEach(msgType => loadMsgType(msgType));
-loadPSChinaNews();
+loadPSChinaNews(true);
 
 function loadMsgType(msgType: string) {
-	loginMsgs[msgType] = FS(`${INTRO_FOLDER}/${msgType.toLowerCase().replace(/\s/g, '-')}.html`)
-		.readIfExistsSync().replace(/[\n|\t]/g, '');
+	loginMsgs[msgType] = FS(`${INTRO_FOLDER}/${msgType.toLowerCase().replace(/\s/g, '-')}.html`).readIfExistsSync().replace(/[\n|\t]/g, '');
 }
 
-async function scanPSChinaNews(): Promise<number> {
+async function getRecentTopics(): Promise<{[index: string]: string}> {
 	const topics: {[index: string]: string} = {};
 	let recentPage = await new NetRequest(`${FORUMS_URL}/recent`).get();
 	let tagIndex = recentPage.indexOf(`<a href="/topic/`);
@@ -39,35 +33,27 @@ async function scanPSChinaNews(): Promise<number> {
 		recentPage = recentPage.slice(tagEndIndex + 4);
 		tagIndex = recentPage.indexOf(`<a href="/topic/`);
 	}
-	let oldUrls = new Set(newsTable.map(([index, url]) => url));
-	Object.entries(topics)
-		.filter(([index, title]) => TOPIC_KEYS.some(key => title.includes(key)))
-		.map(([index, title]) => [title, `${FORUMS_URL}/topic/${index}`])
-		.filter(([index, url]) => !oldUrls.has(url))
-		.forEach(([index, url]) => newsTable.push([index, url]));
+	return topics;
+}
+
+async function loadPSChinaNews(update: boolean = false): Promise<number> {
+	newsTable = Object.entries(await getRecentTopics())
+	.filter(([index, title]) => TOPIC_KEYS.some(key => title.includes(key)))
+	.map(([index, title]) => [title, `${FORUMS_URL}/topic/${index}`]);
+	if (update) updatePSChinaGuide();
 	return newsTable.length;
 }
 
-async function loadPSChinaNews() {
-	let newsData = FS(`${INTRO_FOLDER}/news.json`).readIfExistsSync();
-	if (newsData) {
-		newsTable = JSON.parse(newsData);
-	} else {
-		await scanPSChinaNews();
-		savePSChinaNews();
-	}
-	updatePSChinaIntro();
-}
-
-function savePSChinaNews() {
-	FS(`${INTRO_FOLDER}/news.json`).writeSync(JSON.stringify(newsTable, null, '\t'));
-}
-
-function updatePSChinaIntro() {
+function updatePSChinaGuide() {
 	const newsStr = newsTable.map(([title, url]) => `<p><a href="${url}">${title}</a></p>`).join('');
-	loadMsgType('PS China Intro');
-	loginMsgs['PS China Intro'] = loginMsgs['PS China Intro'].replace('{}', newsStr);
+	loadMsgType('PS China Guide');
+	loginMsgs['PS China Guide'] = loginMsgs['PS China Guide'].replace('{}', newsStr);
 }
+
+let lastEditTime = -1;
+let currentEditor = '';
+let currentCursor = -1;
+let newsTable: string[][] = [];
 
 function requireWriteAccess(userid: string): boolean {
 	if (currentEditor !== userid && !!Users.get(currentEditor) && Date.now() < lastEditTime + NEWS_EDIT_CD) {
@@ -83,7 +69,6 @@ function showNewsTable(roomid: string): string {
 	.map((row, i) => row.map((text, j) => {
 		if (text.startsWith('http')) text = `<a href="${text}">${text}</a>`;
 		if (currentCursor === i * 2 + j) {
-			// TODO: Move Up & Move Down
 			let buf = '';
 			buf += `<form data-submitsend="/msgroom ${roomid}, /pschinaforums news edit ${i * 2 + j},{cn-forums-news-text}">`;
 			buf += `<input name="cn-forums-news-text" value="${escapeHTML(text)}"/> `;
@@ -105,7 +90,6 @@ function showNewsTable(roomid: string): string {
 }
 
 export const commands: Chat.ChatCommands = {
-	'cnforums': 'pschinaforums',
 	pschinaforums: {
 		news: {
 			'': 'edit',
@@ -117,7 +101,7 @@ export const commands: Chat.ChatCommands = {
 				}
 				const [cursorStr, text] = target.split(',');
 				const cursor = ((parseInt(cursorStr) + 1) || 0) - 1;
-				const rowIndex = cursor >> 1;
+				const rowIndex = Math.floor(cursor / 2);
 				if (text === '-') {
 					newsTable.splice(rowIndex, 1);
 					currentCursor = -1;
@@ -125,7 +109,7 @@ export const commands: Chat.ChatCommands = {
 					newsTable.push(['(请编辑标题)', '(请编辑链接)']);
 					currentCursor = -1;
 				} else if (cursor >= 0 && cursor === currentCursor) {
-					newsTable[rowIndex][cursor & 1] = text;
+					newsTable[rowIndex][cursor % 2] = text;
 					currentCursor = -1;
 				} else {
 					currentCursor = cursor;
@@ -138,7 +122,7 @@ export const commands: Chat.ChatCommands = {
 				if (!requireWriteAccess(user.id)) {
 					return this.errorReply(`${Users.get(currentEditor)?.name} 正在编辑新闻列表。`);
 				}
-				await scanPSChinaNews();
+				await loadPSChinaNews();
 				this.parse('/pschinaforums news edit');
 			},
 			update(target, room, user) {
@@ -147,8 +131,7 @@ export const commands: Chat.ChatCommands = {
 				if (!requireWriteAccess(user.id)) {
 					return this.errorReply(`${Users.get(currentEditor)?.name} 正在编辑新闻列表。`);
 				}
-				updatePSChinaIntro();
-				savePSChinaNews();
+				updatePSChinaGuide();
 				currentEditor = '';
 				this.sendReply('新闻列表更新成功!');
 				this.stafflog(`${user.name} 更新了新闻列表。`)
@@ -159,17 +142,6 @@ export const commands: Chat.ChatCommands = {
 				if (currentEditor === user.id) currentEditor = '';
 				this.sendReply('|uhtmlchange|cn-forums|');
 			}
-		},
-
-		'': 'help',
-		help(target, room, user) {
-			if (!room) return;
-			const cmds = Object.entries({
-				'新闻列表': '/pschinaforums news',
-			}).map(([desc, cmd]) => [PetUtils.button(cmd, desc), `<code>${cmd}</code>`]);
-			let buf = 'PS China 论坛相关功能:'
-			buf += PetUtils.table([], [], cmds, '300px', 'left', 'left', true);
-			user.sendTo(room.roomid, `|uhtml|pet-welcome|${buf}`);
 		}
 	}
 }
