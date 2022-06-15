@@ -6,11 +6,13 @@ const MINGAMESHALFDECAY = 1;
 const MINGAMESNODECAY = 6;
 const DECAYRATE = 0.015;
 
+const ALLOWED_BOT_IDS = ['spltbot'];
+
 export const commands: Chat.ChatCommands = {
 	laddertour: {
 		prefix(target, room, user) {
 			if (!room) return false;
-			this.checkCan('addhtml', null, room);
+			if (!ALLOWED_BOT_IDS.includes(user.id)) this.checkCan('bypassall');
 			const prefix = toID(target);
 			if (!prefix) return this.errorReply('Prefix error.');
 			Config.forcedprefixes.privacy = [prefix];
@@ -18,7 +20,7 @@ export const commands: Chat.ChatCommands = {
 		},
 		open(target, room, user) {
 			if (!room) return false;
-			this.checkCan('addhtml', null, room);
+			if (!ALLOWED_BOT_IDS.includes(user.id)) this.checkCan('bypassall');
 			const format = Dex.formats.get(toID(target));
 			if (!format.exists) return this.errorReply('Format name error.');
 			//@ts-ignore
@@ -28,7 +30,7 @@ export const commands: Chat.ChatCommands = {
 		},
 		close(target, room, user) {
 			if (!room) return false;
-			this.checkCan('addhtml', null, room);
+			if (!ALLOWED_BOT_IDS.includes(user.id)) this.checkCan('bypassall');
 			const format = Dex.formats.get(toID(target))
 			if (!format.exists) return this.errorReply('Format name error.');
 			//@ts-ignore
@@ -37,8 +39,8 @@ export const commands: Chat.ChatCommands = {
 			room.add(`|html|<div class='broadcast-green' style="text-align: center;"><b>${msg}</b></div>`).update();
 		},
 		async decay(target, room, user) {
-			if (!room) return false;
-			this.checkCan('addhtml', null, room);
+			if (!target || !room) return this.parse('/laddertour decayhelp');
+			if (!ALLOWED_BOT_IDS.includes(user.id)) this.checkCan('bypassall');
 			const dateStr = PetUtils.getDate();
 			const formatid = toID(target);
 			if (!Dex.formats.get(formatid).exists) return this.errorReply('Format name error.');
@@ -79,6 +81,9 @@ export const commands: Chat.ChatCommands = {
 			await Ladders(formatid).save();
 			this.globalModlog(`Ladder decayed: ${formatid}`);
 			this.addModAction(`Ladder decayed: ${formatid}`);
-		}
+		},
+		decayhelp: [
+			`/laddertour decay [format]`
+		]
 	}
 };

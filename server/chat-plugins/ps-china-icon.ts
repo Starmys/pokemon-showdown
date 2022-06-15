@@ -3,7 +3,29 @@
 * Credits: Lord Haji, panpawn.*
 *******************************/
 import {FS} from '../../lib';
+import {SERVER_URL} from './ps-china-pet-mode';
+
 let https = require("https");
+
+const ICONS_FOLDER = 'icons-2022';
+
+const speciesIdByNumber: {[num: number]: string[]} = {};
+Dex.species.all().forEach(species => {
+	if (species.num > 0) {
+		if (!speciesIdByNumber[species.num]) {
+			speciesIdByNumber[species.num] = [];
+		}
+		speciesIdByNumber[species.num].push(species.id);
+	}
+});
+export const iconURLs: {[speciesId: string]: string} = {};
+Object.entries(speciesIdByNumber).forEach(([num, speciesIdList]) => speciesIdList.forEach((speciesId, index) => {
+	const numStr = `00${num}`.slice(-3);
+	const fileName = `${numStr}.${speciesId}.gif`;
+	if (FS(`./config/avatars/${ICONS_FOLDER}/${fileName}`).existsSync()) {
+		iconURLs[speciesId] = `${SERVER_URL}/avatars/${ICONS_FOLDER}/${fileName}`;
+	}
+}));
 
 let icons: {[username: string]: string} = JSON.parse(FS("config/icons.json").readIfExistsSync() || '{}');
 
@@ -45,7 +67,7 @@ export const commands: Chat.ChatCommands = {
 	customicon: "icon",
 	icon: {
 		set(target, room, user) {
-			this.checkCan("bypassall");
+			this.checkCan("lock");
 			let targets = target.split(",");
 			for (let u in targets) targets[u] = targets[u].trim();
 			if (targets.length !== 2) return this.parse("/iconhelp");
@@ -54,10 +76,13 @@ export const commands: Chat.ChatCommands = {
 
 			let iconLink = targets[1];
 			const species = Dex.species.get(iconLink);
-			if (species.num > 0) {
-				iconLink = `http://39.96.50.192:8000/avatars/icons/icon${("00" + species.num).slice(-3)}.gif`;
-			} else if (parseInt(iconLink.substr(0, 3))) {
-				iconLink = `http://39.96.50.192:8000/avatars/icons/icon${iconLink}.gif`;
+			if (iconURLs[species.id]) {
+				iconLink = iconURLs[species.id];
+			} else {
+				const [num, index] = iconLink.split(/\_+/).map(x => parseInt(x));
+				if (speciesIdByNumber[num]) {
+					iconLink = iconURLs[speciesIdByNumber[num][index || 0]];
+				}
 			}
 
 			if (icons[targetName]) return this.errorReply("This user already has a custom userlist icon.  Do /icon delete [user] and then set their new icon.");
@@ -71,7 +96,7 @@ export const commands: Chat.ChatCommands = {
 
 		remove: "delete",
 		delete(target, room, user) {
-			this.checkCan("bypassall");
+			this.checkCan("lock");
 			const targetName = toID(target);
 			if (!icons[targetName]) return this.errorReply(`/icon - ${targetName} does not have an icon.`);
 			delete icons[targetName];
