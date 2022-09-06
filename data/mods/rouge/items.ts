@@ -574,4 +574,27 @@ export const Items: { [k: string]: ModdedItemData } = {
 		num: 225,
 		gen: 3,
 	},
+	consolationprize: {
+		name: "Consolation Prize",
+		spritenum: 459,
+		fling: {
+			basePower: 30,
+		},
+		onStart(pokemon) {
+			let min1: keyof typeof pokemon.storedStats = 'atk';
+			let min2: keyof typeof pokemon.storedStats = 'atk';
+			for (let x in pokemon.storedStats) {
+				if (pokemon.storedStats[x as keyof typeof pokemon.storedStats] < pokemon.storedStats[min1]) {
+					min2 = min1;
+					min1 = x as keyof typeof pokemon.storedStats;
+				} else if (pokemon.storedStats[x as keyof typeof pokemon.storedStats] < pokemon.storedStats[min2]) {
+					min2 = x as keyof typeof pokemon.storedStats;
+				}
+			}
+			pokemon.storedStats[min1] *= 1.5;
+			pokemon.storedStats[min2] *= 1.5;
+		},
+		num: 225,
+		gen: 3,
+	},
 };
