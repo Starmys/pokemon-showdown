@@ -90,6 +90,7 @@ function showNewsTable(roomid: string): string {
 }
 
 export const commands: Chat.ChatCommands = {
+	'cnforums': 'pschinaforums',
 	pschinaforums: {
 		news: {
 			'': 'edit',
@@ -142,6 +143,17 @@ export const commands: Chat.ChatCommands = {
 				if (currentEditor === user.id) currentEditor = '';
 				this.sendReply('|uhtmlchange|cn-forums|');
 			}
+		},
+
+		'': 'help',
+		help(target, room, user) {
+			if (!room) return;
+			const cmds = Object.entries({
+				'新闻列表': '/pschinaforums news',
+			}).map(([desc, cmd]) => [PetUtils.button(cmd, desc), `<code>${cmd}</code>`]);
+			let buf = 'PS China 论坛相关功能:'
+			buf += PetUtils.table([], [], cmds, '300px', 'left', 'left', true);
+			user.sendTo(room.roomid, `|uhtml|pet-welcome|${buf}`);
 		}
 	}
 }
