@@ -5083,65 +5083,87 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 	},
 	////////////////////   每月特殊分级
 	{
-		section: "PSChina Special Of The Mouth",
+		section: "PSChina Special Of The Month",
 		column: 1,
 	},
 	////////////////////   每月特殊分级
 	{
-		name: "[Gen 8] OU Of 24 Team Size",
-		desc:"每个队伍可以携带最多24只精灵,any team can have max 24 pokemon",
-		mod: 'gen8',
-		debug: true,
-
-		// no restrictions, for serious (other than team preview)
-		ruleset: ['Standard', 'Dynamax Clause', 'Max Team Size = 24'],
-		banlist: [
-			'Uber', 'AG', 'Arena Trap', 'Moody', 'Power Construct', 'Sand Veil', 'Shadow Tag', 'Snow Cloak',
-			'King\'s Rock', 'Baton Pass','Beat Up',
+		name: "[Gen 8] National Dex BH",
+		desc: `Anything that can be hacked in-game and is usable in local battles is allowed.`,
+		threads: [
+			`&bullet; <a href="https://www.smogon.com/forums/threads/national-dex-bh-v3.3690179/#post-9217527">National Dex BH v3</a>`,
+			`&bullet; <a href="https://www.smogon.com/forums/threads/national-dex-bh.3658587/">National Dex BH</a>`,
 		],
+
+		mod: 'gen8',
+		ruleset: ['-Nonexistent', 'Standard NatDex', 'Forme Clause', 'Sleep Moves Clause', '2 Ability Clause', 'OHKO Clause', 'Evasion Moves Clause', 'Dynamax Clause', 'CFZ Clause', '!Obtainable'],
+		banlist: [
+			'Calyrex-Shadow', 'Cramorant-Gorging', 'Eternatus-Eternamax', 'Groudon-Primal', 'Rayquaza-Mega', 'Shedinja',
+			'Arena Trap', 'Contrary', 'Gorilla Tactics', 'Huge Power', 'Illusion', 'Innards Out', 'Libero', 'Magnet Pull', 'Moody',
+			'Neutralizing Gas', 'Parental Bond', 'Protean', 'Pure Power', 'Shadow Tag', 'Stakeout', 'Water Bubble', 'Wonder Guard',
+			'Comatose + Sleep Talk', 'Imprison + Transform',
+			'Belly Drum', 'Bolt Beak', 'Chatter', 'Court Change', 'Double Iron Bash', 'Electrify', 'Octolock', 'Shell Smash',
+			'Gengarite', 'Arceus > 1'
+		],
+		restricted: ['Zacian-Crowned', 'Intrepid Sword'],
+		onValidateSet(set) {
+			const ability = this.dex.abilities.get(set.ability);
+			if (set.species === 'Zacian-Crowned') {
+				if (this.dex.toID(set.item) !== 'rustedsword' || ability.id !== 'intrepidsword') {
+					return [`${set.species} is banned.`];
+				}
+			} else if (ability.id === 'intrepidsword') {
+				return [`${set.name}'s ability ${ability.name} is banned.`];
+			}
+		},
+		onChangeSet(set) {
+			const item = this.dex.toID(set.item);
+			if (set.species === 'Zacian' && item === 'rustedsword') {
+				set.species = 'Zacian-Crowned';
+				set.ability = 'Intrepid Sword';
+				const ironHead = set.moves.indexOf('ironhead');
+				if (ironHead >= 0) {
+					set.moves[ironHead] = 'behemothblade';
+				}
+			}
+			if (set.species === 'Zamazenta' && item === 'rustedshield') {
+				set.species = 'Zamazenta-Crowned';
+				set.ability = 'Dauntless Shield';
+				const ironHead = set.moves.indexOf('ironhead');
+				if (ironHead >= 0) {
+					set.moves[ironHead] = 'behemothbash';
+				}
+			}
+		},
 	},
 	{
-		name: "[Gen 8] Tier Shift Ubers",
-		desc:"低于ub分级的宝可梦除血量外所有种族值,OU/UUBL +10, UU/RUBL +20,RU/NUBL +30,NU/PUBL +40,PU及以下 +50。Pok&eacute;mon below Uber get their stats, excluding HP, boosted. OU/UUBL get + 10,UU/RUBL get +20, RU/NUBL get +30, NU/PUBL get +40, and PU or lower get +50.",
+		name: "[Gen 8] Runamax",
+		desc:
+			"1. 在Gen8 OU规则的基础上, 允许RU及以下分级的精灵极巨化; " +
+			"2. 以下精灵和极巨化不共存: 波克基斯, 巨牙鲨, 多边兽Z, 龙卷云; " +
+			"3. 以下特性和极巨化不共存: 变身者, 优游自如, 叶绿素, 太阳之力; " +
+			"4. 不允许超极巨化。"
+		,
 
 		mod: 'gen8',
-		ruleset: ['Standard', 'Dynamax Clause', 'Overflow Stat Mod'],
-		banlist: ['Shadow Tag', 'Baton Pass'],
-		onBegin() {
-			this.add('rule', 'Tier Shift Mod: Pok\u00e9mon get stat buffs depending on their tier, excluding HP.');
+		ruleset: ['Standard'],
+		banlist: ['Uber', 'AG', 'Arena Trap', 'Moody', 'Power Construct', 'Shadow Tag', 'Baton Pass'],
+		onValidateSet(set) {
+			if (set.gigantamax) {
+				return [
+					`您的${set.species}是超极巨化个体, 但Runamax分级不允许超极巨化。`
+				];
+			}
 		},
-		onModifySpecies(species, target, source, effect) {
-			if (!species.baseStats) return;
-			const boosts: { [tier: string]: number } = {
-				ou:10,
-				uubl: 10,
-				uu: 20,
-				rubl: 20,
-				ru: 30,
-				nubl: 30,
-				nu: 40,
-				publ: 40,
-				pu: 50,
-				nfe: 50,
-				lc: 50,
-			};
-			let tier: string = this.toID(species.tier);
-			if (!(tier in boosts)) return;
-			// Non-Pokemon bans in lower tiers
-			if (target) {
-				if (target.set.item === 'lightclay') return;
-				if (['drizzle', 'drought', 'snowwarning'].includes(target.set.ability) && boosts[tier] > 20) tier = 'nubl';
+		onBegin() {
+			for (const pokemon of this.getAllPokemon()) {
+				if (["RUBL", "UU", "UUBL", "OU"].indexOf(pokemon.species.tier) >= 0 ||
+					["Togekiss", "Sharpedo", "Porygon-Z", "Tornadus"].indexOf(pokemon.species.baseSpecies) >= 0 ||
+					["imposter", "swiftswim", "chlorophyll", "solarpower"].indexOf(this.toID(pokemon.ability)) >= 0) {
+					pokemon.getDynamaxRequest = (skipChecks?: boolean) => { return undefined; };
+				}
 			}
-			const pokemon = this.dex.deepClone(species);
-			pokemon.bst = pokemon.baseStats['hp'];
-			const boost = boosts[tier];
-			let statName: StatID;
-			for (statName in pokemon.baseStats as StatsTable) {
-				if (statName === 'hp') continue;
-				pokemon.baseStats[statName] = this.clampIntRange(pokemon.baseStats[statName] + boost, 1, 255);
-				pokemon.bst += pokemon.baseStats[statName];
-			}
-			return pokemon;
+			this.add('rule', 'Runamax模式规则: http://47.94.147.145/topic/1146/runamax-cup-%E6%8A%A5%E5%90%8D%E5%B8%96');
 		},
 		
 	},
@@ -5150,7 +5172,6 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 
 		mod: 'gen8',
 		gameType: 'doubles',
-		searchShow: false,
 		ruleset: ['Flat Rules', '!! Adjust Level = 50', 'VGC Timer', '+Unobtainable',	'+Past', 'Sketch Gen 8 Moves'],
 		onValidateSet(set) {
 			// These Pokemon are still unobtainable
