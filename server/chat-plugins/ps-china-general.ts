@@ -41,7 +41,6 @@ const PSChinaCommands = {
 		'<@> 查找并公开replay': '/restorereplay',
 		'<@> 更新 PS China Guide': '/pschinaforums news',
 		'将对战链接发送到房间': '/reportto',
-		'查看随机对战配置': '/randomset',
 		'<&> 天梯decay': '/laddertour decay',
 		'[Gen 8] OU 队伍查询': '/teamdb',
 		'<&> 更新队伍数据库': '/teamdb update',
@@ -129,24 +128,5 @@ export const commands: Chat.ChatCommands = {
 	},
 	bp33help: [
 		`/bp33 gen[1-8] - 指定一个世代随机生成bp33精灵池`,
-	],
-
-	randset: 'randomset',
-	randomset(target, room, user) {
-		const [pokemonString, formatString] = target.split(',');
-		this.runBroadcast();
-
-		const format = Dex.formats.get(formatString || room?.battle?.format || 'gen8freeforall');
-		if (!format.exists) return this.parse('/randomsethelp');
-
-		const species = Dex.species.get(pokemonString);
-		if (!species.exists) return this.parse('/randomsethelp');
-		
-		const set = Teams.getGenerator(format.id).randomSet(species.id);
-		const prettyifiedSet = Utils.escapeHTML(Teams.export([set])).replace(/<br \/>$/, '');
-		this.sendReplyBox(`<details><summary><strong>Random set for ${species.name} in ${format.name}</strong></summary>${prettyifiedSet}</details>`);
-	},
-	randomsethelp: [
-		`/randomset [pokemon], [format] - 查找宝可梦pokemon在format分级上的随机对战配置 (分级默认为[Gen 8] Random Battle)`,
 	],
 };
