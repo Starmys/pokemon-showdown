@@ -92,7 +92,7 @@ export const Avatars = new class {
 		saveCustomAvatars(instant);
 	}
 	src(avatar: AvatarID) {
-		if (avatar.includes('.')) return '';
+		if (avatar.includes('.')) return `http://39.96.50.192:8000/avatars/${avatar}`;
 		const avatarUrl = avatar.startsWith('#') ? `trainers-custom/${avatar.slice(1)}.png` : `trainers/${avatar}.png`;
 		return `https://${Config.routes.client}/sprites/${avatarUrl}`;
 	}
