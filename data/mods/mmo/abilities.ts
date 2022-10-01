@@ -18,4 +18,36 @@ export const Abilities: {[k: string]: ModdedAbilityData} = {
 			}
 		},
 	},
+	drizzle: {
+		inherit: true,
+		onStart(source) {
+			if (this.field.weather !== 'raindance') {
+				this.field.setWeather('raindance');
+			}
+		},
+	},
+	drought: {
+		inherit: true,
+		onStart(source) {
+			if (this.field.weather !== 'sunnyday') {
+				this.field.setWeather('sunnyday');
+			}
+		},
+	},
+	sandstream: {
+		inherit: true,
+		onStart(source) {
+			if (this.field.weather !== 'sandstorm') {
+				this.field.setWeather('sandstorm');
+			}
+		},
+	},
+	snowwarning: {
+		inherit: true,
+		onStart(source) {
+			if (this.field.weather !== 'hail') {
+				this.field.setWeather('hail');
+			}
+		},
+	},
 }
