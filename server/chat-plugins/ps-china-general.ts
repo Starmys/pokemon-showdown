@@ -1,5 +1,6 @@
 import { Utils } from '../../lib';
 import { PetUtils } from './ps-china-pet-mode';
+import { MAX_USERS } from './ps-china-admin';
 
 const PSChinaCommands = {
 	'国服积分': {
@@ -38,6 +39,7 @@ const PSChinaCommands = {
 		'查看房间赛设置': '/autotour config',
 	},
 	'其他': {
+		'<&> 查看白名单': '/pschinawhitelist',
 		'<@> 查找并公开replay': '/restorereplay',
 		'<@> 更新 PS China Guide': '/pschinaforums news',
 		'将对战链接发送到房间': '/reportto',
@@ -52,7 +54,8 @@ export const commands: Chat.ChatCommands = {
 	'pschina': 'pschinahelp',
 	pschinahelp (target, room, user) {
 		const isGlobalMod = user.can('lock');
-		let buf = `<b>Pok&eacute;mon Showdown China 指令表</b>`;
+		let buf = `<b>当前在线人数: </b>${Users.onlineCount} / ${MAX_USERS}<br>`;
+		buf += `<b>Pok&eacute;mon Showdown China 指令表</b>`;
 		Object.entries(PSChinaCommands).forEach(([section, cmds]) => {
 			buf += `<details title="Click to view replays" style="left: 20px; position: relative">`;
 			buf += `<summary><b>${section}</b></summary>`;
