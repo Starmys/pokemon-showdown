@@ -49,8 +49,7 @@ import {FS, Utils, ProcessManager} from '../lib';
 import {
 	Auth, GlobalAuth, PLAYER_SYMBOL, HOST_SYMBOL, RoomPermission, GlobalPermission,
 } from './user-groups';
-import { dropUser as dropPetModeUser } from './chat-plugins/ps-china-pet-mode';
-import { loginMsgs } from './chat-plugins/ps-china-forums';
+import { AdminUtils } from './chat-plugins/ps-china-admin';
 
 const MINUTES = 60 * 1000;
 const IDLE_TIMER = 60 * MINUTES;
@@ -736,14 +735,10 @@ export class User extends Chat.MessageContext {
 			}
 		}
 
-		let date = new Date();
-		let zfill = (x: number) => { return ("0" + x).slice(-2); };
-		FS(`logs/iplog/${date.getFullYear()}-${zfill(date.getMonth() + 1)}-${zfill((date.getDate()))}.txt`)
-			.append(`${userid},${zfill(date.getHours())}:${zfill(date.getMinutes())},${connection.ip}\n`);
-		if (this.id.startsWith('guest')) {
-			Object.entries(loginMsgs).forEach(([k, v]) => this.send(`|pm|${k}|${this.tempGroup}${this.name}|/raw ${v}`));
-		} else {
-			dropPetModeUser(this.id);
+		if (!AdminUtils.onUserRename(this, connection, userid)) {
+			this.popup('非常抱歉, 由于Pokemon Showdown中国服务器人数已满, 您无法登陆');
+			setTimeout(() => this.disconnectAll(), 5000);
+			return false;
 		}
 
 		if (!name) name = '';
@@ -1223,7 +1218,7 @@ export class User extends Chat.MessageContext {
 			// can still be locked after logout.
 		}
 		// NOTE: can't do a this.update(...) at this point because we're no longer connected.
-		dropPetModeUser(this.getLastId());
+		AdminUtils.onUserDisconnect(this);
 	}
 	onDisconnect(connection: Connection) {
 		// slightly safer to do this here so that we can do this before Conn#user is nulled.
