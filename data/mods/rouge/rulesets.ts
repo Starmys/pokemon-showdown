@@ -36,7 +36,7 @@ export class RougeUtils {
 	}
 
 	static saveUser(userid: ID, userProperty: rougeUserProperty) {
-		FS(`${USERPATH}/${userid}.json`).safeWriteSync(JSON.stringify(userProperty));
+		FS(`${USERPATH}/${userid}.json`).safeWriteSync( JSON.stringify(userProperty));
 	}
 
 	static loadRougeProps(userid: ID): string[] | undefined {
@@ -164,14 +164,17 @@ export class RougeUtils {
 		let userProperty = this.getUser(userid);
 		if (userProperty?.rougeinit) {
 			let passNum = userProperty['rougeinit'] - 1;
-			let passRecord = userProperty['passrecord'] || { 'cave': Array(25).fill(0), 'void': Array(25).fill(0) };
-			passRecord[passOption][passNum]++;
-			userProperty['passrecord'] = passRecord;
-			this.saveUser(userid, userProperty);
-			return true;
+			if (passNum < 25) {
+				let passRecord = userProperty['passrecord'] || { 'cave': Array(25).fill(0), 'void': Array(25).fill(0) };
+				passRecord[passOption][passNum]++;
+				userProperty['passrecord'] = passRecord;
+				this.saveUser(userid, userProperty);
+				return true;
+			}
 		} else {
 			return false;
 		}
+		return false;
 	}
 
 	static getPassRecord(userid: ID): rougePassRecord | undefined {
@@ -246,6 +249,24 @@ export class RougeUtils {
 			pokemon.battle.singleEvent('Start', item, pokemon.itemState, pokemon, source, effect);
 		}
 		return true;
+	}
+	static checkPassRecord(userid: ID): boolean {
+		let userProperty = this.getUser(userid);
+		if (userProperty?.rouge) {
+			let rougeProps = userProperty['passrecord'];
+			if (rougeProps?.void) {
+				for (let i = 0; i < 25;i++) {
+					if (!rougeProps.void[i])
+						return false;
+				}
+				return true;
+			}
+			 else {
+				return false;
+			}
+		} else {
+			return false;
+		}
 	}
 }
 
@@ -482,6 +503,10 @@ const relicsEffects = {
 	'lifestream': (battle: Battle) => {
 		RougeUtils.addLives(battle.toID(battle.p2.name), 0.25);
 	},
+	'stope': (battle: Battle) => {
+		battle.field.addPseudoWeather("stope");
+		battle.add('message', 'Stope start');
+	},
 };
 
 
@@ -543,8 +568,7 @@ export const Rulesets: { [k: string]: FormatData } = {
 				const rand = this.prng.next(3);
 				this.p1.pokemon.push(new Pokemon(Teams.unpack('Reward|Shop||shopman|' + (rand === 0 ? 'Evo A Pokemon,' : rand === 1 ? this.prng.next(3)===0? 'Evo All,' : 'Refresh Reward,' : 'skip,') + sample(reward, 3, this.prng, reward2).join(',') + '|Careful|252,4,,,252,|||||')![0], this.p2));
 				this.p1.pokemon.push(new Pokemon(Teams.unpack('Shopowner|Magikarp||shopman|splash|Hardy||M|0,0,0,0,0,0||5|')![0], this.p1));
-			}	
-
+			}
 			this.p1.pokemonLeft += 6;
 			this.p1.emitRequest = (update: AnyObject) => {
 				this.send('sideupdate', `${this.p1.id}\n|request|${JSON.stringify(update)}`);
