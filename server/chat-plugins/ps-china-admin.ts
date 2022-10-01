@@ -1,6 +1,11 @@
 import { FS } from '../../lib';
-import { SERVER_URL, PetUtils, getUser as getPetUser } from './ps-china-pet-mode';
+import { Auth } from '../user-groups';
+import { SERVER_URL, PetUtils, getUser as getPetUser, dropUser as dropPetModeUser } from './ps-china-pet-mode';
+import { loginMsgs } from './ps-china-forums';
 
+export const MAX_USERS = 500;
+
+const WHITELISTPATH = 'config/ps-china/whitelist.json';
 const REPLAYHEADPATH = 'config/ps-china/replay/replay-head.txt';
 const REPLAYTAILPATH = 'config/ps-china/replay/replay-tail.txt';
 
@@ -12,6 +17,7 @@ if (!FS(IPLOGDIR).existsSync()) FS(IPLOGDIR).mkdir();
 if (!FS(SCORELOGDIR).existsSync()) FS(SCORELOGDIR).mkdir();
 
 let userAlts: { [userid: string]: string[] } = JSON.parse(FS(IPMAPPATH).readIfExistsSync() || '{}');
+let whitelist: { [userid: string]: number } = JSON.parse(FS(WHITELISTPATH).readIfExistsSync() || '{}');
 let addingScore: boolean = false;
 
 export class AdminUtils {
@@ -153,6 +159,45 @@ export class AdminUtils {
 		addingScore = false;
 		return [oldScore, newScore];
 	}
+	static saveWhitelist() {
+		FS(WHITELISTPATH).safeWriteSync(PetUtils.formatJSON(whitelist));
+	}
+	static addToWhitelist(userid: string, days: number) {
+		userid = toID(userid);
+		let expireTime = Date.now() + days * 24 * 60 * 60 * 1000;
+		if (Date.now() < expireTime) {
+			whitelist[userid] = expireTime;
+		} else {
+			delete whitelist[userid];
+		}
+		AdminUtils.saveWhitelist();
+	}
+	static checkWhitelist(userid: string): boolean {
+		userid = toID(userid);
+		if (Auth.atLeast(Users.globalAuth.get(userid as ID), '+')) return true;
+		if (whitelist[userid]) {
+			if (Date.now() < whitelist[userid]) return true;
+			delete whitelist[userid];
+			AdminUtils.saveWhitelist();
+		}
+		return false;
+	}
+	static onUserRename(user: User, connection: Connection, nextId: string): boolean {
+		if (Users.onlineCount > MAX_USERS && !Users.get(nextId) && !AdminUtils.checkWhitelist(nextId)) return false;
+		let date = new Date();
+		let zfill = (x: number) => { return ("0" + x).slice(-2); };
+		FS(`logs/iplog/${date.getFullYear()}-${zfill(date.getMonth() + 1)}-${zfill((date.getDate()))}.txt`)
+			.append(`${nextId},${zfill(date.getHours())}:${zfill(date.getMinutes())},${connection.ip}\n`);
+		if (user.id.startsWith('guest')) {
+			Object.entries(loginMsgs).forEach(([k, v]) => user.send(`|pm|${k}|${user.tempGroup}${user.name}|/raw ${v}`));
+		} else {
+			dropPetModeUser(user.id);
+		}
+		return true;
+	}
+	static onUserDisconnect(user: User) {
+		dropPetModeUser(user.getLastId());
+	}
 }
 
 export const commands: Chat.ChatCommands = {
@@ -284,4 +329,52 @@ export const commands: Chat.ChatCommands = {
 	checkaltshelp: [
 		'/checkalts [user] - 查看user用户(默认为自己)的关联账号'
 	],
+
+	'cnwl': 'pschinawhitelist',
+	pschinawhitelist: {
+		'': 'check',
+		check(target, room, user) {
+			this.checkCan('lock');
+			let now = Date.now();
+			let whitelistTable = [];
+			let changed = false;
+			for (let [userid, expireTime] of Object.entries(whitelist)) {
+				if (expireTime < now) {
+					delete whitelist[userid];
+					changed = true;
+				} else {
+					let expireTimeStr = new Date(expireTime).toString().split('GMT')[0];
+					whitelistTable.push([userid, expireTimeStr]);
+				}
+			}
+			if (changed) AdminUtils.saveWhitelist();
+			let buf = '<b>PS China 白名单:</b>';
+			if (whitelistTable.length > 0) {
+				buf += '<br/>';
+				buf += PetUtils.table([], ['PSID', '过期时间'], whitelistTable, '400px', 'center', 'center', true);
+			} else {
+				buf += ' 目前是空的<br/>';
+			}
+			buf += `<form data-submitsend="/msgroom ${room!.roomid}, /pschinawhitelist edit {userid},{days}">`;
+			buf += `给<input name="userid" style="width: 100px"/>添加`;
+			buf += `<input name="days" value="1" style="width: 20px"/>天白名单权限`;
+			buf += `<button class="button" type="submit">OK</button>`;
+			buf += `</form>`;
+			this.sendReply(`|uhtml|pschinawhitelist|${buf}`);
+		},
+
+		'add': 'edit',
+		'delete': 'edit',
+		'remove': 'edit',
+		edit(target, room, user) {
+			this.checkCan('lock');
+			let [userid, daysStr] = target.split(',');
+			userid = toID(userid);
+			if (!userid) return this.parse('/pschinawhitelist check');
+			let days = parseFloat(daysStr);
+			if (isNaN(days)) return this.parse('/pschinawhitelist check');
+			AdminUtils.addToWhitelist(userid, days);
+			this.parse('/pschinawhitelist check');
+		},
+	}
 };

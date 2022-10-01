@@ -5,9 +5,9 @@ import { Pokemonpool } from "../../config/rouge/pokemonpool";
 import { Championteams } from "../../config/rouge/Championteams";
 import { Enemies } from "../../config/rouge/Enemies";
 import { RougeUtils } from "../../data/mods/rouge/rulesets";
+
 export class Rouge {
-	
-	
+
 	static specialInitMons = ['Pidgey', 'Quagsire','Umbreon']
 	static initButtons = [
 		[1, 5, 8, 11, 14, 17, 20, 23],
@@ -22,8 +22,11 @@ export class Rouge {
 		user: User, bot: User, userTeam: string, botTeam: string, format: string, hidden: boolean | undefined,
 		delayedStart: boolean | 'multi' | undefined = false
 	): GameRoom | undefined {
-		//A.getInstance().aa = Users;
-		return Rooms.createBattle({
+		if (rougeBattleRooms[user.id]) {
+			rougeBattleRooms[user.id]?.destroy();
+			delete rougeBattleRooms[user.id];
+		}
+		rougeBattleRooms[user.id] = Rooms.createBattle({
 			format: format,
 			p1: {
 				user: bot,
@@ -45,6 +48,7 @@ export class Rouge {
 			challengeType: 'unrated',
 			delayedStart: delayedStart,
 		});
+		return rougeBattleRooms[user.id];
 	}
 	static inBattle(userid: string): string | undefined {
 		const battleWithBot = (roomid: string) => {
@@ -57,7 +61,7 @@ export class Rouge {
 		return [...user.inRooms].find(x => toID(x).indexOf('rougemod') >= 0 && battleWithBot(x));
 	}
 }
-
+const rougeBattleRooms: { [userid: string]: GameRoom | undefined } = {};
 export const commands: Chat.ChatCommands = {
 
 	rouge: {
@@ -90,7 +94,10 @@ export const commands: Chat.ChatCommands = {
 			let rougeProps = RougeUtils.loadRougeProps(user.id);
 			let isRebegin = !(rougeProps && rougeProps.length > 1) || rougeProps[1] !== rougeProps[2]
 			if (!target && isRebegin) {
-				return user.sendTo(room.roomid, `|uhtml|rouge|<b>请选择开局精灵:</b><br/>${Rouge.initButtons}<br/><b>特殊开局:</b><br/>${Rouge.specialInitButtons}`);
+				let beginstr = `|uhtml|rouge|<b>请选择开局精灵:</b><br/>${Rouge.initButtons}<br/>`;
+				if (RougeUtils.checkPassRecord(user.id))
+					beginstr += `<b>特殊开局: </b><br/ > ${Rouge.specialInitButtons}`;
+				return user.sendTo(room.roomid, beginstr);
 			}
 
 			const bot = Users.get(BOTID);
@@ -146,7 +153,18 @@ export const commands: Chat.ChatCommands = {
 				botTeam = unpack(Rouge.prng.sample(Enemies[0]), Rouge.prng);
 				RougeUtils.updateUserTeam(user.id, userTeam, true);
 			}
+
 			Rouge.createBattle(user, bot, userTeam, botTeam, 'gen8rougemod @@@pschinarougemode', undefined);
+			//let ll=-1;
+			//if (rooms)
+			//	ll = rooms[user.id].findIndex(x => x.battle?.ended);
+			//if (ll>-1) {
+			//	rooms[user.id][ll].destroy();
+			//	rooms[user.id].splice(ll, 1);
+			//}
+			//let roombattle = Rouge.createBattle(user, bot, userTeam, botTeam, 'gen8rougemod @@@pschinarougemode', undefined);
+			//if (roombattle)
+			//	rooms[user.id].push(roombattle);
 		},
 
 		clearcache(target, room, user) {
@@ -176,6 +194,9 @@ export const commands: Chat.ChatCommands = {
 		chooselead(target, room, user) {
 			if (!user.registered) return PetUtils.popup(user, "请先注册账号!");
 			if (!room) return PetUtils.popup(user, "请在房间里使用Rouge系统");
+			if (Rouge.inBattle(user.id)) {
+				return user.popup(`|html|<div style="text-align: center">请先完成对战再改首发</div>`);
+			}
 			let num = Number(target) - 1
 			if (num && Number.isInteger(num) && num <= 5 && num >= 1) {
 				let x = RougeUtils.changeLead(user.id, num);
