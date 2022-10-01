@@ -884,6 +884,10 @@ export const Moves: {[k: string]: ModdedMoveData} = {
 				}
 			},
 		},
+		flags: {powder: 1, protect: 1, reflectable: 1, mirror: 1, bypasssub: 1},
+		onTryImmunity(target) {
+			return !target.types.includes('Grass');
+		},
 	},
 	precipiceblades: {
 		inherit: true,
@@ -1649,6 +1653,10 @@ export const Moves: {[k: string]: ModdedMoveData} = {
 	cottonspore: {
 		inherit: true,
 		target: "allAdjacentFoes",
+		flags: {powder: 1, protect: 1, reflectable: 1, mirror: 1},
+		onTryImmunity(target) {
+			return !target.types.includes('Grass');
+		},
 	},
 	covet: {
 		inherit: true,
@@ -2020,6 +2028,9 @@ export const Moves: {[k: string]: ModdedMoveData} = {
 		type: "Poison",
 		zMove: {boost: {def: 1}},
 		contestType: "Clever",
+		onTryImmunity(target) {
+			return !target.types.includes('Grass');
+		},
 	},
 	powergem: {
 		inherit: true,
@@ -2100,6 +2111,9 @@ export const Moves: {[k: string]: ModdedMoveData} = {
 		inherit: true,
 		priority: 2,
 		flags: {powder: 1},
+		onTryImmunity(target) {
+			return !target.types.includes('Grass');
+		},
 	},
 	reflect: {
 		inherit: true,
@@ -2202,6 +2216,9 @@ export const Moves: {[k: string]: ModdedMoveData} = {
 		type: "Grass",
 		zMove: {boost: {spe: 1}},
 		contestType: "Clever",
+		onTryImmunity(target) {
+			return !target.types.includes('Grass');
+		},
 	},
 	smog: {
 		inherit: true,
@@ -2243,6 +2260,9 @@ export const Moves: {[k: string]: ModdedMoveData} = {
 		type: "Grass",
 		zMove: {effect: 'clearnegativeboost'},
 		contestType: "Beautiful",
+		onTryImmunity(target) {
+			return !target.types.includes('Grass');
+		},
 	},
 	stormthrow: {
 		inherit: true,
@@ -2273,6 +2293,9 @@ export const Moves: {[k: string]: ModdedMoveData} = {
 		type: "Grass",
 		zMove: {boost: {spd: 1}},
 		contestType: "Clever",
+		onTryImmunity(target) {
+			return !target.types.includes('Grass');
+		},
 	},
 	substitute: {
 		inherit: true,
@@ -2421,4 +2444,5 @@ export const Moves: {[k: string]: ModdedMoveData} = {
 			this.add('-clearboost', target);
 		},
 	},
+	// TODO: manually set weather
 };
