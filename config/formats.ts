@@ -17,6 +17,8 @@ New sections will be added to the bottom of the specified column.
 The column value will be ignored for repeat sections.
 */
 
+import { Pokemon } from '../sim';
+
 export const Formats: FormatList = [
 
 	// S/V Singles
@@ -5223,90 +5225,63 @@ export const Formats: FormatList = [
 		column: 1,
 	},
 	{
-		name: "[Gen 8] National Dex BH",
-		desc: `Anything that can be hacked in-game and is usable in local battles is allowed.`,
-		threads: [
-			`&bullet; <a href="https://www.smogon.com/forums/threads/national-dex-bh-v3.3690179/#post-9217527">National Dex BH v3</a>`,
-			`&bullet; <a href="https://www.smogon.com/forums/threads/national-dex-bh.3658587/">National Dex BH</a>`,
-		],
-
+		name: "[Gen 8] Stat Gift",
+		desc: `1号位精灵hp种族翻倍, 2号位精灵atk种族翻倍, 3号位精灵def种族翻倍, 4号位精灵spa种族翻倍, 5号位精灵spd种族翻倍, 6号位精灵spe种族翻倍,最高255.\n` +
+				`Each Pok&eacute;mon will double its stat depending on its position in the team,The upper limit is 255`,
 		mod: 'gen8',
-		ruleset: ['-Nonexistent', 'Standard NatDex', 'Forme Clause', 'Sleep Moves Clause', '2 Ability Clause', 'OHKO Clause', 'Evasion Moves Clause', 'Dynamax Clause', 'CFZ Clause', '!Obtainable'],
-		banlist: [
-			'Calyrex-Shadow', 'Cramorant-Gorging', 'Eternatus-Eternamax', 'Groudon-Primal', 'Rayquaza-Mega', 'Shedinja',
-			'Arena Trap', 'Contrary', 'Gorilla Tactics', 'Huge Power', 'Illusion', 'Innards Out', 'Libero', 'Magnet Pull', 'Moody',
-			'Neutralizing Gas', 'Parental Bond', 'Protean', 'Pure Power', 'Shadow Tag', 'Stakeout', 'Water Bubble', 'Wonder Guard',
-			'Comatose + Sleep Talk', 'Imprison + Transform',
-			'Belly Drum', 'Bolt Beak', 'Chatter', 'Court Change', 'Double Iron Bash', 'Electrify', 'Octolock', 'Shell Smash',
-			'Gengarite', 'Arceus > 1'
-		],
-		restricted: ['Zacian-Crowned', 'Intrepid Sword'],
-		onValidateSet(set) {
-			const ability = this.dex.abilities.get(set.ability);
-			if (set.species === 'Zacian-Crowned') {
-				if (this.dex.toID(set.item) !== 'rustedsword' || ability.id !== 'intrepidsword') {
-					return [`${set.species} is banned.`];
-				}
-			} else if (ability.id === 'intrepidsword') {
-				return [`${set.name}'s ability ${ability.name} is banned.`];
-			}
+		ruleset: ['Standard', 'Dynamax Clause','Overflow Stat Mod'],
+		banlist: ['Uber', 'AG', 'Arena Trap', 'Moody', 'Power Construct', 'Sand Veil', 'Shadow Tag', 'Snow Cloak', 'King\'s Rock', 'Baton Pass'],
+		onBegin() {
+			this.add('rule', 'Stat Gift模式规则: http://47.94.147.145/topic/2477/%E5%9B%BD%E6%9C%8D%E4%B8%93%E5%B1%9Eom%E5%88%86%E7%BA%A7/8');
 		},
-		onChangeSet(set) {
-			const item = this.dex.toID(set.item);
-			if (set.species === 'Zacian' && item === 'rustedsword') {
-				set.species = 'Zacian-Crowned';
-				set.ability = 'Intrepid Sword';
-				const ironHead = set.moves.indexOf('ironhead');
-				if (ironHead >= 0) {
-					set.moves[ironHead] = 'behemothblade';
-				}
-			}
-			if (set.species === 'Zamazenta' && item === 'rustedshield') {
-				set.species = 'Zamazenta-Crowned';
-				set.ability = 'Dauntless Shield';
-				const ironHead = set.moves.indexOf('ironhead');
-				if (ironHead >= 0) {
-					set.moves[ironHead] = 'behemothbash';
-				}
-			}
+		onModifySpecies(species, target, source) {
+			if (source || !target?.side) return;
+
+			const stat = Dex.stats.ids()[target.side.team.indexOf(target.set)];
+			const newSpecies = this.dex.deepClone(species);
+
+			newSpecies.bst -= newSpecies.baseStats[stat];
+			newSpecies.baseStats[stat] = this.clampIntRange(newSpecies.baseStats[stat]*2, 1, 255) ;
+			newSpecies.bst += newSpecies.baseStats[stat];
+			return newSpecies;
 		},
 	},
 	{
-		name: "[Gen 8] Runamax",
+		name: "[Gen 8] Shuffmon",
 		desc:
-			"1. 在Gen8 OU规则的基础上, 允许RU及以下分级的精灵极巨化; " +
-			"2. 以下精灵和极巨化不共存: 波克基斯, 巨牙鲨, 多边兽Z, 龙卷云; " +
-			"3. 以下特性和极巨化不共存: 变身者, 优游自如, 叶绿素, 太阳之力; " +
-			"4. 不允许超极巨化。"
+			"两边携带的精灵会在开局进行随机分配\n " +
+			"All sides' pokemon will reshuffle on the begin"
 		,
 
 		mod: 'gen8',
-		ruleset: ['Standard'],
-		banlist: ['Uber', 'AG', 'Arena Trap', 'Moody', 'Power Construct', 'Shadow Tag', 'Baton Pass'],
-		onValidateSet(set) {
-			if (set.gigantamax) {
-				return [
-					`您的${set.species}是超极巨化个体, 但Runamax分级不允许超极巨化。`
-				];
-			}
-		},
+		ruleset: ['Standard', 'Dynamax Clause'],
+		banlist: ['Uber', 'AG', 'Arena Trap', 'Moody', 'Power Construct', 'Sand Veil', 'Shadow Tag', 'Snow Cloak', 'King\'s Rock', 'Baton Pass'],
 		onBegin() {
-			for (const pokemon of this.getAllPokemon()) {
-				if (["RUBL", "UU", "UUBL", "OU"].indexOf(pokemon.species.tier) >= 0 ||
-					["Togekiss", "Sharpedo", "Porygon-Z", "Tornadus"].indexOf(pokemon.species.baseSpecies) >= 0 ||
-					["imposter", "swiftswim", "chlorophyll", "solarpower"].indexOf(this.toID(pokemon.ability)) >= 0) {
-					pokemon.getDynamaxRequest = (skipChecks?: boolean) => { return undefined; };
+			const len=[];
+			const allPokemon = this.getAllPokemon();
+			for (let side of this.sides) {
+				len.push(side.pokemon.length)
+				side.pokemon=[]
+			}
+			let indexes = [...new Array(this.sides.length).keys()]
+			for (const pokemon of allPokemon) {
+				let sideIndex = this.sample(indexes);
+				this.sides[sideIndex].pokemon.push(new Pokemon(pokemon.set, this.sides[sideIndex]))
+
+				if (this.sides[sideIndex].pokemon.length >= len[sideIndex]) {
+					indexes.splice(sideIndex, 1);
 				}
 			}
-			this.add('rule', 'Runamax模式规则: http://47.94.147.145/topic/1146/runamax-cup-%E6%8A%A5%E5%90%8D%E5%B8%96');
+			this.add('rule', 'Shuffmon模式规则: http://47.94.147.145/topic/2477/%E5%9B%BD%E6%9C%8D%E4%B8%93%E5%B1%9Eom%E5%88%86%E7%BA%A7/9');
 		},
 	},
 	{
-		name: "[Gen 8] VGC Nation Dex",
+		name: "[Gen 8] VGC Nation Dex limit 2 Restricted",
 
 		mod: 'gen8',
 		gameType: 'doubles',
-		ruleset: ['Flat Rules', '!! Adjust Level = 50', 'VGC Timer', '+Unobtainable',	'+Past', 'Sketch Gen 8 Moves'],
+		ruleset: ['Flat Rules', '!! Adjust Level = 50', 'VGC Timer', '+Unobtainable', '+Past', 'Sketch Gen 8 Moves', 'Limit Two Restricted'],
+		restricted: ['Restricted Legendary'],
 		onValidateSet(set) {
 			// These Pokemon are still unobtainable
 			const unobtainables = [

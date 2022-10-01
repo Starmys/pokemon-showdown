@@ -84,8 +84,12 @@ export const Conditions: {[k: string]: ModdedConditionData} = {
 
 		},
 		onWeather(target,source,effect) {
-			if (effect && effect.id === 'sandstorm')
-				this.damage(target.baseMaxhp / 16);
+			if (effect && effect.id === 'sandstorm') {
+				if (target.m.sanddamage)
+					this.damage(target.baseMaxhp / 16 * target.m.sanddamage);
+				else
+					this.damage(target.baseMaxhp / 16);
+			}
 		},
 	},
 	hail: {
@@ -1024,6 +1028,55 @@ export const Conditions: {[k: string]: ModdedConditionData} = {
 		onFieldEnd() {
 			this.add('-fieldend', 'Status Push');
 			this.add('-message', 'The Status Push subsided.');
+		},
+	},
+	stope: {
+		name: 'Stope',
+		effectType: 'Weather',
+		duration: 0,
+
+		
+		onWeather(target, source, effect) {
+			if (effect && effect.id === 'stope') {
+				if (target.hasType('Rock') && target.side === this.p2) {
+					let i = this.sample([1, 2, 3, 4]);
+					switch (i) {
+					case 1:
+						this.boost(this.sample([{ atk: 1 }, { def: 1 }, { spa: 1 }, { spd: 1 }, { spe: 1 }]), target);
+						break;
+					case 2:
+						this.heal(target.baseMaxhp / 6, target);
+						break;
+					case 3:
+						if (this.field.isWeather('sandstorm')) {
+							if (target.foes().length >= 1) {
+								if (target.foes()[0].m.sanddamage) {
+									target.foes()[0].m.sanddamage *= 2;
+								} else {
+									target.foes()[0].m.sanddamage = 2;
+								}
+							} else {
+								this.field.setWeather('sandstorm');
+							}
+						}
+						break;
+					case 4:
+						break;
+					}
+				}
+
+			}
+		},
+
+
+		onFieldResidualOrder: 1,
+		onFieldResidual() {
+			this.add('-weather', 'Stope', '[upkeep]');
+			this.eachEvent('Weather');
+		},
+		onFieldEnd() {
+			this.add('-fieldend', 'Stope');
+			this.add('-message', 'The Stope subsided.');
 		},
 	},
 };
