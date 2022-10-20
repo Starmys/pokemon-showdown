@@ -41,7 +41,7 @@ export const Rulesets: {[k: string]: FormatData} = {
 			dcTimer: false,
 			dcTimerBank: false,
 		},
-		ruleset: ['Dynamax Clause'],
+		ruleset: ['Dynamax Clause', 'Terastal Clause'],
 		onBegin() {
 			if (Dex.toID(this.p1.name) !== 'pschinabot') {
 				this.add('html', `<div class="broadcast-red"><strong>霸主宝可梦消失了!</strong></div>`);

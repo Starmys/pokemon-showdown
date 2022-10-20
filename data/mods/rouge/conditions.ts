@@ -111,6 +111,21 @@ export const Conditions: {[k: string]: ModdedConditionData} = {
 				this.damage(target.baseMaxhp / 16);
 		},
 	},
+	snow: {
+		inherit: true,
+		onFieldStart(field, source, effect) {
+			if (effect?.effectType === 'Rule' && source.side === this.p2) {
+				this.effectState.duration = 0;
+			}
+			if (effect?.effectType === 'Ability') {
+				if (this.gen <= 5) this.effectState.duration = 0;
+				this.add('-weather', 'Snow', '[from] ability: ' + effect.name, '[of] ' + source);
+			} else {
+				this.add('-weather', 'Snow');
+			}
+		},
+		
+	},
 	guardianshield: {
 		name: 'Guardian Shield',
 		duration: 0,
@@ -180,6 +195,10 @@ export const Conditions: {[k: string]: ModdedConditionData} = {
 			if (move.category !== 'Status'&&!move.isZ && (!move.multihit || move.multihit === 1) && pokemon.side === this.p2)
 				move.multihit = 5;
 		},
+		onDeductPP(target, source) {
+			if (source.side === this.p2 && this.activeMove?.multihit === 5)
+				return 1;
+		},
 		onFieldStart(battle, source, effect) {
 			if (effect?.effectType === 'Ability') {
 				this.add('-fieldstart', 'Guerrilla', '[from] ability: ' + effect, '[of] ' + source);
@@ -188,7 +207,7 @@ export const Conditions: {[k: string]: ModdedConditionData} = {
 			}
 			this.add('-message', 'Guerrilla is radiated.');
 		},
-
+		
 		onFieldResidualOrder: 1,
 		onFieldEnd() {
 			this.add('-fieldend', 'Guerrilla');
@@ -356,7 +375,7 @@ export const Conditions: {[k: string]: ModdedConditionData} = {
 
 		onWeatherModifyDamage(relayVar: number, source: Pokemon, target: Pokemon, move) {
 			if (source.side === this.p2) {
-				if (move.type === 'Electric' && this.prng.next(5)===1) {
+				if (move.type === 'Electric' && this.prng.next(3)===1) {
 					if (!target.status) target.setStatus('par', source, move, true);
 				}
 				return this.chainModify(1.2);
@@ -519,12 +538,7 @@ export const Conditions: {[k: string]: ModdedConditionData} = {
 			}
 			this.add('-message', 'Iceberg began to fall.');
 		},
-		onModifyDefPriority: 10,
-		onModifyDef(def, pokemon) {
-			if (pokemon.hasType('Ice') ) {
-				return this.modify(def, 1.5);
-			}
-		},
+		
 		onFieldResidualOrder: 1,
 		onFieldResidual() {
 			this.add('-weather', 'Iceberg', '[upkeep]');
@@ -537,7 +551,7 @@ export const Conditions: {[k: string]: ModdedConditionData} = {
 					this.add('-message', 'The Iceberg heal the Pokemon.');
 				}
 				if (!target.hasType('Ice') && target.side === this.p1) {
-					this.damage(target.baseMaxhp / 16);
+					this.damage(target.baseMaxhp / 8);
 					this.add('-message', 'The Iceberg hurt the Pokemon.');
 				}
 			}
@@ -645,7 +659,7 @@ export const Conditions: {[k: string]: ModdedConditionData} = {
 		},
 		onDeductPP(target, source) {
 			if (source.side === this.p2 && this.activeMove?.type === 'Ghost')
-				return 3;
+				return 2;
 		},
 		onFieldStart(battle, source, effect) {
 			if (effect?.effectType === 'Ability') {
@@ -772,20 +786,21 @@ export const Conditions: {[k: string]: ModdedConditionData} = {
 		duration: 0,
 		
 		
-		onModifyMovePriority: 100,
+		onModifyMovePriority: 101,
 		onModifyMove(move, pokemon, target) {
 			if (['endeavor', 'fling', 'iceball', 'rollout'].includes(move.id)) return;
 			if (move.flags['charge']) return;
 			if (move.category !== 'Status' && !move.isZ && (!move.multihit || move.multihit === 1) && pokemon.side === this.p2) {
-				if (move.self) {
-					if (!move.secondaries) move.secondaries = [];
-					move.secondaries.push({ chance: 100, self: { volatileStatus: 'mustrecharge' } });
-				}
-				else
-					move.self = { volatileStatus: 'mustrecharge', };
+				
 				move.basePower *= 3;                                         
 			}
 
+		},
+
+		onAfterMoveSecondarySelf(source, target, move) {
+			if (move.category !== 'Status' && !move.isZ && (!move.multihit || move.multihit === 1) && source.side === this.p2 && source.isActive) {
+				source.addVolatile('mustrecharge');
+			}
 		},
 		onFieldStart(battle, source, effect) {
 			if (effect?.effectType === 'Ability') {
@@ -844,8 +859,9 @@ export const Conditions: {[k: string]: ModdedConditionData} = {
 
 
 		onAfterMoveSecondary(target, source, move) {
-			if (source.side === this.p2 && move.category !== "Status" && target && target.hp > 0 ) {
-				this.damage(target.maxhp*0.1, target, source);
+			if (source.side === this.p2 && move.category !== "Status" && target && target.hp > 0) {
+				const typeMod = this.clampIntRange(target.runEffectiveness(this.dex.getActiveMove('dazzlinggleam')), -6, 6);
+				this.damage(target.maxhp * 0.1 * Math.pow(2, typeMod), target, source);
 			}
 		},
 		onFieldStart(battle, source, effect) {
@@ -906,7 +922,7 @@ export const Conditions: {[k: string]: ModdedConditionData} = {
 
 		onSwitchOut(pokemon) {
 			if (pokemon.side === this.p2)
-				pokemon.heal(pokemon.baseMaxhp / 10);
+				pokemon.heal(pokemon.baseMaxhp *0.15);
 		},
 		
 		onFieldStart(battle, source, effect) {
@@ -1068,7 +1084,14 @@ export const Conditions: {[k: string]: ModdedConditionData} = {
 			}
 		},
 
-
+		onFieldStart(battle, source, effect) {
+			if (effect?.effectType === 'Ability') {
+				this.add('-fieldstart', 'Stope', '[from] ability: ' + effect, '[of] ' + source);
+			} else {
+				this.add('-fieldstart', 'Stope');
+			}
+			this.add('-message', 'Stope is radiated.');
+		},
 		onFieldResidualOrder: 1,
 		onFieldResidual() {
 			this.add('-weather', 'Stope', '[upkeep]');
@@ -1077,6 +1100,276 @@ export const Conditions: {[k: string]: ModdedConditionData} = {
 		onFieldEnd() {
 			this.add('-fieldend', 'Stope');
 			this.add('-message', 'The Stope subsided.');
+		},
+	},
+	championbelt: {
+		name: 'Champion Belt',
+		effectType: 'Weather',
+		duration: 0,
+
+		onModifyAtkPriority: -102,
+		onModifyAtk(atk, pokemon) {
+			if (pokemon.side === this.p2)
+				return this.chainModify(1.25);
+		},
+		onModifySpAPriority: -102,
+		onModifySpA(spa, pokemon) {
+			if (pokemon.side === this.p2)
+				return this.chainModify(1.25);
+		},
+		onFieldStart(battle, source, effect) {
+			if (effect?.effectType === 'Ability') {
+				this.add('-fieldstart', 'Champion Belt', '[from] ability: ' + effect, '[of] ' + source);
+			} else {
+				this.add('-fieldstart', 'Champion Belt');
+			}
+			this.add('-message', 'Champion Belt is radiated.');
+		},
+
+		onFieldResidualOrder: 1,
+		onFieldResidual() {
+			this.add('-weather', 'Champion Belt', '[upkeep]');
+			this.eachEvent('Weather');
+		},
+		onFieldEnd() {
+			this.add('-fieldend', 'Champion Belt');
+			this.add('-message', 'The Champion Belt subsided.');
+		},
+	},
+	packlight: {
+		name: 'Pack Light',
+		effectType: 'Weather',
+		duration: 0,
+
+
+		onStart() {
+			if (this.p2.active[0] && this.p2.active[0].useItem()) {
+				this.p2.active[0].addVolatile('unburden');
+			}
+		},
+		onSwitchIn(pokemon) {
+			if (pokemon && pokemon.side === this.p2 && this.p2.active[0].useItem()) {
+				pokemon.addVolatile('unburden');
+			}
+		},
+		onTakeItem(item, pokemon) {
+			if (pokemon && pokemon.side === this.p2)
+				pokemon.addVolatile('unburden');
+		},
+		onFieldStart(battle, source, effect) {
+			if (effect?.effectType === 'Ability') {
+				this.add('-fieldstart', 'Pack Light', '[from] ability: ' + effect, '[of] ' + source);
+			} else {
+				this.add('-fieldstart', 'Pack Light');
+			}
+			this.add('-message', 'Pack Light is radiated.');
+		},
+
+		onFieldResidualOrder: 1,
+		onFieldResidual() {
+			this.add('-weather', 'Pack Light', '[upkeep]');
+			this.eachEvent('Weather');
+		},
+		onFieldEnd() {
+			this.add('-fieldend', 'Pack Light');
+			this.add('-message', 'The Champion Belt subsided.');
+		},
+	},
+	enchantments: {
+		name: 'Enchantments',
+		effectType: 'Weather',
+		duration: 0,
+
+		onStart() {
+			if (this.p2.active[0]) {
+				this.p2.active[0].storedStats.atk += this.p2.active[0].storedStats.spa * 0.25;
+				this.p2.active[0].storedStats.spa += this.p2.active[0].storedStats.atk * 0.25;
+			}
+		},
+		onSwitchIn(pokemon) {
+			if (pokemon && pokemon.side === this.p2) {
+				pokemon.storedStats.atk += pokemon.storedStats.spa * 0.25;
+				pokemon.storedStats.spa += pokemon.storedStats.atk * 0.25;
+			}
+		},
+		onFieldStart(battle, source, effect) {
+			if (effect?.effectType === 'Ability') {
+				this.add('-fieldstart', 'Enchantments', '[from] ability: ' + effect, '[of] ' + source);
+			} else {
+				this.add('-fieldstart', 'Enchantments');
+			}
+			this.add('-message', 'Enchantments is radiated.');
+		},
+
+		onFieldResidualOrder: 1,
+		onFieldResidual() {
+			this.add('-weather', 'Enchantments', '[upkeep]');
+			this.eachEvent('Weather');
+		},
+		onFieldEnd() {
+			this.add('-fieldend', 'Enchantments');
+			this.add('-message', 'The Enchantments subsided.');
+		},
+	},
+	flameshield: {
+		name: 'Flame Shield',
+		effectType: 'Weather',
+		duration: 0,
+
+		onDamagePriority:-102,
+		onDamage(damage, target, source, effect) {
+			if (effect.id === 'recoil' || effect.id === 'lifeorb' || effect.id === 'rockyhelmet') {
+				if (!this.activeMove) throw new Error("Battle.activeMove is null");
+				if (this.activeMove.id !== 'struggle') {
+					if (target && target.side === this.p2) {
+						return damage / 2;
+					} else if (target && target.side === this.p1) {
+						return damage * 2;
+					}
+				}
+			}
+		},
+		onFieldStart(battle, source, effect) {
+			if (effect?.effectType === 'Ability') {
+				this.add('-fieldstart', 'Flame Shield', '[from] ability: ' + effect, '[of] ' + source);
+			} else {
+				this.add('-fieldstart', 'Flame Shield');
+			}
+			this.add('-message', 'Flame Shield is radiated.');
+		},
+
+		onFieldResidualOrder: 1,
+		onFieldResidual() {
+			this.add('-weather', 'Flame Shield', '[upkeep]');
+			this.eachEvent('Weather');
+		},
+		onFieldEnd() {
+			this.add('-fieldend', 'Flame Shield');
+			this.add('-message', 'The Flame Shield subsided.');
+		},
+	},
+	physicalsuppression: {
+		name: 'Physical Suppression',
+		effectType: 'Weather',
+		duration: 0,
+
+		onBoost(boots, target, source, effect) {
+			if (!boots.atk) {
+				boots = {};
+			}
+		},
+		onFieldStart(battle, source, effect) {
+			if (effect?.effectType === 'Ability') {
+				this.add('-fieldstart', 'Physical Suppression', '[from] ability: ' + effect, '[of] ' + source);
+			} else {
+				this.add('-fieldstart', 'Physical Suppression');
+			}
+			this.add('-message', 'Physical Suppression is radiated.');
+		},
+
+		onFieldResidualOrder: 1,
+		onFieldResidual() {
+			this.add('-weather', 'Physical Suppression', '[upkeep]');
+			this.eachEvent('Weather');
+		},
+		onFieldEnd() {
+			this.add('-fieldend', 'Physical Suppression');
+			this.add('-message', 'The Physical Suppression subsided.');
+		},
+	},
+	contraryblade: {
+		name: 'Contrary Blade',
+		effectType: 'Weather',
+		duration: 0,
+		onModifyMovePriority: 102,
+		onModifyMove(move, pokemon, target) {
+			if (move.category !== 'Status' && pokemon.side === this.p2) {
+				if (move.category === 'Special') {
+					move.category = 'Physical';
+				} else if (move.category === 'Physical') {
+					move.category = 'Special';
+				}
+				
+			}
+		},
+		onFieldStart(battle, source, effect) {
+			if (effect?.effectType === 'Ability') {
+				this.add('-fieldstart', 'Contrary Blade', '[from] ability: ' + effect, '[of] ' + source);
+			} else {
+				this.add('-fieldstart', 'Contrary Blade');
+			}
+			this.add('-message', 'Contrary Blade is radiated.');
+		},
+
+		onFieldResidualOrder: 1,
+		onFieldResidual() {
+			this.add('-weather', 'Contrary Blade', '[upkeep]');
+			this.eachEvent('Weather');
+		},
+		onFieldEnd() {
+			this.add('-fieldend', 'Contrary Blade');
+			this.add('-message', 'The Contrary Blade subsided.');
+		},
+	},
+	melodyofsiren: {
+		name: 'Melody Of Siren',
+		effectType: 'Weather',
+		duration: 0,
+
+		onWeatherModifyDamage(damage, source, target, move) {
+			if (target && target.side === this.p1&& target.cureStatus()) {
+				this.chainModify(1.5);
+			}
+
+		},
+		onFieldStart(battle, source, effect) {
+			if (effect?.effectType === 'Ability') {
+				this.add('-fieldstart', 'Melody Of Siren', '[from] ability: ' + effect, '[of] ' + source);
+			} else {
+				this.add('-fieldstart', 'Melody Of Siren');
+			}
+			this.add('-message', 'Melody Of Siren is radiated.');
+		},
+
+		onFieldResidualOrder: 1,
+		onFieldResidual() {
+			this.add('-weather', 'Melody Of Siren', '[upkeep]');
+			this.eachEvent('Weather');
+		},
+		onFieldEnd() {
+			this.add('-fieldend', 'Melody Of Siren');
+			this.add('-message', 'The Melody Of Siren subsided.');
+		},
+	},
+	conjuringshow: {
+		name: 'Conjuring Show',
+		effectType: 'Weather',
+		duration: 0,
+
+		onModifyAccuracy(accuracy, target, source, move) {
+			if (typeof accuracy !== 'number') return;
+			if (target && target.side === this.p2)
+				return this.chainModify([3686, 4096]);
+			else if (target.side === this.p1)
+				return this.chainModify([4080, 4096]);
+		},
+		onFieldStart(battle, source, effect) {
+			if (effect?.effectType === 'Ability') {
+				this.add('-fieldstart', 'Conjuring Show', '[from] ability: ' + effect, '[of] ' + source);
+			} else {
+				this.add('-fieldstart', 'Conjuring Show');
+			}
+			this.add('-message', 'Conjuring Show is radiated.');
+		},
+
+		onFieldResidualOrder: 1,
+		onFieldResidual() {
+			this.add('-weather', 'Conjuring Show', '[upkeep]');
+			this.eachEvent('Weather');
+		},
+		onFieldEnd() {
+			this.add('-fieldend', 'Conjuring Show');
+			this.add('-message', 'The Conjuring Show subsided.');
 		},
 	},
 };
