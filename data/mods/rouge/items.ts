@@ -597,4 +597,71 @@ export const Items: { [k: string]: ModdedItemData } = {
 		num: 225,
 		gen: 3,
 	},
+	smoketrigger: {
+		name: "Smoke Trigger",
+		spritenum: 2,
+		fling: {
+			basePower: 30,
+		},
+		onDamagingHit(damage, target, source, move) {
+			if (move) {
+				if (target.useItem()) {
+					this.boost({ accuracy: -2 }, source, target, this.effect);
+				}
+			}
+		},
+		
+		num: 545,
+		gen: 5,
+	},
+	thruster: {
+		name: "Thruster",
+		spritenum: 2,
+		fling: {
+			basePower: 30,
+		},
+		onResidualOrder: 5,
+		onResidualSubOrder: 4,
+		onResidual(pokemon) {
+			if (pokemon.activeTurns) {
+				this.boost({ spe: 1 });
+			}
+		},
+
+		num: 545,
+		gen: 5,
+	},
+	custapElement: {
+		name: "Custap Element",
+		spritenum: 86,
+		onFractionalPriorityPriority: -2,
+		onFractionalPriority(priority, pokemon) {
+			if (
+				priority <= 0 &&
+				(pokemon.hp <= pokemon.maxhp / 4 )
+			) {
+				
+					return 0.1;
+				}
+			
+		},
+		num: 210,
+		gen: 4,
+	},
+	micromaster: {
+		name: "Micro Master",
+		spritenum: 86,
+		onModifyAtkPriority: 1,
+		onModifyAtk(atk, pokemon) {
+			if (pokemon.lastMove?.category === 'Special') 
+				return this.chainModify(2);
+		},
+		onModifySpAPriority: 1,
+		onModifySpA(spa, pokemon) {
+			if (pokemon.lastMove?.category === 'Physical')
+				return this.chainModify(2);
+		},
+		num: 210,
+		gen: 4,
+	},
 };

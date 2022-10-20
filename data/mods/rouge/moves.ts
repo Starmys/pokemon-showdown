@@ -137,7 +137,7 @@ function restoreAbility(set: PokemonSet, s: string): PokemonSet {
 	if (['0', '1', 'H', 'S'].includes(set.ability) && !newAbility[set.ability] ) set.ability='0';
 	return set;
 }
-export function sample<T>(items: T[], number: number, prng: PRNG = new PRNG(), otheritems:T[]=[]) {
+export function sample<T>(items: T[], number: number, prng: PRNG = new PRNG(), otheritems:T[]=[]):T[] {
 	if (items.length === 0) {
 		return [];
 	}
@@ -161,7 +161,7 @@ export function sample<T>(items: T[], number: number, prng: PRNG = new PRNG(), o
 	}
 	return newitems;
 }
-export function unpack(pokeset: any | any[], prng: PRNG = new PRNG(), level?: number) {
+export function unpack(pokeset: any | any[], prng: PRNG = new PRNG(), level?: number, evs?: StatsTable) {
 	let buf = '';
 	
 	if (!Array.isArray(pokeset))
@@ -192,7 +192,16 @@ export function unpack(pokeset: any | any[], prng: PRNG = new PRNG(), level?: nu
 			buf += '|' + prng.sample(natures);
 
 		// evs
-		if (set.evs === ',,,,,') {
+		if (evs) {
+			buf+='|'
+			for (let i of ['hp', 'atk', 'def', 'spa', 'spd', 'spe']) {
+				if (i !== 'spe')
+					//@ts-ignore
+					buf += evs[i] + ',';
+				else
+					buf += evs[i];
+			}
+		}else if (set.evs === ',,,,,') {
 			buf += '|';
 		} else {
 			buf += '|' + set.evs;
@@ -293,6 +302,32 @@ export function championreward(pokemon: Pokemon, type: 'itemroom' | 'moveroom' |
 	
 };
 export const Moves: { [k: string]: ModdedMoveData } = {
+	sketch: {
+		inherit: true,
+		onHit(target, source) {
+			const disallowedMoves = ['chatter', 'sketch', 'struggle'];
+			const move = target.lastMove;
+			if (source.transformed || !move || source.moves.includes(move.id)) return false;
+			if (disallowedMoves.includes(move.id) || move.isZ || move.isMax) return false;
+			const sketchIndex = source.moves.indexOf('sketch');
+			if (sketchIndex < 0) return false;
+			const sketchedMove = {
+				move: move.name,
+				id: move.id,
+				pp: move.pp,
+				maxpp: move.pp,
+				target: move.target,
+				disabled: false,
+				used: false,
+			};
+			source.moveSlots[sketchIndex] = sketchedMove;
+			source.baseMoveSlots[sketchIndex] = sketchedMove;
+			this.add('-activate', source, 'move: Sketch', move.name);
+			let pokemon = source.side.team.find(x => x == source.set);
+			if (pokemon)
+				pokemon.moves[sketchIndex] = move.name;
+		},
+	},
 	hackmonspass: {
 		num: 349,
 		accuracy: true,
@@ -572,6 +607,7 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 		secondary: null,
 		target: "normal",
 		type: "Normal",
+		zMove: { basePower: 120 },
 	},
 	supersteelbeam: {
 		num: 796,
@@ -597,6 +633,7 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 		secondary: null,
 		target: "normal",
 		type: "Steel",
+		zMove: { basePower: 200 },
 	},
 	sheercolder: {
 		num: 329,
@@ -646,6 +683,7 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 		type: "Bug",
 		contestType: "Cute",
 		multihit: 2,
+		zMove: { basePower: 175 },
 		onTryMove() {
 			this.attrLastMove('[still]');
 		},
@@ -667,6 +705,7 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 		secondary: null,
 		target: "normal",
 		type: "Fairy",
+		zMove: { basePower: 200 },
 		contestType: "Beautiful",
 		onTryMove() {
 			this.attrLastMove('[still]');
@@ -861,6 +900,7 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 		onPrepareHit(target, source) {
 			this.add('-anim', source, 'Facade', target);
 		},
+		zMove: { basePower: 140 },
 	},
 	swandance: {
 		num: 263,
@@ -887,6 +927,7 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 		onPrepareHit(target, source) {
 			this.add('-anim', source, 'Snipe Shot', target);
 		},
+		zMove: { basePower: 160 },
 	},
 	spiritualtide: {
 		num: 263,
@@ -912,6 +953,7 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 		onPrepareHit(target, source) {
 			this.add('-anim', source, 'Whirlpool', target);
 		},
+		zMove: { basePower: 160 },
 	},
 	zenwhirlpool: {
 		num: 250,
@@ -933,6 +975,7 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 		onPrepareHit(target, source) {
 			this.add('-anim', source, 'Psychic', target);
 		},
+		zMove: { basePower: 140 },
 	},
 	steelterrain: {
 		accuracy: true,
@@ -1024,6 +1067,7 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 		onPrepareHit(target, source) {
 			this.add('-anim', source, 'Silver Wind', target);
 		},
+		zMove: { basePower: 160 },
 	},
 	superparaboliccharge: {
 		num: 570,
@@ -1045,6 +1089,7 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 		onPrepareHit(target, source) {
 			this.add('-anim', source, 'Parabolic Charge', target);
 		},
+		zMove: { basePower: 170 },
 	},
 	superspiritbreak: {
 		num: 789,
@@ -1069,6 +1114,7 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 		onPrepareHit(target, source) {
 			this.add('-anim', source, 'Spirit Break', target);
 		},
+		zMove: { basePower: 175 },
 	},
 	dualace: {
 		num: 814,
@@ -1090,6 +1136,7 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 		onPrepareHit(target, source) {
 			this.add('-anim', source, 'Aerial Ace', target);
 		},
+		zMove: { basePower: 160 },
 	},
 	fearowdrillpeck: {
 		num: 65,
@@ -1118,6 +1165,7 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 		onPrepareHit(target, source) {
 			this.add('-anim', source, 'Drill Peck', target);
 		},
+		zMove: { basePower: 180 },
 	},
 	toxicwrap: {
 		num: 35,
@@ -1178,6 +1226,7 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 		onPrepareHit(target, source) {
 			this.add('-anim', source, 'Flying Press', target);
 		},
+		
 	},
 	psychicsword: {
 		num: 473,
@@ -1204,6 +1253,7 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 		onPrepareHit(target, source) {
 			this.add('-anim', source, 'Secret Sword', target);
 		},
+		zMove: { basePower: 185 },
 	},
 	backdraft: {
 		num: 796,
@@ -1226,6 +1276,7 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 		secondary: null,
 		target: "normal",
 		type: "Fire",
+		zMove: { basePower: 120 },
 	},
 	spring: {
 		num: 796,
@@ -1248,6 +1299,173 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 		secondary: null,
 		target: "normal",
 		type: "Water",
+		zMove: { basePower: 140 },
+	},
+	fakeshot: {
+		num: 252,
+		accuracy: 100,
+		basePower: 40,
+		category: "Physical",
+		name: "Fake Shot",
+		pp: 10,
+		priority: 1,
+		flags: { contact: 1, protect: 1, mirror: 1 },
+		onTry(source) {
+			if (source.activeMoveActions > 1) {
+				this.hint("Fake Shot only works on your first turn out.");
+				return false;
+			}
+		},
+		onTryMove() {
+			this.attrLastMove('[still]');
+		},
+		onPrepareHit(target, source) {
+			this.add('-anim', source, 'Fake Out', target);
+		},
+		secondaries: [
+			{
+				chance: 100,
+				volatileStatus: 'flinch',
+			},
+			{
+				chance: 50,
+				boosts: { atk:-1 },
+			},
+			{
+				chance: 50,
+				boosts: { spa: -1 },
+			},
+		],
+		
+		selfSwitch: true,
+		target: "normal",
+		type: "Normal",
+		contestType: "Cute",
+		zMove: { basePower: 100 },
+	},
+	mewball: {
+		num: 796,
+		accuracy: 100,
+		basePower: 100,
+		category: "Special",
+		name: "Mew Ball",
+		pp: 5,
+		forceSTAB: true,
+		priority: 0,
+		flags: { protect: 1, mirror: 1 },
+		
+		onModifyMove(move) {
+			let type = this.sample(this.dex.types.all()).name
+			move.type = type
+			this.add('message','This Mew Ball is '+type+' type')
+		},
+		onTryMove() {
+			this.attrLastMove('[still]');
+		},
+		onPrepareHit(target, source) {
+			this.add('-anim', source, 'Judgment', target);
+		},
+		secondary: null,
+		target: "normal",
+		type: "Normal",
+		zMove: { basePower: 175 },
+	},
+	parry: {
+		num: 596,
+		accuracy: true,
+		basePower: 0,
+		category: "Status",
+		name: "Parry",
+		pp: 10,
+		priority: 4,
+		flags: {},
+		stallingMove: true,
+		volatileStatus: 'parry',
+		onPrepareHit(pokemon,source) {
+			this.add('-anim', source, 'Protect', pokemon);
+			return !!this.queue.willAct() && this.runEvent('StallMove', pokemon);
+		},
+		onHit(pokemon) {
+			pokemon.addVolatile('stall');
+		},
+		condition: {
+			duration: 1,
+			onStart(target) {
+				this.add('-singleturn', target, 'move: Protect');
+			},
+			onTryHitPriority: 3,
+			onTryHit(target, source, move) {
+				if (!move.flags['protect']) {
+					if (['gmaxoneblow', 'gmaxrapidflow'].includes(move.id)) return;
+					if (move.isZ || move.isMax) target.getMoveHitData(move).zBrokeProtect = true;
+					return;
+				}
+				if (move.smartTarget) {
+					move.smartTarget = false;
+				} else {
+					this.add('-activate', target, 'move: Protect');
+				}
+				const lockedmove = source.getVolatile('lockedmove');
+				if (lockedmove) {
+					// Outrage counter is reset
+					if (source.volatiles['lockedmove'].duration === 2) {
+						delete source.volatiles['lockedmove'];
+					}
+				}
+				if (this.checkMoveMakesContact(move, source, target)) {
+					this.damage(source.baseMaxhp / 8, source, target);
+				}
+				return this.NOT_FAIL;
+			},
+			onHit(target, source, move) {
+				if (move.isZOrMaxPowered) {
+					this.damage(source.baseMaxhp / 8, source, target, 'recoil');
+				}
+			},
+		},
+		onTryMove() {
+			this.attrLastMove('[still]');
+		},
+		
+		secondary: null,
+		target: "self",
+		type: "Grass",
+		zMove: { boost: { def: 1 } },
+	},
+	speedimpact: {
+		num: 486,
+		accuracy: 100,
+		basePower: 0,
+		basePowerCallback(pokemon, target) {
+			let ratio = Math.round(pokemon.getStat('spe') / target.getStat('spe'));
+			if (!isFinite(ratio)) ratio = 0;
+			const bp = [50, 80, 100, 130, 160, 200][Math.min(ratio, 5)];
+			this.debug('BP: ' + bp);
+			return bp;
+		},
+		category: "Physical",
+		name: "Speed Impact",
+		pp: 10,
+		priority: 0,
+		flags: { contact: 1, protect: 1, mirror: 1 },
+		secondary: null,
+		target: "normal",
+		type: "Fighting",
+		zMove: { basePower: 160 },
+		maxMove: { basePower: 130 },
+		contestType: "Cool",
+		onTryMove() {
+			this.attrLastMove('[still]');
+		},
+		onPrepareHit(target, source) {
+			this.add('-anim', source, 'Giga Impact', target);
+		},
+		onModifyMove(move, pokemon) {
+			if (pokemon.terastallized && pokemon.getStat('atk', false, true) > pokemon.getStat('spa', false, true)) {
+				move.category = 'Physical';
+			}
+		},
+	
 	},
 	//--------shop's  moves
 	getsuperband: {
@@ -1861,6 +2079,82 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 		},
 		desc: 'random pokemon of your team get Satori No Wheelchair',
 		shortDesc: 'random pokemon of your team get Satori No Wheelchair',
+	},
+	getsmoketrigger: {
+		num: 1002,
+		name: 'Get Smoke Trigger',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			selectpokemon(pokemon, ' Get Item');
+
+		},
+		desc: 'random pokemon of your team get Smoke Trigger',
+		shortDesc: 'random pokemon of your team get Smoke Trigger',
+	},
+	getcustapelement: {
+		num: 1002,
+		name: 'Get Custap Element',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			selectpokemon(pokemon, ' Get Item');
+
+		},
+		desc: 'random pokemon of your team get Custap Element',
+		shortDesc: 'random pokemon of your team get Custap Element',
+	},
+	getmicromaster: {
+		num: 1002,
+		name: 'Get Micro Master',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			selectpokemon(pokemon, ' Get Item');
+
+		},
+		desc: 'random pokemon of your team get Micro Master',
+		shortDesc: 'random pokemon of your team get Micro Master',
+	},
+	getthruster: {
+		num: 1002,
+		name: 'Get Thruster',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			selectpokemon(pokemon, ' Get Item');
+
+		},
+		desc: 'random pokemon of your team get Micro Master',
+		shortDesc: 'random pokemon of your team get Micro Master',
 	},
 	//----------movemoves
 
@@ -3293,6 +3587,174 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 		},
 
 	},
+	learnfakeshot: {
+		num: 1000,
+		name: 'Learn Fake Shot',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon, source, move) {
+			selectpokemon(pokemon, ' Learn Move');
+			pokemon.moveSlots.push({
+				move: move.name,
+				id: this.toID('move.name'),
+				pp: 0,
+				maxpp: 1,
+				target: 'self',
+				disabled: true,
+				used: false,
+				virtual: true,
+			})
+
+		},
+
+	},
+	learnmewball: {
+		num: 1000,
+		name: 'Learn Mew Ball',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon, source, move) {
+			selectpokemon(pokemon, ' Learn Move');
+			pokemon.moveSlots.push({
+				move: move.name,
+				id: this.toID('move.name'),
+				pp: 0,
+				maxpp: 1,
+				target: 'self',
+				disabled: true,
+				used: false,
+				virtual: true,
+			})
+
+		},
+
+	},
+	learnparry: {
+		num: 1000,
+		name: 'Learn Parry',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon, source, move) {
+			selectpokemon(pokemon, ' Learn Move');
+			pokemon.moveSlots.push({
+				move: move.name,
+				id: this.toID('move.name'),
+				pp: 0,
+				maxpp: 1,
+				target: 'self',
+				disabled: true,
+				used: false,
+				virtual: true,
+			})
+
+		},
+
+	},
+	learnsketch: {
+		num: 1000,
+		name: 'Learn Sketch',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon, source, move) {
+			selectpokemon(pokemon, ' Learn Move');
+			pokemon.moveSlots.push({
+				move: move.name,
+				id: this.toID('move.name'),
+				pp: 0,
+				maxpp: 1,
+				target: 'self',
+				disabled: true,
+				used: false,
+				virtual: true,
+			})
+
+		},
+
+	},
+	learnpopulationbomb: {
+		num: 1000,
+		name: 'Learn Population Bomb',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon, source, move) {
+			selectpokemon(pokemon, ' Learn Move');
+			pokemon.moveSlots.push({
+				move: move.name,
+				id: this.toID('move.name'),
+				pp: 0,
+				maxpp: 1,
+				target: 'self',
+				disabled: true,
+				used: false,
+				virtual: true,
+			})
+
+		},
+
+	},
+	learnspeedimpact: {
+		num: 1000,
+		name: 'Learn Speed Impact',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon, source, move) {
+			selectpokemon(pokemon, ' Learn Move');
+			pokemon.moveSlots.push({
+				move: move.name,
+				id: this.toID('move.name'),
+				pp: 0,
+				maxpp: 1,
+				target: 'self',
+				disabled: true,
+				used: false,
+				virtual: true,
+			})
+
+		},
+
+	},
 	//------------- commonmoves--------------
 	evoapokemon: {
 		num: 1000,
@@ -3762,6 +4224,23 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 
 		},
 	},
+	promoteapokemon: {
+		num: 1000,
+		name: 'Promote A Pokemon',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: 10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			selectpokemon(pokemon, ' Promote');
+
+		},
+	},
 	//--------------pokemonmoves----------
 	getmunchlax: {
 		num: 1000,
@@ -4196,9 +4675,9 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 		},
 
 	},
-	getyanmega: {
+	getyanma: {
 		num: 1000,
-		name: 'Get Yanmega',
+		name: 'Get Yanma',
 		type: 'Normal',
 		accuracy: true,
 		basePower: 0,
@@ -4210,8 +4689,8 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 		flags: {},
 		onHit(pokemon) {
 			if (pokemon.side.team.length < 6) {
-				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(unpack(Pokemonpool.Yanmega, this.prng, pokemon.side.team[0].level))!);
-				this.add('html', `<div class="broadcast-green"><strong>Yanmega has joined in your team</strong></div>`);
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(unpack(Pokemonpool.Yanma, this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Yanma has joined in your team</strong></div>`);
 				chooseroom(pokemon, this.prng);
 			} else {
 				selectpokemon(pokemon, '','Replace Pokemon ');
@@ -6116,6 +6595,702 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 		},
 
 	},
+	getkangaskhan: {
+		num: 1000,
+		name: 'Get Kangaskhan',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(unpack(Pokemonpool.Kangaskhan, this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Kangaskhan has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
+	getduraludon: {
+		num: 1000,
+		name: 'Get Duraludon',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(unpack(Pokemonpool.Duraludon, this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Duraludon has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
+	getwingull: {
+		num: 1000,
+		name: 'Get Wingull',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(unpack(Pokemonpool.Wingull, this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Wingull has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
+	getelectabuzz: {
+		num: 1000,
+		name: 'Get Electabuzz',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(unpack(Pokemonpool.Electabuzz, this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Electabuzz has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
+	getnecrozma: {
+		num: 1000,
+		name: 'Get Necrozma',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(unpack(Pokemonpool.Necrozma, this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Necrozma has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
+	getskrelp: {
+		num: 1000,
+		name: 'Get Skrelp',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(unpack(Pokemonpool.Skrelp, this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Skrelp has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
+	getvullaby: {
+		num: 1000,
+		name: 'Get Vullaby',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(unpack(Pokemonpool.Vullaby, this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Vullaby has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
+	getmew: {
+		num: 1000,
+		name: 'Get Mew',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(unpack(Pokemonpool.Mew, this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Mew has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
+	getdeerling: {
+		num: 1000,
+		name: 'Get Deerling',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(unpack(Pokemonpool.Deerling, this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Deerling has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
+	getlillipup: {
+		num: 1000,
+		name: 'Get Lillipup',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(unpack(Pokemonpool.Lillipup, this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Lillipup has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
+	getcaterpie: {
+		num: 1000,
+		name: 'Get Caterpie',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(unpack(Pokemonpool.Caterpie, this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Caterpie has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
+	getironmoth: {
+		num: 1000,
+		name: 'Get Iron Moth',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(unpack(Pokemonpool["Iron Moth"], this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Iron Moth has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
+	getslitherwing: {
+		num: 1000,
+		name: 'Get Slither Wing',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(unpack(Pokemonpool["Slither Wing"], this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Slither Wing has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
+	getbellsprout: {
+		num: 1000,
+		name: 'Get Bellsprout',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(unpack(Pokemonpool.Bellsprout, this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Bellsprout has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
+	getmareep: {
+		num: 1000,
+		name: 'Get Mareep',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(unpack(Pokemonpool.Mareep, this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Mareep has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
+	gettympole: {
+		num: 1000,
+		name: 'Get Tympole',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(unpack(Pokemonpool.Tympole, this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Tympole has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
+	gettentacool: {
+		num: 1000,
+		name: 'Get Tentacool',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(unpack(Pokemonpool.Tentacool, this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Tentacool has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
+	getscraggy: {
+		num: 1000,
+		name: 'Get Scraggy',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(unpack(Pokemonpool.Scraggy, this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Scraggy has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
+	getnacli: {
+		num: 1000,
+		name: 'Get Nacli',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(unpack(Pokemonpool.Nacli, this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Nacli has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
+	getmankey: {
+		num: 1000,
+		name: 'Get Mankey',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(unpack(Pokemonpool.Mankey, this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Mankey has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
+	getcapsakid: {
+		num: 1000,
+		name: 'Get Capsakid',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(unpack(Pokemonpool.Capsakid, this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Capsakid has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
+	getfrigibax: {
+		num: 1000,
+		name: 'Get Frigibax',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(unpack(Pokemonpool.Frigibax, this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Frigibax has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
+	gettandemaus: {
+		num: 1000,
+		name: 'Get Tandemaus',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(unpack(Pokemonpool.Tandemaus, this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Tandemaus has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
+	getpawniard: {
+		num: 1000,
+		name: 'Get Pawniard',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(unpack(Pokemonpool.Pawniard, this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Pawniard has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
+	getironvaliant: {
+		num: 1000,
+		name: 'Get Iron Valiant',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(unpack(Pokemonpool["Iron Valiant"], this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Iron Valiant has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
+	getterrakion: {
+		num: 1000,
+		name: 'Get Terrakion',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(unpack(Pokemonpool.Terrakion, this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Terrakion has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
+	getironthorns: {
+		num: 1000,
+		name: 'Get Iron Thorns',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(unpack(Pokemonpool["Iron Thorns"], this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Iron Thorns has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
+	getroaringmoon: {
+		num: 1000,
+		name: 'Get Roaring Moon',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(unpack(Pokemonpool["Roaring Moon"], this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Roaring Moon has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
+	gettinkatink: {
+		num: 1000,
+		name: 'Get Tinkatink',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(unpack(Pokemonpool.Tinkatink, this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Tinkatink has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
 	//-------------abilitymoves------------
 
 	becomebomber: {
@@ -6677,6 +7852,114 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 		desc: '',
 		shortDesc: '',
 	},
+	becomehaven: {
+		num: 1002,
+		name: 'Become Haven',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			selectpokemon(pokemon, ' Transform Ability');
+		},
+		desc: '',
+		shortDesc: '',
+	},
+	becomeovercharge: {
+		num: 1002,
+		name: 'Become Overcharge',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			selectpokemon(pokemon, ' Transform Ability');
+		},
+		desc: '',
+		shortDesc: '',
+	},
+	becomeadaptability: {
+		num: 1002,
+		name: 'Become Adaptability',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			selectpokemon(pokemon, ' Transform Ability');
+		},
+		desc: '',
+		shortDesc: '',
+	},
+	becomebornofexplosion: {
+		num: 1002,
+		name: 'Become Born Of Explosion',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			selectpokemon(pokemon, ' Transform Ability');
+		},
+		desc: '',
+		shortDesc: '',
+	},
+	becomeszpenguin: {
+		num: 1002,
+		name: 'Become Szpenguin',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			selectpokemon(pokemon, ' Transform Ability');
+		},
+		desc: '',
+		shortDesc: '',
+	},
+	becomespikybody: {
+		num: 1002,
+		name: 'Become Spiky Body',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			selectpokemon(pokemon, ' Transform Ability');
+		},
+		desc: '',
+		shortDesc: '',
+	},
 	//----------------elitemoves---------
 	gainartirain: {
 		num: 1002,
@@ -6698,9 +7981,9 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 		desc: '',
 		shortDesc: '',
 	},
-	gainartihail: {
+	gainartisnow: {
 		num: 1002,
-		name: 'Gain Artihail',
+		name: 'Gain Artisnow',
 		type: 'Normal',
 		accuracy: true,
 		basePower: 0,
@@ -6711,8 +7994,8 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'artihail');
-			this.add('html', `<div class="broadcast-green"><strong>you get the artihail</strong></div>`);
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'artisnow');
+			this.add('html', `<div class="broadcast-green"><strong>you get the artisnow</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
 		desc: '',
@@ -7593,6 +8876,226 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 		onHit(pokemon) {
 			RougeUtils.addRelics(this.toID(pokemon.side.name), 'stope');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Stope</strong></div>`);
+			chooseroom(pokemon, this.prng);
+		},
+		desc: '',
+		shortDesc: '',
+	},
+	gainchampionbelt: {
+		num: 1002,
+		name: 'Gain Champion Belt',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'championbelt');
+			this.add('html', `<div class="broadcast-green"><strong>you get the Champion Belt</strong></div>`);
+			chooseroom(pokemon, this.prng);
+		},
+		desc: '',
+		shortDesc: '',
+	},
+	gainholographicprojection: {
+		num: 1002,
+		name: 'Gain Holographic Projection',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'holographicprojection');
+			this.add('html', `<div class="broadcast-green"><strong>you get the Holographic Projection</strong></div>`);
+			chooseroom(pokemon, this.prng);
+		},
+		desc: '',
+		shortDesc: '',
+	},
+	gainpacklight: {
+		num: 1002,
+		name: 'Gain Pack Light',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'packlight');
+			this.add('html', `<div class="broadcast-green"><strong>you get the Pack Light</strong></div>`);
+			chooseroom(pokemon, this.prng);
+		},
+		desc: '',
+		shortDesc: '',
+	},
+	gainreplication: {
+		num: 1002,
+		name: 'Gain Replication',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'replication');
+			this.add('html', `<div class="broadcast-green"><strong>you get the Replication</strong></div>`);
+			chooseroom(pokemon, this.prng);
+		},
+		desc: '',
+		shortDesc: '',
+	},
+	gainenchantments: {
+		num: 1002,
+		name: 'Gain Enchantments',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'enchantments');
+			this.add('html', `<div class="broadcast-green"><strong>you get the Enchantments</strong></div>`);
+			chooseroom(pokemon, this.prng);
+		},
+		desc: '',
+		shortDesc: '',
+	},
+	gainflameshield: {
+		num: 1002,
+		name: 'Gain Flame Shield',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'flameshield');
+			this.add('html', `<div class="broadcast-green"><strong>you get the Flame Shield</strong></div>`);
+			chooseroom(pokemon, this.prng);
+		},
+		desc: '',
+		shortDesc: '',
+	},
+	gainheroicsword: {
+		num: 1002,
+		name: 'Gain Heroic Sword',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'heroicsword');
+			this.add('html', `<div class="broadcast-green"><strong>you get the Heroic Sword</strong></div>`);
+			chooseroom(pokemon, this.prng);
+		},
+		desc: '',
+		shortDesc: '',
+	},
+	gainphysicalsuppression: {
+		num: 1002,
+		name: 'Gain Physical Suppression',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'physicalsuppression');
+			this.add('html', `<div class="broadcast-green"><strong>you get the Physical Suppression</strong></div>`);
+			chooseroom(pokemon, this.prng);
+		},
+		desc: '',
+		shortDesc: '',
+	},
+	gaincontraryblade: {
+		num: 1002,
+		name: 'Gain Contrary Blade',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'contraryblade');
+			this.add('html', `<div class="broadcast-green"><strong>you get the Contrary Blade</strong></div>`);
+			chooseroom(pokemon, this.prng);
+		},
+		desc: '',
+		shortDesc: '',
+	},
+	gainmelodyofsiren: {
+		num: 1002,
+		name: 'Gain Melody Of Siren',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'melodyofsiren');
+			this.add('html', `<div class="broadcast-green"><strong>you get the Melody Of Siren</strong></div>`);
+			chooseroom(pokemon, this.prng);
+		},
+		desc: '',
+		shortDesc: '',
+	},
+	gainconjuringshow: {
+		num: 1002,
+		name: 'Gain Conjuring Show',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'conjuringshow');
+			this.add('html', `<div class="broadcast-green"><strong>you get the Conjuring Show</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
 		desc: '',
@@ -9702,7 +11205,8 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 				}
 				let items: Item[] = []
 				for (let x of sps) {
-					items=items.concat( Dex.items.all().filter(item => item.itemUser?.includes(x)));
+					//因为形态问题导致专属道具属于某个特定形态而不是常人理解的专属道具，所以所有专属道具按原型判断
+					items = items.concat(Dex.items.all().filter(item =>item.forcedForme?.split('-')[0]===x|| item.itemUser?.map(user => { let x = Dex.species.get(user); return (Array.isArray(x.battleOnly) ? this.sample( x.battleOnly) : x.battleOnly) || x.name }).includes(x)));
 				}
 				let item='';
 				if (items.length)
@@ -9749,7 +11253,7 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 				}
 				let items: Item[] = []
 				for (let x of sps) {
-					items = items.concat(Dex.items.all().filter(item => item.itemUser?.includes(x)));
+					items = items.concat(Dex.items.all().filter(item =>item.forcedForme?.split('-')[0]===x|| item.itemUser?.map(user => { let x = Dex.species.get(user); return (Array.isArray(x.battleOnly) ? this.sample( x.battleOnly) : x.battleOnly) || x.name }).includes(x)));
 				}
 				let item = '';
 				if (items.length)
@@ -9796,7 +11300,7 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 				}
 				let items: Item[] = []
 				for (let x of sps) {
-					items = items.concat(Dex.items.all().filter(item => item.itemUser?.includes(x)));
+					items = items.concat(Dex.items.all().filter(item =>item.forcedForme?.split('-')[0]===x|| item.itemUser?.map(user => { let x = Dex.species.get(user); return (Array.isArray(x.battleOnly) ? this.sample( x.battleOnly) : x.battleOnly) || x.name }).includes(x)));
 				}
 				let item = '';
 				if (items.length)
@@ -9843,7 +11347,7 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 				}
 				let items: Item[] = []
 				for (let x of sps) {
-					items = items.concat(Dex.items.all().filter(item => item.itemUser?.includes(x)));
+					items = items.concat(Dex.items.all().filter(item =>item.forcedForme?.split('-')[0]===x|| item.itemUser?.map(user => { let x = Dex.species.get(user); return (Array.isArray(x.battleOnly) ? this.sample( x.battleOnly) : x.battleOnly) || x.name }).includes(x)));
 				}
 				let item = '';
 				if (items.length)
@@ -9890,7 +11394,7 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 				}
 				let items: Item[] = []
 				for (let x of sps) {
-					items = items.concat(Dex.items.all().filter(item => item.itemUser?.includes(x)));
+					items = items.concat(Dex.items.all().filter(item =>item.forcedForme?.split('-')[0]===x|| item.itemUser?.map(user => { let x = Dex.species.get(user); return (Array.isArray(x.battleOnly) ? this.sample( x.battleOnly) : x.battleOnly) || x.name }).includes(x)));
 				}
 				let item = '';
 				if (items.length)
@@ -9937,7 +11441,7 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 				}
 				let items: Item[] = []
 				for (let x of sps) {
-					items = items.concat(Dex.items.all().filter(item => item.itemUser?.includes(x)));
+					items = items.concat(Dex.items.all().filter(item =>item.forcedForme?.split('-')[0]===x|| item.itemUser?.map(user => { let x = Dex.species.get(user); return (Array.isArray(x.battleOnly) ? this.sample( x.battleOnly) : x.battleOnly) || x.name }).includes(x)));
 				}
 				let item = '';
 				if (items.length)
@@ -9954,6 +11458,414 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 				}
 				target.item = item;
 				this.add('html', `<div class="broadcast-green"><strong>your ${target.name} has got ${item}</strong></div>`);
+			}
+			chooseroom(pokemon, this.prng);
+
+		},
+	},
+	selectpokemon1promote: {
+		num: 1000,
+		name: 'Select Pokemon 1 Promote',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: 10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			let oldpoke = pokemon.side.team[0];
+			let newpoke = undefined;
+			switch (this.toID(oldpoke.species)) {
+				case 'caterpie': newpoke = Teams.unpack(unpack(Pokemonpool.Rayquaza, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'fearow':
+				case 'spearow': newpoke = Teams.unpack(unpack(Pokemonpool["Ho-Oh"], this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'pelipper':
+				case 'wingull': newpoke = Teams.unpack(unpack(Pokemonpool.Lugia, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'mew': newpoke = Teams.unpack(unpack(Pokemonpool.Mewtwo, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'wailord':
+				case 'wailmer': newpoke = Teams.unpack(unpack(Pokemonpool.Kyogre, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'torkoal': newpoke = Teams.unpack(unpack(Pokemonpool.Groudon, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'duraludon': newpoke = Teams.unpack(unpack(Pokemonpool.Dialga, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'dreepy':
+				case 'drakloak':
+				case 'dragapult': newpoke = Teams.unpack(unpack(Pokemonpool.Giratina, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'kingdra':
+				case 'seadra': newpoke = Teams.unpack(unpack(Pokemonpool.Palkia, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'mandibuzz':
+				case 'vullaby': newpoke = Teams.unpack(unpack(Pokemonpool.Yveltal, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'deerling':
+				case 'sawsbuck': newpoke = Teams.unpack(unpack(Pokemonpool.Xerneas, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'dragalge': newpoke = Teams.unpack(unpack(Pokemonpool.Eternatus, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'glastrier': newpoke = Teams.unpack(unpack(Pokemonpool["Calyrex-Ice"], this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'spectrier': newpoke = Teams.unpack(unpack(Pokemonpool["Calyrex-Shadow"], this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'herdier':
+				case 'stoutland': newpoke = Teams.unpack(unpack(Pokemonpool.Zacian, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'arcanine':
+				case 'growlithe': newpoke = Teams.unpack(unpack(Pokemonpool.Zamazenta, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'zygarde10': newpoke = Teams.unpack(unpack(Pokemonpool.Zygarde, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'charizard': newpoke = Teams.unpack(unpack(Pokemonpool.Reshiram, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'necrozma': newpoke = this.random(2) === 1 ? Teams.unpack(unpack(Pokemonpool["Necrozma-Dawn-Wings"], this.prng, oldpoke.level, oldpoke.evs))![0] : Teams.unpack(unpack(Pokemonpool["Necrozma-Dusk-Mane"], this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'druddigon': newpoke = Teams.unpack(unpack(Pokemonpool.Zekrom, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'lapras': newpoke = Teams.unpack(unpack(Pokemonpool.Kyurem, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'electivire':
+				case 'electabuzz': newpoke = Teams.unpack(unpack(Pokemonpool["Kyurem-Black"], this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'altaria':
+				case 'swablu': newpoke = Teams.unpack(unpack(Pokemonpool["Kyurem-White"], this.prng, oldpoke.level, oldpoke.evs))![0]; break
+			}
+			if (newpoke) {
+				pokemon.side.team[0] = newpoke
+				this.add('html', `<div class="broadcast-green"><strong>your ${oldpoke.name} promote to ${newpoke.name} Miraculously</strong></div>`);
+			} else {
+				oldpoke.evs.atk = Math.min(oldpoke.evs.atk + 64, 252);
+				oldpoke.evs.def = Math.min(oldpoke.evs.def + 64, 252);
+				oldpoke.evs.hp = Math.min(oldpoke.evs.hp + 64, 252);
+				oldpoke.evs.spa = Math.min(oldpoke.evs.spa + 64, 252);
+				oldpoke.evs.spd = Math.min(oldpoke.evs.spd + 64, 252);
+				oldpoke.evs.spe = Math.min(oldpoke.evs.spe + 64, 252);
+				this.add('html', `<div class="broadcast-green"><strong>even your ${oldpoke.name}try hard but it haven't potential to promote only increase 64 evs</strong></div>`);
+			}
+			chooseroom(pokemon, this.prng);
+
+		},
+	},
+	selectpokemon2promote: {
+		num: 1000,
+		name: 'Select Pokemon 2 Promote',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: 10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			let oldpoke = pokemon.side.team[1];
+			let newpoke = undefined;
+			switch (this.toID(oldpoke.species)) {
+				case 'caterpie': newpoke = Teams.unpack(unpack(Pokemonpool.Rayquaza, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'fearow':
+				case 'spearow': newpoke = Teams.unpack(unpack(Pokemonpool["Ho-Oh"], this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'pelipper':
+				case 'wingull': newpoke = Teams.unpack(unpack(Pokemonpool.Lugia, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'mew': newpoke = Teams.unpack(unpack(Pokemonpool.Mewtwo, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'wailord':
+				case 'wailmer': newpoke = Teams.unpack(unpack(Pokemonpool.Kyogre, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'torkoal': newpoke = Teams.unpack(unpack(Pokemonpool.Groudon, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'duraludon': newpoke = Teams.unpack(unpack(Pokemonpool.Dialga, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'dreepy':
+				case 'drakloak':
+				case 'dragapult': newpoke = Teams.unpack(unpack(Pokemonpool.Giratina, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'kingdra':
+				case 'seadra': newpoke = Teams.unpack(unpack(Pokemonpool.Palkia, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'mandibuzz':
+				case 'vullaby': newpoke = Teams.unpack(unpack(Pokemonpool.Yveltal, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'deerling':
+				case 'sawsbuck': newpoke = Teams.unpack(unpack(Pokemonpool.Xerneas, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'dragalge': newpoke = Teams.unpack(unpack(Pokemonpool.Eternatus, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'glastrier': newpoke = Teams.unpack(unpack(Pokemonpool["Calyrex-Ice"], this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'spectrier': newpoke = Teams.unpack(unpack(Pokemonpool["Calyrex-Shadow"], this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'herdier':
+				case 'stoutland': newpoke = Teams.unpack(unpack(Pokemonpool.Zacian, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'arcanine':
+				case 'growlithe': newpoke = Teams.unpack(unpack(Pokemonpool.Zamazenta, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'zygarde10': newpoke = Teams.unpack(unpack(Pokemonpool.Zygarde, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'charizard': newpoke = Teams.unpack(unpack(Pokemonpool.Reshiram, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'necrozma': newpoke = this.random(2) === 1 ? Teams.unpack(unpack(Pokemonpool["Necrozma-Dawn-Wings"], this.prng, oldpoke.level, oldpoke.evs))![0] : Teams.unpack(unpack(Pokemonpool["Necrozma-Dusk-Mane"], this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'druddigon': newpoke = Teams.unpack(unpack(Pokemonpool.Zekrom, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'lapras': newpoke = Teams.unpack(unpack(Pokemonpool.Kyurem, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'electivire':
+				case 'electabuzz': newpoke = Teams.unpack(unpack(Pokemonpool["Kyurem-Black"], this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'altaria':
+				case 'swablu': newpoke = Teams.unpack(unpack(Pokemonpool["Kyurem-White"], this.prng, oldpoke.level, oldpoke.evs))![0]; break
+			}
+			if (newpoke) {
+				pokemon.side.team[1] = newpoke
+				this.add('html', `<div class="broadcast-green"><strong>your ${oldpoke.name} promote to ${newpoke.name} Miraculously</strong></div>`);
+			} else {
+				oldpoke.evs.atk = Math.min(oldpoke.evs.atk + 64, 252);
+				oldpoke.evs.def = Math.min(oldpoke.evs.def + 64, 252);
+				oldpoke.evs.hp = Math.min(oldpoke.evs.hp + 64, 252);
+				oldpoke.evs.spa = Math.min(oldpoke.evs.spa + 64, 252);
+				oldpoke.evs.spd = Math.min(oldpoke.evs.spd + 64, 252);
+				oldpoke.evs.spe = Math.min(oldpoke.evs.spe + 64, 252);
+				this.add('html', `<div class="broadcast-green"><strong>even your ${oldpoke.name}try hard but it haven't potential to promote only increase 64 evs</strong></div>`);
+			}
+			chooseroom(pokemon, this.prng);
+
+		},
+	},
+	selectpokemon3promote: {
+		num: 1000,
+		name: 'Select Pokemon 3 Promote',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: 10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			let oldpoke = pokemon.side.team[2];
+			let newpoke = undefined;
+			switch (this.toID(oldpoke.species)) {
+				case 'caterpie': newpoke = Teams.unpack(unpack(Pokemonpool.Rayquaza, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'fearow':
+				case 'spearow': newpoke = Teams.unpack(unpack(Pokemonpool["Ho-Oh"], this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'pelipper':
+				case 'wingull': newpoke = Teams.unpack(unpack(Pokemonpool.Lugia, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'mew': newpoke = Teams.unpack(unpack(Pokemonpool.Mewtwo, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'wailord':
+				case 'wailmer': newpoke = Teams.unpack(unpack(Pokemonpool.Kyogre, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'torkoal': newpoke = Teams.unpack(unpack(Pokemonpool.Groudon, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'duraludon': newpoke = Teams.unpack(unpack(Pokemonpool.Dialga, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'dreepy':
+				case 'drakloak':
+				case 'dragapult': newpoke = Teams.unpack(unpack(Pokemonpool.Giratina, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'kingdra':
+				case 'seadra': newpoke = Teams.unpack(unpack(Pokemonpool.Palkia, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'mandibuzz':
+				case 'vullaby': newpoke = Teams.unpack(unpack(Pokemonpool.Yveltal, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'deerling':
+				case 'sawsbuck': newpoke = Teams.unpack(unpack(Pokemonpool.Xerneas, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'dragalge': newpoke = Teams.unpack(unpack(Pokemonpool.Eternatus, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'glastrier': newpoke = Teams.unpack(unpack(Pokemonpool["Calyrex-Ice"], this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'spectrier': newpoke = Teams.unpack(unpack(Pokemonpool["Calyrex-Shadow"], this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'herdier':
+				case 'stoutland': newpoke = Teams.unpack(unpack(Pokemonpool.Zacian, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'arcanine':
+				case 'growlithe': newpoke = Teams.unpack(unpack(Pokemonpool.Zamazenta, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'zygarde10': newpoke = Teams.unpack(unpack(Pokemonpool.Zygarde, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'charizard': newpoke = Teams.unpack(unpack(Pokemonpool.Reshiram, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'necrozma': newpoke = this.random(2) === 1 ? Teams.unpack(unpack(Pokemonpool["Necrozma-Dawn-Wings"], this.prng, oldpoke.level, oldpoke.evs))![0] : Teams.unpack(unpack(Pokemonpool["Necrozma-Dusk-Mane"], this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'druddigon': newpoke = Teams.unpack(unpack(Pokemonpool.Zekrom, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'lapras': newpoke = Teams.unpack(unpack(Pokemonpool.Kyurem, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'electivire':
+				case 'electabuzz': newpoke = Teams.unpack(unpack(Pokemonpool["Kyurem-Black"], this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'altaria':
+				case 'swablu': newpoke = Teams.unpack(unpack(Pokemonpool["Kyurem-White"], this.prng, oldpoke.level, oldpoke.evs))![0]; break
+			}
+			if (newpoke) {
+				pokemon.side.team[2] = newpoke
+				this.add('html', `<div class="broadcast-green"><strong>your ${oldpoke.name} promote to ${newpoke.name} Miraculously</strong></div>`);
+			} else {
+				oldpoke.evs.atk = Math.min(oldpoke.evs.atk + 64, 252);
+				oldpoke.evs.def = Math.min(oldpoke.evs.def + 64, 252);
+				oldpoke.evs.hp = Math.min(oldpoke.evs.hp + 64, 252);
+				oldpoke.evs.spa = Math.min(oldpoke.evs.spa + 64, 252);
+				oldpoke.evs.spd = Math.min(oldpoke.evs.spd + 64, 252);
+				oldpoke.evs.spe = Math.min(oldpoke.evs.spe + 64, 252);
+				this.add('html', `<div class="broadcast-green"><strong>even your ${oldpoke.name}try hard but it haven't potential to promote only increase 64 evs</strong></div>`);
+			}
+			chooseroom(pokemon, this.prng);
+
+		},
+	},
+	selectpokemon4promote: {
+		num: 1000,
+		name: 'Select Pokemon 4 Promote',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: 10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			let oldpoke = pokemon.side.team[3];
+			let newpoke = undefined;
+			switch (this.toID(oldpoke.species)) {
+				case 'caterpie': newpoke = Teams.unpack(unpack(Pokemonpool.Rayquaza, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'fearow':
+				case 'spearow': newpoke = Teams.unpack(unpack(Pokemonpool["Ho-Oh"], this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'pelipper':
+				case 'wingull': newpoke = Teams.unpack(unpack(Pokemonpool.Lugia, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'mew': newpoke = Teams.unpack(unpack(Pokemonpool.Mewtwo, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'wailord':
+				case 'wailmer': newpoke = Teams.unpack(unpack(Pokemonpool.Kyogre, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'torkoal': newpoke = Teams.unpack(unpack(Pokemonpool.Groudon, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'duraludon': newpoke = Teams.unpack(unpack(Pokemonpool.Dialga, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'dreepy':
+				case 'drakloak':
+				case 'dragapult': newpoke = Teams.unpack(unpack(Pokemonpool.Giratina, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'kingdra':
+				case 'seadra': newpoke = Teams.unpack(unpack(Pokemonpool.Palkia, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'mandibuzz':
+				case 'vullaby': newpoke = Teams.unpack(unpack(Pokemonpool.Yveltal, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'deerling':
+				case 'sawsbuck': newpoke = Teams.unpack(unpack(Pokemonpool.Xerneas, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'dragalge': newpoke = Teams.unpack(unpack(Pokemonpool.Eternatus, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'glastrier': newpoke = Teams.unpack(unpack(Pokemonpool["Calyrex-Ice"], this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'spectrier': newpoke = Teams.unpack(unpack(Pokemonpool["Calyrex-Shadow"], this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'herdier':
+				case 'stoutland': newpoke = Teams.unpack(unpack(Pokemonpool.Zacian, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'arcanine':
+				case 'growlithe': newpoke = Teams.unpack(unpack(Pokemonpool.Zamazenta, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'zygarde10': newpoke = Teams.unpack(unpack(Pokemonpool.Zygarde, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'charizard': newpoke = Teams.unpack(unpack(Pokemonpool.Reshiram, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'necrozma': newpoke = this.random(2) === 1 ? Teams.unpack(unpack(Pokemonpool["Necrozma-Dawn-Wings"], this.prng, oldpoke.level, oldpoke.evs))![0] : Teams.unpack(unpack(Pokemonpool["Necrozma-Dusk-Mane"], this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'druddigon': newpoke = Teams.unpack(unpack(Pokemonpool.Zekrom, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'lapras': newpoke = Teams.unpack(unpack(Pokemonpool.Kyurem, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'electivire':
+				case 'electabuzz': newpoke = Teams.unpack(unpack(Pokemonpool["Kyurem-Black"], this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'altaria':
+				case 'swablu': newpoke = Teams.unpack(unpack(Pokemonpool["Kyurem-White"], this.prng, oldpoke.level, oldpoke.evs))![0]; break
+			}
+			if (newpoke) {
+				pokemon.side.team[3] = newpoke
+				this.add('html', `<div class="broadcast-green"><strong>your ${oldpoke.name} promote to ${newpoke.name} Miraculously</strong></div>`);
+			} else {
+				oldpoke.evs.atk = Math.min(oldpoke.evs.atk + 64, 252);
+				oldpoke.evs.def = Math.min(oldpoke.evs.def + 64, 252);
+				oldpoke.evs.hp = Math.min(oldpoke.evs.hp + 64, 252);
+				oldpoke.evs.spa = Math.min(oldpoke.evs.spa + 64, 252);
+				oldpoke.evs.spd = Math.min(oldpoke.evs.spd + 64, 252);
+				oldpoke.evs.spe = Math.min(oldpoke.evs.spe + 64, 252);
+				this.add('html', `<div class="broadcast-green"><strong>even your ${oldpoke.name}try hard but it haven't potential to promote only increase 64 evs</strong></div>`);
+			}
+			chooseroom(pokemon, this.prng);
+
+		},
+	},
+	selectpokemon5promote: {
+		num: 1000,
+		name: 'Select Pokemon 5 Promote',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: 10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			let oldpoke = pokemon.side.team[4];
+			let newpoke = undefined;
+			switch (this.toID(oldpoke.species)) {
+				case 'caterpie': newpoke = Teams.unpack(unpack(Pokemonpool.Rayquaza, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'fearow':
+				case 'spearow': newpoke = Teams.unpack(unpack(Pokemonpool["Ho-Oh"], this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'pelipper':
+				case 'wingull': newpoke = Teams.unpack(unpack(Pokemonpool.Lugia, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'mew': newpoke = Teams.unpack(unpack(Pokemonpool.Mewtwo, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'wailord':
+				case 'wailmer': newpoke = Teams.unpack(unpack(Pokemonpool.Kyogre, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'torkoal': newpoke = Teams.unpack(unpack(Pokemonpool.Groudon, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'duraludon': newpoke = Teams.unpack(unpack(Pokemonpool.Dialga, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'dreepy':
+				case 'drakloak':
+				case 'dragapult': newpoke = Teams.unpack(unpack(Pokemonpool.Giratina, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'kingdra':
+				case 'seadra': newpoke = Teams.unpack(unpack(Pokemonpool.Palkia, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'mandibuzz':
+				case 'vullaby': newpoke = Teams.unpack(unpack(Pokemonpool.Yveltal, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'deerling':
+				case 'sawsbuck': newpoke = Teams.unpack(unpack(Pokemonpool.Xerneas, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'dragalge': newpoke = Teams.unpack(unpack(Pokemonpool.Eternatus, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'glastrier': newpoke = Teams.unpack(unpack(Pokemonpool["Calyrex-Ice"], this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'spectrier': newpoke = Teams.unpack(unpack(Pokemonpool["Calyrex-Shadow"], this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'herdier':
+				case 'stoutland': newpoke = Teams.unpack(unpack(Pokemonpool.Zacian, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'arcanine':
+				case 'growlithe': newpoke = Teams.unpack(unpack(Pokemonpool.Zamazenta, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'zygarde10': newpoke = Teams.unpack(unpack(Pokemonpool.Zygarde, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'charizard': newpoke = Teams.unpack(unpack(Pokemonpool.Reshiram, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'necrozma': newpoke = this.random(2) === 1 ? Teams.unpack(unpack(Pokemonpool["Necrozma-Dawn-Wings"], this.prng, oldpoke.level, oldpoke.evs))![0] : Teams.unpack(unpack(Pokemonpool["Necrozma-Dusk-Mane"], this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'druddigon': newpoke = Teams.unpack(unpack(Pokemonpool.Zekrom, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'lapras': newpoke = Teams.unpack(unpack(Pokemonpool.Kyurem, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'electivire':
+				case 'electabuzz': newpoke = Teams.unpack(unpack(Pokemonpool["Kyurem-Black"], this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'altaria':
+				case 'swablu': newpoke = Teams.unpack(unpack(Pokemonpool["Kyurem-White"], this.prng, oldpoke.level, oldpoke.evs))![0]; break
+			}
+			if (newpoke) {
+				pokemon.side.team[4] = newpoke
+				this.add('html', `<div class="broadcast-green"><strong>your ${oldpoke.name} promote to ${newpoke.name} Miraculously</strong></div>`);
+			} else {
+				oldpoke.evs.atk = Math.min(oldpoke.evs.atk + 64, 252);
+				oldpoke.evs.def = Math.min(oldpoke.evs.def + 64, 252);
+				oldpoke.evs.hp = Math.min(oldpoke.evs.hp + 64, 252);
+				oldpoke.evs.spa = Math.min(oldpoke.evs.spa + 64, 252);
+				oldpoke.evs.spd = Math.min(oldpoke.evs.spd + 64, 252);
+				oldpoke.evs.spe = Math.min(oldpoke.evs.spe + 64, 252);
+				this.add('html', `<div class="broadcast-green"><strong>even your ${oldpoke.name}try hard but it haven't potential to promote only increase 64 evs</strong></div>`);
+			}
+			chooseroom(pokemon, this.prng);
+
+		},
+	},
+	selectpokemon6promote: {
+		num: 1000,
+		name: 'Select Pokemon 6 Promote',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: 10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			let oldpoke = pokemon.side.team[5];
+			let newpoke = undefined;
+			switch (this.toID(oldpoke.species)) {
+				case 'caterpie': newpoke = Teams.unpack(unpack(Pokemonpool.Rayquaza, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'fearow':
+				case 'spearow': newpoke = Teams.unpack(unpack(Pokemonpool["Ho-Oh"], this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'pelipper':
+				case 'wingull': newpoke = Teams.unpack(unpack(Pokemonpool.Lugia, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'mew': newpoke = Teams.unpack(unpack(Pokemonpool.Mewtwo, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'wailord':
+				case 'wailmer': newpoke = Teams.unpack(unpack(Pokemonpool.Kyogre, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'torkoal': newpoke = Teams.unpack(unpack(Pokemonpool.Groudon, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'duraludon': newpoke = Teams.unpack(unpack(Pokemonpool.Dialga, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'dreepy':
+				case 'drakloak':
+				case 'dragapult': newpoke = Teams.unpack(unpack(Pokemonpool.Giratina, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'kingdra':
+				case 'seadra': newpoke = Teams.unpack(unpack(Pokemonpool.Palkia, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'mandibuzz':
+				case 'vullaby': newpoke = Teams.unpack(unpack(Pokemonpool.Yveltal, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'deerling':
+				case 'sawsbuck': newpoke = Teams.unpack(unpack(Pokemonpool.Xerneas, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'dragalge': newpoke = Teams.unpack(unpack(Pokemonpool.Eternatus, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'glastrier': newpoke = Teams.unpack(unpack(Pokemonpool["Calyrex-Ice"], this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'spectrier': newpoke = Teams.unpack(unpack(Pokemonpool["Calyrex-Shadow"], this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'herdier':
+				case 'stoutland': newpoke = Teams.unpack(unpack(Pokemonpool.Zacian, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'arcanine':
+				case 'growlithe': newpoke = Teams.unpack(unpack(Pokemonpool.Zamazenta, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'zygarde10': newpoke = Teams.unpack(unpack(Pokemonpool.Zygarde, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'charizard': newpoke = Teams.unpack(unpack(Pokemonpool.Reshiram, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'necrozma': newpoke = this.random(2) === 1 ? Teams.unpack(unpack(Pokemonpool["Necrozma-Dawn-Wings"], this.prng, oldpoke.level, oldpoke.evs))![0] : Teams.unpack(unpack(Pokemonpool["Necrozma-Dusk-Mane"], this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'druddigon': newpoke = Teams.unpack(unpack(Pokemonpool.Zekrom, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'lapras': newpoke = Teams.unpack(unpack(Pokemonpool.Kyurem, this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'electivire':
+				case 'electabuzz': newpoke = Teams.unpack(unpack(Pokemonpool["Kyurem-Black"], this.prng, oldpoke.level, oldpoke.evs))![0]; break
+				case 'altaria':
+				case 'swablu': newpoke = Teams.unpack(unpack(Pokemonpool["Kyurem-White"], this.prng, oldpoke.level, oldpoke.evs))![0]; break
+			}
+			if (newpoke) {
+				pokemon.side.team[5] = newpoke
+				this.add('html', `<div class="broadcast-green"><strong>your ${oldpoke.name} promote to ${newpoke.name} Miraculously</strong></div>`);
+			} else {
+				oldpoke.evs.atk = Math.min(oldpoke.evs.atk + 64, 252);
+				oldpoke.evs.def = Math.min(oldpoke.evs.def + 64, 252);
+				oldpoke.evs.hp = Math.min(oldpoke.evs.hp + 64, 252);
+				oldpoke.evs.spa = Math.min(oldpoke.evs.spa + 64, 252);
+				oldpoke.evs.spd = Math.min(oldpoke.evs.spd + 64, 252);
+				oldpoke.evs.spe = Math.min(oldpoke.evs.spe + 64, 252);
+				this.add('html', `<div class="broadcast-green"><strong>even your ${oldpoke.name}try hard but it haven't potential to promote only increase 64 evs</strong></div>`);
 			}
 			chooseroom(pokemon, this.prng);
 
