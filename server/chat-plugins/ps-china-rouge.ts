@@ -5,17 +5,18 @@ import { Pokemonpool } from "../../config/rouge/pokemonpool";
 import { Championteams } from "../../config/rouge/Championteams";
 import { Enemies } from "../../config/rouge/Enemies";
 import { RougeUtils } from "../../data/mods/rouge/rulesets";
+import { createTry } from "typescript";
 
 export class Rouge {
 
 	static specialInitMons = ['Pidgey', 'Quagsire','Umbreon']
 	static initButtons = [
-		[1, 5, 8, 11, 14, 17, 20, 23],
-		[2, 6, 9, 12, 15, 18, 21, 24],
-		[3, 7, 10, 13, 16, 19, 22, 25],
+		[1, 5, 8, 11, 14, 17, 20, 23,26],
+		[2, 6, 9, 12, 15, 18, 21, 24,27],
+		[3, 7, 10, 13, 16, 19, 22, 25,28],
 		[4]
 	].map(x => x.map(x => PetUtils.button(`/rouge start ${x}`, '', PetUtils.iconStyle(RougeUtils.initMons[x - 1]))).join('')).join('<br>');
-	static specialInitButtons = [PetUtils.button(`/rouge start ${26}`, '', PetUtils.iconStyle(Rouge.specialInitMons[0])), PetUtils.button(`/rouge start ${27}`, '', PetUtils.iconStyle(Rouge.specialInitMons[1])), PetUtils.button(`/rouge start ${28}`, '', PetUtils.iconStyle(Rouge.specialInitMons[2]))].join('');
+	static specialInitButtons = [PetUtils.button(`/rouge start ${RougeUtils.initMons.length + 1}`, '', PetUtils.iconStyle(Rouge.specialInitMons[0])), PetUtils.button(`/rouge start ${RougeUtils.initMons.length + 2}`, '', PetUtils.iconStyle(Rouge.specialInitMons[1])), PetUtils.button(`/rouge start ${RougeUtils.initMons.length+3}`, '', PetUtils.iconStyle(Rouge.specialInitMons[2]))].join('');
 	static leadbButtons = [2, 3, 4, 5, 6].map(x => PetUtils.button(`/rouge chooselead ${x}`, `${x}`)).join('');
 	static prng: PRNG = new PRNG();
 	static createBattle(
@@ -23,8 +24,13 @@ export class Rouge {
 		delayedStart: boolean | 'multi' | undefined = false
 	): GameRoom | undefined {
 		if (rougeBattleRooms[user.id]) {
-			rougeBattleRooms[user.id]?.destroy();
-			delete rougeBattleRooms[user.id];
+			try {
+				rougeBattleRooms[user.id]?.destroy();
+			} catch {
+
+			} finally {
+				delete rougeBattleRooms[user.id];
+			}
 		}
 		rougeBattleRooms[user.id] = Rooms.createBattle({
 			format: format,
@@ -144,9 +150,12 @@ export const commands: Chat.ChatCommands = {
 					case 23: userTeam = unpack(Pokemonpool.Scorbunny, Rouge.prng); break;
 					case 24: userTeam = unpack(Pokemonpool.Sobble, Rouge.prng); break;
 					case 25: userTeam = unpack(Pokemonpool.Grookey, Rouge.prng); break;
-					case 26: userTeam = unpack(Pokemonpool.Cscl, Rouge.prng); break;
-					case 27: userTeam = unpack(Pokemonpool["Daiwa Scarlet"], Rouge.prng); break;
-					case 28: userTeam = unpack(Pokemonpool.Wind777, Rouge.prng); break;
+					case 26: userTeam = unpack(Pokemonpool.Fuecoco, Rouge.prng); break;
+					case 27: userTeam = unpack(Pokemonpool.Quaxly, Rouge.prng); break;
+					case 28: userTeam = unpack(Pokemonpool.Sprigatito, Rouge.prng); break;
+					case 29: userTeam = unpack(Pokemonpool.Cscl, Rouge.prng); break;
+					case 30: userTeam = unpack(Pokemonpool["Daiwa Scarlet"], Rouge.prng); break;
+					case 31: userTeam = unpack(Pokemonpool.Wind777, Rouge.prng); break;
 					default: return user.sendTo(room.roomid, `|html|<b>该角色暂未公布</b><br>`);
 				}
 				RougeUtils.setInitial(user.id, role);
@@ -154,7 +163,7 @@ export const commands: Chat.ChatCommands = {
 				RougeUtils.updateUserTeam(user.id, userTeam, true);
 			}
 
-			Rouge.createBattle(user, bot, userTeam, botTeam, 'gen8rougemod @@@pschinarougemode', undefined);
+			Rouge.createBattle(user, bot, userTeam, botTeam, 'gen9rougemod @@@pschinarougemode', undefined);
 			//let ll=-1;
 			//if (rooms)
 			//	ll = rooms[user.id].findIndex(x => x.battle?.ended);
@@ -213,14 +222,14 @@ export const commands: Chat.ChatCommands = {
 		showpassrecord(target, room, user) {
 			if (!user.registered) return PetUtils.popup(user, "请先注册账号!");
 			if (!room) return PetUtils.popup(user, "请在房间里使用Rouge系统");
-			let userRecord = RougeUtils.getPassRecord(user.id) || { 'cave': Array(25).fill(0), 'void': Array(25).fill(0) };
+			let userRecord = RougeUtils.getPassRecord(user.id) || { 'cave': Array(RougeUtils.initMons.length).fill(0), 'void': Array(RougeUtils.initMons.length).fill(0) };
 
 			let buf = '';
 			buf += '<details><summary><b>您的成就</b></summary>';
 			buf += PetUtils.table(
 				RougeUtils.initMons,
 				['Cave', 'Void'],
-				[...new Array(25).keys()].map(i => [userRecord['cave'][i], userRecord['void'][i]]),
+				[...new Array(RougeUtils.initMons.length).keys()].map(i => [userRecord['cave'][i]||0, userRecord['void'][i]]||0),
 				'200px',
 				'center',
 				'center',
@@ -234,7 +243,16 @@ export const commands: Chat.ChatCommands = {
 		clear(target, room, user) {
 			if (!room) return PetUtils.popup(user, "请在房间里使用Rouge系统");
 			user.sendTo(room.roomid, `|uhtmlchange|rouge|`);
-		}
+		},
+		fullpassrecord(target, room, user) {
+			if (!room) return PetUtils.popup(user, "请在房间里使用Rouge系统");
+			this.checkCan('lock');
+			let rougeUser = RougeUtils.getUser(user.id);
+			if (rougeUser) {
+				rougeUser.passrecord = { 'cave': Array(RougeUtils.initMons.length).fill(1), 'void': Array(RougeUtils.initMons.length).fill(1) };
+				RougeUtils.saveUser(user.id, rougeUser);
+			}
+		},
 	},
 
 }
