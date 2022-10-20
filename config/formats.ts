@@ -4806,14 +4806,14 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 		},
 	},
 	{
-		name: "[Gen 8] Rouge Mod",
+		name: "[Gen 9] Rouge Mod",
 		desc: `出发, 去往未知洞穴里探险`,
 
 		challengeShow: false,
 		// tournamentShow: false,
 
 		mod: 'rouge',
-		ruleset: ['Dynamax Clause'],
+		ruleset: ['Dynamax Clause','Standard NatDex'],
 	},
 	{
 		name: "[Gen 8] Pet Mode 宠物模式",
@@ -5015,9 +5015,13 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 		rated: false,
 		mod: 'mmo',
 		ruleset: [
-			'Species Clause', 'Sleep Clause Mod', 'Adjust Level = 50', 'Team Preview',
+			'Species Clause', 'Sleep Clause Mod', 'Team Preview',
 			'HP Percentage Mod', 'Cancel Mod', 'Endless Battle Clause',
 		],
+
+		onBattleStart() {
+			this.gen = 8;
+		}
 	},
 	{
 		name: "[Gen 5] PokeMMO Test",
@@ -5030,6 +5034,26 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 			'Obtainable Abilities', 'Obtainable Formes', 'EV Limit = Auto',
 		],
 		banlist: ['Unreleased', 'Unobtainable', 'Past', 'Future', 'LGPE', 'CAP', 'Custom'],
+
+		onBattleStart() {
+			this.gen = 8;
+		}
+	},
+	{
+		name: "[Gen 5] PokeMMO Doubles",
+
+		rated: true,
+		mod: 'mmo',
+		ruleset: [
+			'Species Clause', 'Sleep Clause Mod', 'Adjust Level = 50', 'Team Preview',
+			'HP Percentage Mod', 'Cancel Mod', 'Endless Battle Clause',
+			'Obtainable Abilities', 'Obtainable Formes', 'EV Limit = Auto',
+		],
+		gameType: 'doubles',
+
+		onBattleStart() {
+			this.gen = 8;
+		}
 	},
 	{
 		name: "[Gen 7] PokeOne",
@@ -5144,7 +5168,7 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 
 		mod: 'gen8',
 		gameType: 'doubles',
-		ruleset: ['Flat Rules', '!! Adjust Level = 50', 'VGC Timer', '+Unobtainable', '+Past', 'Sketch Gen 8 Moves', 'Limit Two Restricted'],
+		ruleset: ['Flat Rules', '!! Adjust Level = 50', 'VGC Timer', '+Unobtainable', '+Past', 'Limit Two Restricted'],
 		restricted: ['Restricted Legendary'],
 		onValidateSet(set) {
 			// These Pokemon are still unobtainable

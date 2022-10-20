@@ -109,12 +109,12 @@ export const Rulesets: {[k: string]: FormatData} = {
 
 	pschinapetmode: {
 		name: 'PS China Pet Mode',
-		ruleset: ['Dynamax Clause'],
+		ruleset: ['Dynamax Clause', 'Terastal Clause'],
 	},
 
 	pschinapetmodebalanced: {
 		name: 'PS China Pet Mode Balanced',
-		ruleset: ['Dynamax Clause', 'Sleep Clause Mod', 'Endless Battle Clause', 'Team Preview', 'HP Percentage Mod', 'Cancel Mod'],
+		ruleset: ['Dynamax Clause', 'Terastal Clause', 'Sleep Clause Mod', 'Endless Battle Clause', 'Team Preview', 'HP Percentage Mod', 'Cancel Mod'],
 	},
 
 	pschinapetmodewild: {
