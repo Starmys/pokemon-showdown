@@ -1253,9 +1253,14 @@ export const Conditions: {[k: string]: ModdedConditionData} = {
 		effectType: 'Weather',
 		duration: 0,
 
-		onBoost(boots, target, source, effect) {
-			if (!boots.atk) {
-				boots = {};
+		onTryBoost(boost, target, source, effect) {
+			if (!boost.atk) {
+				let i: BoostID;
+				for (i in boost) {
+					if (boost[i]! < 0) {
+						delete boost[i];
+					}
+				}
 			}
 		},
 		onFieldStart(battle, source, effect) {
@@ -1370,6 +1375,165 @@ export const Conditions: {[k: string]: ModdedConditionData} = {
 		onFieldEnd() {
 			this.add('-fieldend', 'Conjuring Show');
 			this.add('-message', 'The Conjuring Show subsided.');
+		},
+	},
+	piercingattack: {
+		name: 'Piercing Attack',
+		effectType: 'Weather',
+		duration: 0,
+
+		onModifyDef(this, relayVar, target, source, move) {
+			if (target && target.side === this.p1){
+				return target.level*2;
+			}
+		},
+		onModifySpD(this, relayVar, target, source, move) {
+			if (target && target.side === this.p1){
+				return target.level*2;
+			}
+		},
+		
+		onFieldStart(battle, source, effect) {
+			if (effect?.effectType === 'Ability') {
+				this.add('-fieldstart', 'Piercing Attack', '[from] ability: ' + effect, '[of] ' + source);
+			} else {
+				this.add('-fieldstart', 'Piercing Attack');
+			}
+			this.add('-message', 'Piercing Attack is radiated.');
+		},
+
+		onFieldResidualOrder: 1,
+		onFieldResidual() {
+			this.add('-weather', 'Piercing Attack', '[upkeep]');
+			this.eachEvent('Weather');
+		},
+		onFieldEnd() {
+			this.add('-fieldend', 'Piercing Attack');
+			this.add('-message', 'The Piercing Attack subsided.');
+		},
+	},
+	cockatriceeye: {
+		name: 'Cockatrice Eye',
+		effectType: 'Weather',
+		duration: 0,
+
+		onSwitchIn(target) {
+			if(target && target.side === this.p2&&target.ability!=='shopman'&&!target.hasMove('confusion')){
+				target.moveSlots=[{move: 'Confusion',
+				id: Dex.toID('confusion'),
+				pp: 8,
+				maxpp: 8,
+				target: 'self',
+				disabled: false,
+				used: false,
+				virtual: true,}];
+			}
+		},
+		
+		onTryHit(pokemon, target, move) {
+			const conditions = ['attract', 'captivate','taunt', 'encore', 'torment', 'disable']
+			if (conditions.includes(move.id)) {
+				this.add('-immune', pokemon, '[from] ability: Oblivious');
+				return null;
+			}
+		},
+		
+		onModifyAtk(relayVar, source, target, move) {
+			if (source && source.side === this.p2)
+			return this.chainModify(1.6);
+		},
+		onModifySpA(relayVar, source, target, move) {
+			if (source && source.side === this.p2)
+			return this.chainModify(1.6);
+		},
+		onResidual(target, source, effect) {
+			if(target && target.side === this.p2&&target.ability!=='shopman'&&!target.hasMove('confusionmove')){
+				target.moveSlots=[{move: 'Confusion Move',
+				id: Dex.toID('confusionmove'),
+				pp: 8,
+				maxpp: 8,
+				target: 'self',
+				disabled: false,
+				used: false,
+				virtual: true,}];
+			}
+		},
+		onFieldStart(battle, source, effect) {
+			if (effect?.effectType === 'Ability') {
+				this.add('-fieldstart', 'Cockatrice Eye', '[from] ability: ' + effect, '[of] ' + source);
+			} else {
+				this.add('-fieldstart', 'Cockatrice Eye');
+			}
+			this.add('-message', 'Cockatrice Eye is radiated.');
+		},
+
+		onFieldResidualOrder: 1,
+		onFieldResidual() {
+			this.add('-weather', 'Cockatrice Eye', '[upkeep]');
+			this.eachEvent('Weather');
+		},
+		onFieldEnd() {
+			this.add('-fieldend', 'Cockatrice Eye');
+			this.add('-message', 'The Cockatrice Eye subsided.');
+		},
+	
+	},
+	fallrise: {
+		name: 'Fall Rise',
+		effectType: 'Weather',
+		duration: 0,
+
+		onFaint(target, source, effect) {
+			if(target && target.side===this.p2){
+				let x:keyof typeof target.set.evs=this.sample(['hp','atk','def','spa','spd','spe']);
+				target.set.evs[x]=Math.min(target.set.evs[x],252);
+			}
+		},
+		onFieldStart(battle, source, effect) {
+			if (effect?.effectType === 'Ability') {
+				this.add('-fieldstart', 'Fall Rise', '[from] ability: ' + effect, '[of] ' + source);
+			} else {
+				this.add('-fieldstart', 'Fall Rise');
+			}
+			this.add('-message', 'Fall Rise is radiated.');
+		},
+
+		onFieldResidualOrder: 1,
+		onFieldResidual() {
+			this.add('-weather', 'Fall Rise', '[upkeep]');
+			this.eachEvent('Weather');
+		},
+		onFieldEnd() {
+			this.add('-fieldend', 'Fall Rise');
+			this.add('-message', 'The Fall Rise subsided.');
+		},
+	},
+	orderwayup: {
+		name: 'Order Way Up',
+		effectType: 'Weather',
+		duration: 0,
+
+		onSwitchIn(pokemon) {
+			const moves=['Take Down','Swift','X-Scissor','Brutal Swing','Dragon Breath','Shock Wave','Disarming Voice','Karate Chop','Incinerate','Wing Attack','Astonish','Vine Whip','Bone Club','Powder Snow','Poison Tail','Confusion','Rock Throw','Magnet Bomb','Water Pulse'];
+			this.actions.useMoveInner(this.sample(moves),pokemon);
+		},
+		onFieldStart(battle, source, effect) {
+			if (effect?.effectType === 'Ability') {
+				this.add('-fieldstart', 'Order Way Up', '[from] ability: ' + effect, '[of] ' + source);
+			} else {
+				this.add('-fieldstart', 'Order Way Up');
+			}
+			this.add('-message', 'Order Way Up is radiated.');
+		},
+
+		onFieldResidualOrder: 1,
+		onFieldResidual() {
+			this.add('-weather', 'Order Way Up', '[upkeep]');
+			this.eachEvent('Weather');
+		},
+		onFieldEnd() {
+			this.add('-fieldend', 'Order Way Up');
+			this.add('-message', 'The Order Way Up subsided.');
 		},
 	},
 };
