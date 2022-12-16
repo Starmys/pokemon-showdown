@@ -2,6 +2,8 @@ import { FS, Utils } from '../../lib';
 import { PetUtils } from './ps-china-pet-mode';
 import { AdminUtils } from './ps-china-admin';
 
+export const MIN_PLAYERS_FOR_EGG = 4;
+
 type TourRules = {
 	bonus?: boolean,
 	playercap?: number,
@@ -31,7 +33,7 @@ type TourStatus = {
 
 const SHORT_WATCHER_ADVANCE = 5000;
 const SHORT_WATCHER_CYCLE = 1000;
-const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const DAYS = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
 const SCORE_BONUS = [0, 5, 10, 20, 30, 50, 70];
 const AUTO_TOUR_CONFIG_FILE = 'config/tours.json';
 const TOUR_LOG_DIR = 'logs/tour';
@@ -75,13 +77,16 @@ class ScoreTourUtils {
 				AdminUtils.updateUserAlts();
 				ScoreTourUtils.addTourScore(this.name, tourLog);
 				const winnerId = toID(bracketData?.rootNode?.team);
-				const mainId = AdminUtils.addEggToMain(winnerId);
-				if (mainId) {
-					const winnerNote = mainId === winnerId ? '' : `的宠物系统账号 ${mainId} `;
-					AdminUtils.adminPM(winnerId, `恭喜夺冠! 您${winnerNote}获得了一个蛋!`);
-					Rooms.get('staff')?.add(`|c|&|/log 自动奖品发放: ${winnerId} ${winnerNote}获得了一个蛋`).update();
-				} else {
-					Rooms.get('staff')?.add(`|c|&|/log 自动奖品发放: 未找到冠军 ${winnerId} 的宠物系统账号`).update();
+				AdminUtils.adminPM(winnerId, `恭喜您在 ${this.name} 淘汰赛中夺冠!`);
+				if (Object.keys(tourLog).length >= MIN_PLAYERS_FOR_EGG) {
+					const mainId = AdminUtils.addEggToMain(winnerId);
+					if (mainId) {
+						AdminUtils.adminPM(winnerId, `您的宠物系统账号 ${mainId} 获得了一个蛋!`);
+						Rooms.get('staff')?.add(`|c|&|/log 自动奖品发放: ${winnerId} (${mainId}) 获得了一个蛋`).update();
+					} else {
+						AdminUtils.adminPM(winnerId, `由于未找到您的宠物系统账号, 冠军奖励发放失败`);
+						Rooms.get('staff')?.add(`|c|&|/log 自动奖品发放: 未找到冠军 ${winnerId} 的宠物系统账号`).update();
+					}
 				}
 			}
 		}
@@ -182,10 +187,10 @@ class TourQueue {
 		const format = Dex.formats.get(tourStatus.settings.format);
 		const broadcastContext = new BroadcastContext(room, 'Auto Tour');
 		if (!format.exists) {
-			broadcastContext.errorReply(`Config error: the format ${tourStatus.settings.format} does not exist.`);
+			broadcastContext.errorReply(`配置错误: 分级 "${tourStatus.settings.format}" 不存在`);
 			return;
 		}
-		broadcastContext.sendReply(`Creating ${format.name} tournament...`);
+		broadcastContext.sendReply(`正在创建 ${format.name} 淘汰赛...`);
 		if (!room.settings.tournaments) room.settings.tournaments = {};
 		room.settings.tournaments.forceTimer = tourStatus.settings.rules.forcetimer;
 		room.settings.tournaments.allowScouting = tourStatus.settings.rules.allowscouting;
@@ -220,7 +225,7 @@ class TourQueue {
 				msg += '<tr><th>获胜轮数</th>' + SCORE_BONUS.map((v, i) => `<td>${sfill(i)}</td>`).join('') + '</tr>';
 				msg += '<tr><th>奖励积分</th>' + SCORE_BONUS.map((v, i) => `<td>${sfill(v)}</td>`).join('') + '</tr>';
 				msg += '</table></center>';
-				msg += '<b>冠军还可以在宠物系统中获得一个神秘的蛋!</b>'
+				msg += `<b>若参赛人数达到${MIN_PLAYERS_FOR_EGG}人, 冠军还可以在宠物系统中获得一个神秘的蛋!</b>`
 				for (const u of Users.users.values()) {
 					if (u.connected) u.send(`|pm|&|${u.tempGroup}${u.name}|/raw <div class="broadcast-blue">${msg}</div>`);
 				}
@@ -230,12 +235,12 @@ class TourQueue {
 				broadcastContext.sendReply(tourStatus.settings.desc);
 			}
 		} else {
-			broadcastContext.errorReply('Failed to create a tournament.');
+			broadcastContext.errorReply('淘汰赛创建失败');
 		}
 	}
 
 	check() {
-		return `<b>Next tour:</b> ${this.schedule[0].settings.format} at ${this.schedule[0].nexttime.toString()}`;
+		return `<b>下一场比赛:</b> 分级: ${this.schedule[0].settings.format} 时间: ${this.schedule[0].nexttime.toString()}`;
 	}
 
 	static calcNextTime(timing: TourTiming): Date {
@@ -336,7 +341,7 @@ export const commands: Chat.ChatCommands = {
 			if (tourQueues[roomid]) {
 				let buf = `|uhtml|auto-tour-config|`;
 				buf += `<p>${tourQueues[roomid].check()}</p><br/>`;
-				buf += PetUtils.button('/autotour config', 'View all configured tours');
+				buf += PetUtils.button('/autotour config', '查看房间赛列表');
 				this.sendReply(buf);
 			} else {
 				this.parse(`/autotour config`);
@@ -353,15 +358,15 @@ export const commands: Chat.ChatCommands = {
 				const roomTourConfig = tmpTourConfig[`${room!.roomid}-${user.id}`] || tourConfig[roomid] || [];
 				if (roomTourConfig.length) {
 					buf += '<table style="border-spacing: 5px;">';
-					let header = ['Format', 'Time'];
+					let header = ['分级', '时间'];
 					buf += '<tr>' + header.map(s => `<th style="text-align: center">${s}</th>`).join('') + '</tr>';
 					roomTourConfig.forEach((tourSettings, index) => {
 						const formatName = tourSettings.format;
-						let timing = 'Every ';
+						let timing = '每';
 						if (tourSettings.timing.day !== undefined) {
 							timing += DAYS[tourSettings.timing.day] + ' ';
 						} else {
-							timing = 'Everyday ';
+							timing = '每天 ';
 						}
 						if (tourSettings.timing.hours !== undefined) {
 							timing += ('0' + tourSettings.timing.hours).slice(-2);
@@ -369,25 +374,25 @@ export const commands: Chat.ChatCommands = {
 							timing += 'XX';
 						}
 						timing += ':' + ('0' + tourSettings.timing.minutes).slice(-2);
-						let buttons = PetUtils.button(`/autotour config rules ${index}`, 'Rules');
+						let buttons = PetUtils.button(`/autotour config rules ${index}`, '规则');
 						if (canEdit) {
-							buttons += PetUtils.button(`/autotour config edit ${index}`, 'Edit');
-							buttons += PetUtils.button(`/autotour config edit ${index},delete`, 'Delete');
+							buttons += PetUtils.button(`/autotour config edit ${index}`, '编辑');
+							buttons += PetUtils.button(`/autotour config edit ${index},delete`, '删除');
 						}
 						let row = [formatName, timing, buttons];
 						buf += '<tr>' + row.map(s => `<td style="text-align: center">${s}</td>`).join('') + '</tr>';
 					});
-					const lastRow = ['', '', PetUtils.button(`/autotour config exit`, 'Exit')];
-					if (canEdit) lastRow[0] = PetUtils.button(`/autotour config edit ${roomTourConfig.length}`, 'Add');
+					const lastRow = ['', '', PetUtils.button(`/autotour config exit`, '退出')];
+					if (canEdit) lastRow[0] = PetUtils.button(`/autotour config edit ${roomTourConfig.length}`, '新建');
 					if (notSaved) {
-						lastRow[2] = PetUtils.button(`/autotour config save`, 'Confirm') +
-							PetUtils.button(`/autotour config cancel`, 'Cancel');
+						lastRow[2] = PetUtils.button(`/autotour config save`, '确认') +
+							PetUtils.button(`/autotour config cancel`, '取消');
 					}
 					buf += '<tr>' + lastRow.map(s => `<td style="text-align: center">${s}</td>`).join('') + '</tr>';
 					buf += '</table>';
 				} else {
-					buf += 'There is no auto tour configured in this room. ';
-					if (canEdit) buf += PetUtils.button(`/autotour config edit ${roomTourConfig.length}`, 'Add');
+					buf += `${room!.title} 房间没有设置房间赛`;
+					if (canEdit) buf += PetUtils.button(`/autotour config edit ${roomTourConfig.length}`, '新建');
 				}
 				this.sendReply(buf);
 			},
@@ -402,43 +407,43 @@ export const commands: Chat.ChatCommands = {
 					const forceTimer = !!tourRules.forcetimer;
 					const bonus = !!tourRules.bonus;
 					const lines = [];
-					lines.push(`<b>Bonus: ${bonus ? 'ON' : 'OFF'}</b>`);
+					lines.push(`<b>国服积分奖励: ${bonus ? '开启' : '关闭'}</b>`);
 					if (bonus) {
-						lines.push('PS-China scores will be awarded if you win battles in the tournament.');
+						lines.push('参与者可根据获胜场数取得对应的国服积分奖励');
 					} else {
-						lines.push('No scores awarded in the tournament.');
+						lines.push('参与者不会获得国服积分奖励');
 					}
-					lines.push(`<b>Capacity: ${tourRules.playercap || 'Unset'}</b>`);
+					lines.push(`<b>玩家容量: ${tourRules.playercap || '未设置'}</b>`);
 					if (tourRules.playercap) {
-						lines.push(`A maximum of ${tourRules.playercap} players can take part in the tournament.`);
+						lines.push(`最多可容纳 ${tourRules.playercap} 名玩家参与比赛`);
 					} else {
-						lines.push('There is no upper limit on the number of participants.');
+						lines.push('不设置玩家人数上限');
 					}
-					lines.push(`<b>Scouting: ${allowScouting ? 'Allowed' : 'Banned'}</b>`);
-					lines.push(`Players ${allowScouting ? 'can' : 'can\'t'} watch other tournament battles.`);
-					lines.push(`<b>Force Timer: ${forceTimer ? 'ON' : 'OFF'}</b>`);
+					lines.push(`<b>观战: ${allowScouting ? '允许' : '禁止'}</b>`);
+					lines.push(`参与比赛的玩家 ${allowScouting ? '可以' : '不能'} 观看同时进行的其他对战`);
+					lines.push(`<b>强制计时器: ${forceTimer ? '开' : '关'}</b>`);
 					if (forceTimer) {
-						lines.push('All battles will be timed.');
+						lines.push('在对战触发后强制开启计时器');
 					} else {
-						lines.push('The timer is opt-in.');
+						lines.push('玩家在对战中可自由选择开启或关闭计时器');
 					}
-					lines.push(`<b>Auto-start: ${tourRules.autostart || 'Unset'}</b>`);
+					lines.push(`<b>自动开始: ${tourRules.autostart || '未设置'}</b>`);
 					if (tourRules.autostart) {
-						lines.push(`The tournament will automatically start in ${tourRules.autostart} minute(s).`);
+						lines.push(`报名时间为 ${tourRules.autostart} 分钟, 随后将自动开始比赛`);
 					} else {
-						lines.push('The tournament will not automatically started.');
+						lines.push('比赛不会自动开始, 需要管理员手动开始');
 					}
-					lines.push(`<b>Auto-disqualify: ${tourRules.autodq || 'Unset'}</b>`);
+					lines.push(`<b>自动踢出: ${tourRules.autodq || '未设置'}</b>`);
 					if (tourRules.autodq) {
-						lines.push(`Inactive players will be disqualified in ${tourRules.autodq} minute(s).`);
+						lines.push(`未及时发出或接受挑战的玩家将在 ${tourRules.autodq} 分钟后被自动踢出比赛`);
 					} else {
-						lines.push('Inactive players will not be automatically disqualified.');
+						lines.push('未及时发出或接受挑战的玩家不会被自动踢出比赛');
 					}
 					if (roomTourConfig[index].desc) {
-						lines.push(`<b>Description:</b>`);
+						lines.push(`<b>附加信息:</b>`);
 						lines.push(roomTourConfig[index].desc);
 					}
-					lines.push(PetUtils.button('/autotour config', 'Back'));
+					lines.push(PetUtils.button('/autotour config', '返回'));
 					return this.sendReply(`|uhtml|auto-tour-config|${lines.join('<br/>')}`);
 				}
 			},
@@ -456,7 +461,7 @@ export const commands: Chat.ChatCommands = {
 					delete tmpTourConfig[`${room!.roomid}-${user.id}`];
 				}
 				this.parse('/autotour config');
-				this.sendReply('Auto tour config updated.');
+				this.sendReply('房间赛设置更新完成');
 			},
 			cancel(target, room, user) {
 				this.requireRoom();
@@ -537,32 +542,32 @@ export const commands: Chat.ChatCommands = {
 							buf += `<b>Format</b><br/>`;
 							buf += `<form data-submitsend="${cmdPrefix},format,{autotour-format}">`;
 							buf += `<input name="autotour-format" placeholder="${tourSettings.format}" style="width: 300px"/>`;
-							buf += `<button class="button" type="submit">OK</button>`;
+							buf += `<button class="button" type="submit">确认</button>`;
 							buf += `</form><br/>`;
-							buf += `<b>Bonus</b><br/>`;
-							buf += PetUtils.conditionalButton(bonus, `${cmdPrefix},bonus`, 'On');
-							buf += PetUtils.conditionalButton(!bonus, `${cmdPrefix},bonus`, 'Off');
+							buf += `<b>国服积分奖励</b><br/>`;
+							buf += PetUtils.conditionalButton(bonus, `${cmdPrefix},bonus`, '开启');
+							buf += PetUtils.conditionalButton(!bonus, `${cmdPrefix},bonus`, '关闭');
 							buf += `<br/><br/>`;
-							buf += `<details open><summary><b>Rules</b></summary>`;
+							buf += `<details open><summary><b>规则</b></summary>`;
 							buf += PetUtils.table(
-								['Player Capacity', 'Allow Scouting', 'Force Timer', 'Auto-start', 'Auto-disqualify'],
+								['玩家容量', '观战', '强制计时器', '自动开始', '自动踢出'],
 								[],
 								[
 									`<form data-submitsend="${cmdPrefix},playercap,{autotour-playercap}">` +
 									`<input name="autotour-playercap" placeholder="${rules.playercap}" style="width: 60px"/>` +
-									`<button class="button" type="submit">OK</button>` +
+									`<button class="button" type="submit">确认</button>` +
 									`</form>`,
-									PetUtils.conditionalButton(allowScouting, `${cmdPrefix},allowscouting`, 'On') +
-									PetUtils.conditionalButton(!allowScouting, `${cmdPrefix},allowscouting`, 'Off'),
-									PetUtils.conditionalButton(forceTimer, `${cmdPrefix},forcetimer`, 'On') +
-									PetUtils.conditionalButton(!forceTimer, `${cmdPrefix},forcetimer`, 'Off'),
+									PetUtils.conditionalButton(allowScouting, `${cmdPrefix},allowscouting`, '开启') +
+									PetUtils.conditionalButton(!allowScouting, `${cmdPrefix},allowscouting`, '关闭'),
+									PetUtils.conditionalButton(forceTimer, `${cmdPrefix},forcetimer`, '开启') +
+									PetUtils.conditionalButton(!forceTimer, `${cmdPrefix},forcetimer`, '关闭'),
 									`<form data-submitsend="${cmdPrefix},autostart,{autotour-autostart}">` +
 									`<input name="autotour-autostart" placeholder="${rules.autostart}" style="width: 60px"/>` +
-									`<button class="button" type="submit">OK</button>` +
+									`<button class="button" type="submit">确认</button>` +
 									`</form>`,
 									`<form data-submitsend="${cmdPrefix},autodq,{autotour-autodq}">` +
 									`<input name="autotour-autodq" placeholder="${rules.autodq}" style="width: 60px"/>` +
-									`<button class="button" type="submit">OK</button>` +
+									`<button class="button" type="submit">确认</button>` +
 									`</form>`
 								].map(s => [s]),
 								'350px',
@@ -570,16 +575,16 @@ export const commands: Chat.ChatCommands = {
 								'right'
 							);
 							buf += `</details><br/>`;
-							buf += `<details open><summary><b>Timing</b></summary>`;
+							buf += `<details open><summary><b>时间</b></summary>`;
 							buf += PetUtils.table(
-								['Day', 'Time'],
+								['日期', '时间'],
 								[],
 								[
 									PetUtils.conditionalButton(
 										timing.day === undefined,
 										`${cmdPrefix},day,undefined`,
-										'Everyday',
-									) + DAYS.map((day, i) => PetUtils.conditionalButton(
+										'每天',
+									) + '<br/>' + DAYS.map((day, i) => PetUtils.conditionalButton(
 										timing.day === i,
 										`${cmdPrefix},day,${i}`,
 										day,
@@ -588,7 +593,7 @@ export const commands: Chat.ChatCommands = {
 									`<input name="autotour-hours" placeholder="${timing.hours}" style="width: 60px"/>` +
 									`&ensp;:&ensp;` +
 									`<input name="autotour-minutes" placeholder="${timing.minutes}" style="width: 60px"/>` +
-									`<button class="button" type="submit">OK</button>` +
+									`<button class="button" type="submit">确认</button>` +
 									`</form>`
 								].map(s => [s]),
 								'350px',
@@ -596,17 +601,17 @@ export const commands: Chat.ChatCommands = {
 								'right'
 							)
 							buf += `</details><br/>`;
-							buf += `<b>Description (Optional):</b> ${tourSettings.desc}<br/>`;
+							buf += `<b>附加信息:</b> ${tourSettings.desc}<br/>`;
 							buf += `<form data-submitsend="${cmdPrefix},desc,{autotour-desc}">`;
 							buf += `<input name="autotour-desc" placeholder="${Utils.escapeHTML(tourSettings.desc || 'undefined')}" style="width: 300px"/>`;
-							buf += `<button class="button" type="submit">OK</button>`;
+							buf += `<button class="button" type="submit">确认</button>`;
 							buf += `</form><br/>`;
-							buf += PetUtils.button(`/autotour config`, 'Confirm & Back');
+							buf += PetUtils.button(`/autotour config`, '确认并返回');
 							this.sendReply(buf);
 					}
 				} else if (index === tmpTourConfig[`${room!.roomid}-${user.id}`].length) {
 					tmpTourConfig[`${room!.roomid}-${user.id}`][index] = {
-						format: '[Gen 8] OU',
+						format: '[Gen 9] OU',
 						rules: tmpTourConfig[`${room!.roomid}-${user.id}`][tmpTourConfig[`${room!.roomid}-${user.id}`].length - 1]?.rules || {},
 						timing: { 'minutes': 0, 'hours': 20 }
 					}
