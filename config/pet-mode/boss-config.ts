@@ -1,4 +1,4 @@
-exports.PetModeBossConfig = {
+export const PetModeBossConfig = {
 	'椰树牌椰汁': {
 		'set': '椰树牌椰汁|Exeggutor-Alola|goldencustapberry|harvest2|totemexeggutorattack|Quiet|252,,252,252,252,252|M|||50|',
 		'bonus': 'Grassium Z'

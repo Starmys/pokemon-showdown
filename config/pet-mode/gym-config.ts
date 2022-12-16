@@ -1,4 +1,4 @@
-exports.PetModeGymConfig = {
+export const PetModeGymConfig = {
 	"苍蓝": {
 		"maxlevel": 10,
 		"userteam": "Evasion Moves",
