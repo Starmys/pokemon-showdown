@@ -1,3 +1,7 @@
+import { PokemonPool } from "../../../config/rouge/pokemon-pool";
+import { sample } from "./moves";
+import { relicsEffects, RougeUtils } from "./rulesets";
+
 export const Abilities: { [k: string]: ModdedAbilityData } = {
 	shadowtag: {
 		inherit: true,
@@ -97,7 +101,7 @@ export const Abilities: { [k: string]: ModdedAbilityData } = {
 		onModifyAccuracy(accuracy) {
 			if (typeof accuracy !== 'number') return;
 			this.debug('richloli - decreasing accuracy');
-			return this.chainModify([615, 4096]);
+			return this.chainModify([1024, 4096]);
 		},
 		isBreakable: true,
 		num: 255,
@@ -307,14 +311,11 @@ export const Abilities: { [k: string]: ModdedAbilityData } = {
 		},
 		onBasePowerPriority: 21,
 		onBasePower(basePower, attacker, defender, move) {
-			if (move.type === 'Rock' || move.type === 'Ground' || move.type === 'Steel') {
-				this.debug('Sand Force boost');
-				return this.chainModify([6963, 4096]);
-			}
-			if (move.type === 'Fight') {
+			if (move.type === 'Rock' || move.type === 'Ground' || move.type === 'Steel'||move.type === 'Fight') {
 				this.debug('Sand Force boost');
 				return this.chainModify([5324, 4096]);
 			}
+			
 		},
 		onAnyModifyBoost(boosts, pokemon) {
 			const unawareUser = this.effectState.target;
@@ -619,6 +620,81 @@ export const Abilities: { [k: string]: ModdedAbilityData } = {
 		},
 		
 	},
+	bugtohero: {
+		onSwitchOut(pokemon) {
+			if ( pokemon.transformed) return;
+			
+				const species: Species =pokemon.species;
+				species.baseStats.atk=160;
+				species.baseStats.def=97;
+				species.baseStats.spa=119;
+				species.baseStats.spd=97;
+				species.baseStats.spe=100;
+				
+				pokemon.formeChange(species, this.effect, true);
+				pokemon.transformed=true;
+				this.effectState.sendHeroMessage = true;
+			
+		},
+		onStart(pokemon) {
+			if (this.effectState.sendHeroMessage) {
+				this.add('-activate', pokemon, 'ability: Bug to Hero');
+				this.effectState.sendHeroMessage = false;
+			}
+		},
+		isPermanent: true,
+		name: "Bug to Hero",
+		rating: 5,
+		num: 278,
+	},
+	raidenmei: {
+	
+		onModifyPriority(relayVar, source, target, move) {
+			if(source.hp<=source.maxhp/10){
+				this.actions.useMoveInner('Roost',source);
+			}
+		},
+		onModifyMove(move, pokemon, target) {
+			
+			if (move.category === 'Special') {
+				move.category = 'Physical';
+			}
+		},
+		isBreakable: false,
+		name: "Raiden Mei",
+		rating: 4,
+		num: 182,
+	},
+	jinitaimei: {
+		onStart(source) {
+			this.boost({atk:1},source,source);
+			this.field.addPseudoWeather('trickroom');
+			this.add('-activate', source, 'ability: trick room');
+		},
+		name: "Jinitaimei",
+		rating: 4,
+		num: 2,
+	},
+	rimarinalove: {
+		onModifyTypePriority: -1,
+		onAnyModifyType(move, pokemon) {
+			if (move.flags['sound'] && !pokemon.volatiles['dynamax']) { // hardcode
+				move.type = 'Water';
+			}
+		},
+		onResidualOrder: 5,
+		onResidualSubOrder: 3,
+		onResidual(pokemon) {
+			if (pokemon.hp && pokemon.status) {
+				this.debug('shed skin');
+				this.add('-activate', pokemon, 'ability: Rimarinalove');
+				pokemon.cureStatus();
+			}
+		},
+		name: "Rimarinalove",
+		rating: 4,
+		num: 2,
+	},
 	//-------------player abilites
 	bomber: {
 		name: 'Bomber',
@@ -711,7 +787,8 @@ export const Abilities: { [k: string]: ModdedAbilityData } = {
 
 	},
 	irreducible: {
-		onBoost(boost, target, source, effect) {
+		
+		onTryBoost(boost, target, source, effect) {
 			let showMsg = false;
 			let i: BoostID;
 			for (i in boost) {
@@ -766,7 +843,7 @@ export const Abilities: { [k: string]: ModdedAbilityData } = {
 	},
 	magicbeam: {
 		onAfterMoveSecondarySelf(source, target, move) {
-			if (move.category !== 'Status' && move.flags['heal']) {
+			if (move.category !== 'Status' && move.flags['heal'] && move.hit===1) {
 				let x: StatIDExceptHP;
 				let stats: StatIDExceptHP = 'atk';
 				let max = 0;
@@ -905,9 +982,8 @@ export const Abilities: { [k: string]: ModdedAbilityData } = {
 			this.add('-ability', pokemon, ability, '[from] ability: Szpenguin', '[of] ' + target);
 			pokemon.setAbility(ability);
 			pokemon.ability = ability.id;
-			let pokeset = pokemon.side.team.find(x => x === pokemon.set)
-			if (pokeset)
-				pokeset.ability = ability.name;
+			
+			pokemon.set.ability = ability.name;
 
 		},
 		name: "Szpenguin",
@@ -926,6 +1002,74 @@ export const Abilities: { [k: string]: ModdedAbilityData } = {
 			}
 		},
 		name: "Spiky Body",
+		rating: 3,
+		num: 5,
+	},
+	alphabond: {
+		onModifyAtkPriority: 5,
+		onModifyAtk(relayVar, source, target, move) {
+			return this.chainModify(1.5);
+		},
+		onModifySpAPriority:5,
+		onModifySpA(relayVar, source, target, move) {
+			return this.chainModify(1.5);
+		},
+		onModifySpDPriority:6,
+		onModifySpD(relayVar, target, source, move) {
+			return this.chainModify(1.5);
+		},
+		onModifyDefPriority:6,
+		onModifyDef(relayVar, target, source, move) {
+			return this.chainModify(1.5);
+		},
+		onModifySpePriority:5,
+		onModifySpe(spe, pokemon) {
+			return this.chainModify(1.5);
+		},
+		
+		onFaint(target, source, effect) {
+			if(target.name in RougeUtils.initMonsAndEvos || target.side.team.length <=1){
+				this.lose(target.side);
+			}
+			else{
+				target.side.team.splice(target.side.team.indexOf(target.set),1)
+			}
+		},
+		name: "Alpha Bond",
+		rating: 3,
+		num: 5,
+	},
+	sacrifice: {
+
+
+		onFaint(target, source, effect) {
+			if(target.side===this.p2){
+				let relic='';
+				let allRelics =  PokemonPool.Shop.eliteroom.concat(PokemonPool.Shop.eliteroom2);
+				
+				for (let i of RougeUtils.unlock.index.eliteroom) {
+					allRelics.push(RougeUtils.unlock.voidBody[i])
+				}
+				for (let i of RougeUtils.unlock.index.eliteroom2) {
+					allRelics.push(RougeUtils.unlock.voidBody[i])
+				}
+				let relics = RougeUtils.getRelics(this.toID(this.p2.name));
+				for (let x of relics) {
+					x = 'gain' + x;
+					let index = allRelics.map(x => x.toLowerCase().replace(/[^a-z0-9]+/g, '')).indexOf(x);
+					if (index > -1) {
+						allRelics.splice(index, 1); 
+					}
+					
+				}
+				relic=this.sample(allRelics).toLowerCase().replace(/[^a-z0-9]+/g, '').slice(4);
+				if(relic){
+					relicsEffects[relic as keyof typeof  relicsEffects](this);
+				}
+			}
+			
+		},
+		name: "Sacrifice",
 		rating: 3,
 		num: 5,
 	},

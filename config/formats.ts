@@ -4790,212 +4790,15 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 		column: 1,
 	},
 	{
-		name: "[Gen 8] PS 国服积分",
-		desc: `用于国服论坛积分显示, 天梯对战不计分。`,
-
-		mod: 'gen8',
-		team: 'random',
-		challengeShow: false,
-		rated: false,
-		ruleset: ['PotD', 'Obtainable', 'Sleep Clause Mod', 'HP Percentage Mod', 'Cancel Mod'],
-		onBegin() {
-			this.add('html', `<div class="broadcast-red"><strong>本分级仅用于国服论坛积分显示, 天梯对战不计分。具体积分规则见<a href="http://chinapsim.org./topic/63/">国服积分说明帖</a>.</strong></div>`);
-		},
-	},
-	{
-		name: "[Gen 9] Rouge Mod",
-		desc: `出发, 去往未知洞穴里探险`,
-
-		challengeShow: false,
-		// tournamentShow: false,
-
-		mod: 'rouge',
-		ruleset: ['Dynamax Clause','Standard NatDex'],
-	},
-	{
-		name: "[Gen 8] Pet Mode 宠物模式",
-		desc: `与自己培养的宝可梦并肩作战吧！`,
-
-		mod: 'pet',
-		team: 'randomPetMode',
-		ruleset: ['PS China Pet Mode'],
-	},
-	{
-		name: "[Gen 8] Pet Mode Balanced 宠物平衡模式",
-		desc: `与自己培养的宝可梦一起享受公平的对战吧！`,
-
-		mod: 'pet',
-		team: 'randomPetModeBalanced',
-		ruleset: ['PS China Pet Mode Balanced'],
-	},
-	{
-		name: "[Gen 8] National Dex (Gym Aura Mod 道馆场地模式)",
-		desc: `双方共携带≥4个对应属性的精灵开启对应属性的道馆场地, 不可以使用突击背心`,
-
-		mod: 'pet',
-		ruleset: ['PS China Gym Aura Mode'],
-	},
-	{
-		name: "[Gen 8] Pet Mode Boss Battle",
-		desc: `去挑战强大的霸主宝可梦吧！`,
-
-		searchShow: false,
-		challengeShow: false,
-		// tournamentShow: false,
-
-		mod: 'petboss',
-		gameType: 'multi',
-		team: 'randomPetModeBossBattle',
-		ruleset: ['PS China Pet Mode Boss'],
-	},
-	{
-		name: "[Gen 8] Multi OU",
-		desc: `4-Player 2v2 Doubles OU`,
-		mod: 'gen8',
-		tournamentShow: false,
-		rated: true,
-		gameType: 'multi',
-		ruleset: ['Standard Doubles', 'Dynamax Clause',  'Picked Team Size = 3'],
-		banlist: ['DUber', 'Power Construct'],
-	},
-	{
-		name: "[Gen 8] OU (4P)",
-		desc: `4-Player 1v1v1v1 OU`,
-		mod: 'gen8',
-		tournamentShow: false,
-		rated: false,
-		gameType: 'freeforall',
-		ruleset: ['OU'],
-
-		onTeamPreview() {
-			this.sides.slice(2).forEach(side => {
-				this.add(
-					'html',
-					`<strong style="color:#445566;display:block;">${side.name}'s team:</strong><em style="color:#445566;display:block;">${side.pokemon.map(x => x.name).join(' / ')}</em>`
-				);
-			})
-		},
-	},
-	{
-		name: "[Gen 8] Shinx OU 2v2",
-		desc: `4-Player 2v2 OU for Shinx`,
-		mod: 'gen8',
-		tournamentShow: false,
-		rated: false,
-		gameType: 'multi',
-		timer: { starting: 300, addPerTurn: 45, maxPerTurn: 300, maxFirstTurn: 300, grace: 300 },
-		ruleset: ['Obtainable', 'Team Preview', 'Gravity Sleep Clause', 'Species Clause', 'Nickname Clause', 'OHKO Clause', 'Evasion Moves Clause', 'Endless Battle Clause', 'HP Percentage Mod', 'Cancel Mod', 'Dynamax Clause'],
-		banlist: ['Jirachi', 'Kartana', 'Melmetal', 'swagger', 'Uber', 'AG', 'Arena Trap', 'Moody', 'Power Construct', 'Sand Veil', 'Shadow Tag', 'Snow Cloak',
-			'Bright Powder', 'King\'s Rock', 'Lax Incense', 'Baton Pass',],
-		onModifyMove(move, pokemon, target) {
-			if (move.id === 'defog') {
-				move.onHit = (target, source, move) => {
-					let success = false;
-					if (!target.volatiles['substitute'] || move.infiltrates) success = !!this.boost({ evasion: -1 });
-					const removeTarget = [
-						'reflect', 'lightscreen', 'auroraveil', 'safeguard', 'mist', 'spikes', 'toxicspikes', 'stealthrock', 'stickyweb', 'gmaxsteelsurge',
-					];
-					const removeAll = [
-						'spikes', 'toxicspikes', 'stealthrock', 'stickyweb', 'gmaxsteelsurge',
-					];
-					for (const targetCondition of removeTarget) {
-						if (target.side.removeSideCondition(targetCondition)) {
-							if (!removeAll.includes(targetCondition)) continue;
-							this.add('-sideend', target.side, this.dex.conditions.get(targetCondition).name, '[from] move: Defog', '[of] ' + source);
-							success = true;
-						}
-					}
-					for (const side of this.sides.filter(x => x != target.side)) {
-						for (const sideCondition of removeAll) {
-							if (side.removeSideCondition(sideCondition)) {
-								this.add('-sideend', source.side, this.dex.conditions.get(sideCondition).name, '[from] move: Defog', '[of] ' + source);
-								success = true;
-							}
-						}
-					}
-					this.field.clearTerrain();
-					return success;
-				}
-			}
-		},
-
-	},
-	{
-		name: "[Gen 7] Shinx OU 2v2",
-		desc: `4-Player 2v2 Gen 7 OU for Shinx`,
-		mod: 'gen7',
-		tournamentShow: false,
-		rated: false,
-		gameType: 'multi',
-		timer: { starting: 300, addPerTurn: 45, maxPerTurn: 300, maxFirstTurn: 300, grace: 300 },
-		ruleset: ['Obtainable', 'Team Preview', 'Gravity Sleep Clause','Species Clause', 'Nickname Clause', 'OHKO Clause', 'Moody Clause', 'Evasion Moves Clause', 'Endless Battle Clause', 'HP Percentage Mod', 'Cancel Mod'],
-		banlist: ['Jirachi', 'Magearna', 'Snorlax', 'swagger', 'Uber', 'Arena Trap', 'Power Construct', 'Shadow Tag', 'Baton Pass'],
-		onModifyMove(move, pokemon, target) {
-			if (move.id === 'defog') {
-				move.onHit = (target, source, move) => {
-					let success = false;
-					if (!target.volatiles['substitute'] || move.infiltrates) success = !!this.boost({ evasion: -1 });
-					const removeTarget = [
-						'reflect', 'lightscreen', 'auroraveil', 'safeguard', 'mist', 'spikes', 'toxicspikes', 'stealthrock', 'stickyweb', 'gmaxsteelsurge',
-					];
-					const removeAll = [
-						'spikes', 'toxicspikes', 'stealthrock', 'stickyweb', 'gmaxsteelsurge',
-					];
-					for (const targetCondition of removeTarget) {
-						if (target.side.removeSideCondition(targetCondition)) {
-							if (!removeAll.includes(targetCondition)) continue;
-							this.add('-sideend', target.side, this.dex.conditions.get(targetCondition).name, '[from] move: Defog', '[of] ' + source);
-							success = true;
-						}
-					}
-					for (const side of this.sides.filter(x => x != target.side)) {
-						for (const sideCondition of removeAll) {
-							if (side.removeSideCondition(sideCondition)) {
-								this.add('-sideend', source.side, this.dex.conditions.get(sideCondition).name, '[from] move: Defog', '[of] ' + source);
-								success = true;
-							}
-						}
-					}
-					return success;
-				}
-			}
-		},
-
-	},
-	{
-		name: "[Gen 8] 70 Acc-Cup",
-		desc:
-			"所有技能的命中率*70%",
-
-		mod: 'gen8',
-		ruleset: ['Standard', 'Dynamax Clause'],
-		banlist: ['Uber', 'AG', 'Arena Trap', 'Moody', 'Power Construct', 'Shadow Tag', 'Baton Pass', 'Zoom Lens', 'Wide Lens', 'Victory Star', 'Compound Eyes', 'Wonder Skin','No Guard'],
-		onModifyMove(move, pokemon, target) {
-			if ((typeof move.accuracy) === "number") {
-				move.accuracy = move.accuracy as number * 0.7;
-			}
-			if (move.accuracy === true) {
-				move.accuracy = 70;
-			}
-		},
-		onTryHit(target, source, move) {
-			if (move.target === "self" || move.target === "all" || move.target === "foeSide" || move.target === "allySide") {
-				if (this.prng.next(100) + 1 > 70 * (3 + Math.max(0, source.boosts.accuracy)) / (3 + Math.min(0, source.boosts.accuracy))) {
-					return false;
-				}
-			}
-		},
-	},
-	{
-		name: "[Gen 8] Durants",
+		name: "[Gen 9] Durants",
 		desc: `男人的决斗！`,
 
 		mod: 'pschinaforfun',
 		team: 'randomDurants',
-		ruleset: ['Team Preview', 'Dynamax Clause'],
+		ruleset: ['Team Preview', 'Dynamax Clause','Terastal Clause'],
 	},
 	{
-		name: "[Gen 8] Metronome",
+		name: "[Gen 9] Metronome",
 		desc: `真男人的决斗！`,
 
 		mod: 'pschinaforfun',
@@ -5104,6 +4907,257 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 		ruleset: ['Flat Rules', '!! Adjust Level = 50', 'Min Source Gen = 8', 'VGC Timer', 'Limit One Restricted'],
 		restricted: ['Restricted Legendary'],
 	},
+	///////////////国服多人分级
+	{
+		section: "PSChina multi player",
+		column: 1,
+	},
+	{
+		name: "[Gen 9] Multi OU",
+		desc: `4-Player 2v2 Doubles OU`,
+		mod: 'gen9',
+		tournamentShow: false,
+		rated: true,
+		gameType: 'multi',
+		ruleset: ['Standard Doubles', 'Dynamax Clause',  'Picked Team Size = 3'],
+		banlist: ['DUber', 'Power Construct'],
+	},
+	{
+		name: "[Gen 9] OU (4P)",
+		desc: `4-Player 1v1v1v1 OU`,
+		mod: 'gen9',
+		tournamentShow: false,
+		rated: false,
+		gameType: 'freeforall',
+		ruleset: ['OU'],
+
+		// onTeamPreview() {
+		// 	this.sides.slice(2).forEach(side => {
+		// 		this.add(
+		// 			'html',
+		// 			`<strong style="color:#445566;display:block;">${side.name}'s team:</strong><em style="color:#445566;display:block;">${side.pokemon.map(x => x.name).join(' / ')}</em>`
+		// 		);
+		// 	})
+		// },
+	},
+	{
+		name: "[Gen 9] National Dex (4P)",
+		desc: `4-Player 1v1v1v1 National Dex OU`,
+		mod: 'gen9',
+		tournamentShow: false,
+		rated: false,
+		gameType: 'freeforall',
+		ruleset: ['Standard NatDex', 'OHKO Clause', 'Evasion Clause', 'Species Clause', 'Sleep Clause Mod'],
+		banlist: ['ND Uber', 'ND AG', 'Arena Trap', 'Moody', 'Power Construct', 'Shadow Tag', 'King\'s Rock', 'Quick Claw', 'Razor Fang', 'Assist', 'Baton Pass'],
+	
+	},
+	{
+		name: "[Gen 9] Shuffmon (4P)",
+		desc: "两边携带的精灵会在开局进行随机分配\n " +
+		"All sides' pokemon will reshuffle on the begin"
+	,
+		mod: 'gen9',
+		tournamentShow: false,
+		rated: false,
+		gameType: 'freeforall',
+		ruleset: ['Standard NatDex', 'OHKO Clause', 'Evasion Clause', 'Species Clause', 'Sleep Clause Mod'],
+		banlist: ['ND Uber', 'ND AG', 'Arena Trap', 'Moody', 'Power Construct', 'Shadow Tag', 'King\'s Rock', 'Quick Claw', 'Razor Fang', 'Assist', 'Baton Pass'],
+	
+		onBegin() {
+			const len=[];
+			const allPokemon = this.getAllPokemon();
+			for (let side of this.sides) {
+				len.push(side.pokemon.length)
+				side.pokemon=[]
+			}
+			let indexes = [...new Array(this.sides.length).keys()]
+			for (const pokemon of allPokemon) {
+				let sideIndex = this.sample(indexes);
+				this.sides[sideIndex].pokemon.push(new Pokemon(pokemon.set, this.sides[sideIndex]))
+
+				if (this.sides[sideIndex].pokemon.length >= len[sideIndex]) {
+					indexes.splice(sideIndex, 1);
+				}
+			}
+			this.add('rule', 'Shuffmon模式规则: http://47.94.147.145/topic/2477/%E5%9B%BD%E6%9C%8D%E4%B8%93%E5%B1%9Eom%E5%88%86%E7%BA%A7/9');
+		},
+	},
+	{
+		name: "[Gen 9] 2p v 2p OU ",
+		desc: `4-Player 2v2 OU for Shinx`,
+		mod: 'gen9',
+		tournamentShow: false,
+		rated: false,
+		gameType: 'multi',
+		timer: { starting: 300, addPerTurn: 45, maxPerTurn: 300, maxFirstTurn: 300, grace: 300 },
+		ruleset: ['Obtainable', 'Team Preview', 'Gravity Sleep Clause', 'Species Clause', 'Nickname Clause', 'OHKO Clause', 'Evasion Moves Clause', 'Endless Battle Clause', 'HP Percentage Mod', 'Cancel Mod', 'Dynamax Clause'],
+		banlist: ['Uber', 'AG', 'Arena Trap', 'Moody', 'Power Construct', 'Sand Veil', 'Shadow Tag', 'Snow Cloak',
+			'Bright Powder', 'King\'s Rock', 'Lax Incense', 'Baton Pass','Tatsugiri'],
+		
+		onModifyMove(move, pokemon, target) {
+			if (move.id === 'defog') {
+				move.onHit = (target, source, move) => {
+					let success = false;
+					if (!target.volatiles['substitute'] || move.infiltrates) success = !!this.boost({ evasion: -1 });
+					const removeTarget = [
+						'reflect', 'lightscreen', 'auroraveil', 'safeguard', 'mist', 'spikes', 'toxicspikes', 'stealthrock', 'stickyweb', 'gmaxsteelsurge',
+					];
+					const removeAll = [
+						'spikes', 'toxicspikes', 'stealthrock', 'stickyweb', 'gmaxsteelsurge',
+					];
+					for (const targetCondition of removeTarget) {
+						if (target.side.removeSideCondition(targetCondition)) {
+							if (!removeAll.includes(targetCondition)) continue;
+							this.add('-sideend', target.side, this.dex.conditions.get(targetCondition).name, '[from] move: Defog', '[of] ' + source);
+							success = true;
+						}
+					}
+					for (const side of this.sides.filter(x => x != target.side)) {
+						for (const sideCondition of removeAll) {
+							if (side.removeSideCondition(sideCondition)) {
+								this.add('-sideend', source.side, this.dex.conditions.get(sideCondition).name, '[from] move: Defog', '[of] ' + source);
+								success = true;
+							}
+						}
+					}
+					this.field.clearTerrain();
+					return success;
+				}
+			}
+		},
+
+	},
+	{
+		name: "[Gen 8] 2p v 2p OU",
+		desc: `4-Player 2v2 OU for Shinx`,
+		mod: 'gen8',
+		tournamentShow: false,
+		rated: false,
+		gameType: 'multi',
+		timer: { starting: 300, addPerTurn: 45, maxPerTurn: 300, maxFirstTurn: 300, grace: 300 },
+		ruleset: ['Obtainable', 'Team Preview', 'Gravity Sleep Clause', 'Species Clause', 'Nickname Clause', 'OHKO Clause', 'Evasion Moves Clause', 'Endless Battle Clause', 'HP Percentage Mod', 'Cancel Mod', 'Dynamax Clause'],
+		banlist: ['Jirachi', 'Kartana', 'Melmetal', 'swagger', 'Uber', 'AG', 'Arena Trap', 'Moody', 'Power Construct', 'Sand Veil', 'Shadow Tag', 'Snow Cloak',
+			'Bright Powder', 'King\'s Rock', 'Lax Incense', 'Baton Pass',],
+		onModifyMove(move, pokemon, target) {
+			if (move.id === 'defog') {
+				move.onHit = (target, source, move) => {
+					let success = false;
+					if (!target.volatiles['substitute'] || move.infiltrates) success = !!this.boost({ evasion: -1 });
+					const removeTarget = [
+						'reflect', 'lightscreen', 'auroraveil', 'safeguard', 'mist', 'spikes', 'toxicspikes', 'stealthrock', 'stickyweb', 'gmaxsteelsurge',
+					];
+					const removeAll = [
+						'spikes', 'toxicspikes', 'stealthrock', 'stickyweb', 'gmaxsteelsurge',
+					];
+					for (const targetCondition of removeTarget) {
+						if (target.side.removeSideCondition(targetCondition)) {
+							if (!removeAll.includes(targetCondition)) continue;
+							this.add('-sideend', target.side, this.dex.conditions.get(targetCondition).name, '[from] move: Defog', '[of] ' + source);
+							success = true;
+						}
+					}
+					for (const side of this.sides.filter(x => x != target.side)) {
+						for (const sideCondition of removeAll) {
+							if (side.removeSideCondition(sideCondition)) {
+								this.add('-sideend', source.side, this.dex.conditions.get(sideCondition).name, '[from] move: Defog', '[of] ' + source);
+								success = true;
+							}
+						}
+					}
+					this.field.clearTerrain();
+					return success;
+				}
+			}
+		},
+
+	},
+	{
+		name: "[Gen 7] 2p v 2p OU",
+		desc: `4-Player 2v2 Gen 7 OU for Shinx`,
+		mod: 'gen7',
+		tournamentShow: false,
+		rated: false,
+		gameType: 'multi',
+		timer: { starting: 300, addPerTurn: 45, maxPerTurn: 300, maxFirstTurn: 300, grace: 300 },
+		ruleset: ['Obtainable', 'Team Preview', 'Gravity Sleep Clause','Species Clause', 'Nickname Clause', 'OHKO Clause', 'Moody Clause', 'Evasion Moves Clause', 'Endless Battle Clause', 'HP Percentage Mod', 'Cancel Mod'],
+		banlist: ['Jirachi', 'Magearna', 'Snorlax', 'swagger', 'Uber', 'Arena Trap', 'Power Construct', 'Shadow Tag', 'Baton Pass'],
+		onModifyMove(move, pokemon, target) {
+			if (move.id === 'defog') {
+				move.onHit = (target, source, move) => {
+					let success = false;
+					if (!target.volatiles['substitute'] || move.infiltrates) success = !!this.boost({ evasion: -1 });
+					const removeTarget = [
+						'reflect', 'lightscreen', 'auroraveil', 'safeguard', 'mist', 'spikes', 'toxicspikes', 'stealthrock', 'stickyweb', 'gmaxsteelsurge',
+					];
+					const removeAll = [
+						'spikes', 'toxicspikes', 'stealthrock', 'stickyweb', 'gmaxsteelsurge',
+					];
+					for (const targetCondition of removeTarget) {
+						if (target.side.removeSideCondition(targetCondition)) {
+							if (!removeAll.includes(targetCondition)) continue;
+							this.add('-sideend', target.side, this.dex.conditions.get(targetCondition).name, '[from] move: Defog', '[of] ' + source);
+							success = true;
+						}
+					}
+					for (const side of this.sides.filter(x => x != target.side)) {
+						for (const sideCondition of removeAll) {
+							if (side.removeSideCondition(sideCondition)) {
+								this.add('-sideend', source.side, this.dex.conditions.get(sideCondition).name, '[from] move: Defog', '[of] ' + source);
+								success = true;
+							}
+						}
+					}
+					return success;
+				}
+			}
+		},
+
+	},
+	{
+		name: "[Gen 9] 2p v 2p NDOU ",
+		desc: `4-Player 2v2 OU for Shinx`,
+		mod: 'gen9',
+		tournamentShow: false,
+		rated: false,
+		gameType: 'multi',
+		timer: { starting: 300, addPerTurn: 45, maxPerTurn: 300, maxFirstTurn: 300, grace: 300 },
+		ruleset: ['Obtainable', 'Team Preview', 'Gravity Sleep Clause', 'Species Clause', 'Nickname Clause', 'OHKO Clause', 'Evasion Moves Clause', 'Endless Battle Clause', 'HP Percentage Mod', 'Cancel Mod', 'Dynamax Clause'],
+		banlist: [ 'Uber', 'AG', 'Arena Trap', 'Moody', 'Power Construct', 'Sand Veil', 'Shadow Tag', 'Snow Cloak',
+			'Bright Powder', 'King\'s Rock', 'Lax Incense', 'Baton Pass','Tatsugiri'],
+		
+		onModifyMove(move, pokemon, target) {
+			if (move.id === 'defog') {
+				move.onHit = (target, source, move) => {
+					let success = false;
+					if (!target.volatiles['substitute'] || move.infiltrates) success = !!this.boost({ evasion: -1 });
+					const removeTarget = [
+						'reflect', 'lightscreen', 'auroraveil', 'safeguard', 'mist', 'spikes', 'toxicspikes', 'stealthrock', 'stickyweb', 'gmaxsteelsurge',
+					];
+					const removeAll = [
+						'spikes', 'toxicspikes', 'stealthrock', 'stickyweb', 'gmaxsteelsurge',
+					];
+					for (const targetCondition of removeTarget) {
+						if (target.side.removeSideCondition(targetCondition)) {
+							if (!removeAll.includes(targetCondition)) continue;
+							this.add('-sideend', target.side, this.dex.conditions.get(targetCondition).name, '[from] move: Defog', '[of] ' + source);
+							success = true;
+						}
+					}
+					for (const side of this.sides.filter(x => x != target.side)) {
+						for (const sideCondition of removeAll) {
+							if (side.removeSideCondition(sideCondition)) {
+								this.add('-sideend', source.side, this.dex.conditions.get(sideCondition).name, '[from] move: Defog', '[of] ' + source);
+								success = true;
+							}
+						}
+					}
+					this.field.clearTerrain();
+					return success;
+				}
+			}
+		},
+
+	},
 	////////////////////   每月特殊分级
 	{
 		section: "PSChina Special Of The Month",
@@ -5139,8 +5193,8 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 		,
 
 		mod: 'gen8',
-		ruleset: ['Standard', 'Dynamax Clause'],
-		banlist: ['Uber', 'AG', 'Arena Trap', 'Moody', 'Power Construct', 'Sand Veil', 'Shadow Tag', 'Snow Cloak', 'King\'s Rock', 'Baton Pass'],
+		ruleset: [ 'Dynamax Clause'],
+		banlist: [],
 		onBegin() {
 			const len=[];
 			const allPokemon = this.getAllPokemon();
@@ -5200,5 +5254,67 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 				return [`${set.name}'s item ${item.name} does not exist in Gen ${this.dex.gen}.`];
 			}
 		},
+	},
+	//////////////////非对战分级
+	{
+		section: "PSChina Not to play",
+		column: 1,
+	},
+	{
+		name: "[Gen 8] PS 国服积分",
+		desc: `用于国服论坛积分显示, 天梯对战不计分。`,
+
+		mod: 'gen8',
+		team: 'random',
+		challengeShow: false,
+		rated: false,
+		ruleset: ['PotD', 'Obtainable', 'Sleep Clause Mod', 'HP Percentage Mod', 'Cancel Mod'],
+		onBegin() {
+			this.add('html', `<div class="broadcast-red"><strong>本分级仅用于国服论坛积分显示, 天梯对战不计分。具体积分规则见<a href="http://chinapsim.org./topic/63/">国服积分说明帖</a>.</strong></div>`);
+		},
+	},
+	{
+		name: "[Gen 9] Rouge Mod",
+		desc: `出发, 去往未知洞穴里探险`,
+
+		challengeShow: false,
+
+		mod: 'rouge',
+		ruleset: ['Dynamax Clause', 'Standard NatDex'],
+	},
+	{
+		name: "[Gen 8] Pet Mode 宠物模式",
+		desc: `与自己培养的宝可梦并肩作战吧！`,
+
+		mod: 'pet',
+		team: 'randomPetMode',
+		ruleset: ['PS China Pet Mode'],
+	},
+	{
+		name: "[Gen 8] Pet Mode Balanced 宠物平衡模式",
+		desc: `与自己培养的宝可梦一起享受公平的对战吧！`,
+
+		mod: 'pet',
+		team: 'randomPetModeBalanced',
+		ruleset: ['PS China Pet Mode Balanced'],
+	},
+	{
+		name: "[Gen 8] National Dex (Gym Aura Mod 道馆场地模式)",
+		desc: `双方共携带≥4个对应属性的精灵开启对应属性的道馆场地, 不可以使用突击背心`,
+
+		mod: 'pet',
+		ruleset: ['PS China Gym Aura Mode'],
+	},
+	{
+		name: "[Gen 8] Pet Mode Boss Battle",
+		desc: `去挑战强大的霸主宝可梦吧！`,
+
+		searchShow: false,
+		challengeShow: false,
+
+		mod: 'petboss',
+		gameType: 'multi',
+		team: 'randomPetModeBossBattle',
+		ruleset: ['PS China Pet Mode Boss'],
 	},
 ];

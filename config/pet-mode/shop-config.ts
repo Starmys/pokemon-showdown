@@ -1,4 +1,4 @@
-exports.PetModeShopConfig = {
+export const PetModeShopConfig = {
 	"ball": {
 		"Poke Ball": -1,
 		"Great Ball": 1,

@@ -1050,7 +1050,7 @@ class PetUser {
 		if (args.length !== 2) return;
 		const posType: 'bag' | 'box' = args[0] === 'bag' ? 'bag' : 'box';
 		const index = parseInt(args[1]);
-		if (index === NaN || index < 0 || index >= this.property[posType].length) return;
+		if (isNaN(index) || index < 0 || index >= this.property[posType].length) return;
 		if (ignoreEgg && !Pet.validPet(this.property[posType][index])) return;
 		return {'type': posType, 'index': index};
 	}
@@ -2127,7 +2127,7 @@ export const commands: Chat.ChatCommands = {
 					}
 					petUser.property['time']['gym'] = Date.now();
 					// Create Battle & Restrict User Team Level & Record Battle Information
-					const rule = `gen8petmode @@@pschinapetmodegym`;
+					const rule = `gen9petmode @@@pschinapetmodegym`;
 					const maxLevel = PetBattle.gymConfig[target]['maxlevel'];
 					const userTeam = userSets.map(set => {
 						const features = set.split('|');
@@ -2150,7 +2150,7 @@ export const commands: Chat.ChatCommands = {
 						return PetUtils.popup(user, `您今日已挑战${BOSSLIMIT}次霸主宝可梦!`);
 					}
 					// Create Battle & Record Battle Information
-					const rule = 'gen8petmodebossbattle';
+					const rule = 'gen9petmodebossbattle';
 					petUser.battleInfo = 'boss';
 					FS(`${DEPOSITPATH}/${user.id}.txt`).safeWriteSync(target);
 					battleRoom = PetBattle.createBattle(user, bot, 'random', 'random', rule, false, 'multi');
@@ -2179,7 +2179,7 @@ export const commands: Chat.ChatCommands = {
 					const wildPokemon = Pet.wild(room.roomid, target, petUser.maxLevel(), petUser.levelRistriction(), wantLegend);
 					if (!wildPokemon) return PetUtils.popup(user, '没有发现野生的宝可梦哦');
 					// Create Battle
-					const rule = 'gen8petmode @@@pschinapetmodewild';
+					const rule = 'gen9petmode @@@pschinapetmodewild';
 					petUser.battleInfo = wildPokemon + (wantLegend ? `<=${room.roomid}` : '');
 					battleRoom = PetBattle.createBattle(user, bot, 'random', wildPokemon, rule, !wantLegend);
 				}

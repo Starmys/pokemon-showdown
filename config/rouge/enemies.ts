@@ -1,4 +1,4 @@
-exports.Enemies = [
+export const Enemies = [
 	[
 		{
 			"name": 'Zigzagoon',
