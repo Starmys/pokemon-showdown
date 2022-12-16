@@ -1,4 +1,4 @@
-exports.PetModeSellConfig = {
+export const PetModeSellConfig = {
 	"rate": {
 		"Great Ball": 0.45,
 		"Ultra Ball": 0.27,
