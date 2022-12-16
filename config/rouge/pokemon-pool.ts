@@ -1,23 +1,103 @@
 
-exports.Pokemonpool = {
+export const PokemonPool = {
 	'Shop': {
 		"name": 'Shop',
 		"species": "",
 		"item": '',
 		"ability": "shopman",
 		"moves": [],
-		"pokemonroom": ['Get Munchlax', 'Get Tauros', 'Get Ferroseed', 'Get Indeedee', 'Get Growlithe', 'Get Slowbro', 'Get Lapras', 'Get Dreepy', 'Get Beldum', 'Get Onix', 'Get Slakoth', 'Get Solosis', 'Get Pincurchin',  'Get Pinsir', 'Get Sneasel', 'Get Houndour', 'Get Seadra', 'Get Shinx', 'Get Riolu', 'Get Fletchinder', 'Get Roselia', 'Get Larvitar', 'Get Slowpoke', 'Get Dhelmise', 'Get Gastly', 'Get Torkoal', 'Get Spearow', 'Get Golisopod', 'Get Skarmory', 'Get Absol', 'Get Tyrunt', 'Get Drilbur', 'Get Clefairy', 'Get Shellder', 'Get Heracross', 'Get Swinub', 'Get Dugtrio-Alola', 'Get Silicobra', 'Get Togepi', 'Get Vulpix-Alola', 'Get Scyther', 'Get Krabby', 'Get Binacle', 'Get Shuppet', 'Get Druddigon', 'Get Misdreavus', 'Get Ekans', 'Get Wailmer', 'Get Cosmog', 'Get Emzzf', 'Get Psyduck', 'Get White Devil', 'Get Gible', 'Get Arctovish', 'Get Glastrier', 'Get Virizion', 'Get Miracle Singer', 'Get Nihilego', 'Get Meloetta-Pirouette', 'Get Legend-Unown', 'Get Swablu', 'Get Arctozolt', 'Get Beedrill', 'Get Shroomish', 'Get Cubone', 'Get Dratini', 'Get Yungoos', 'Get Ralts', 'Get Silvally', 'Get Slowpoke-Galar', 'Get Hoopa', 'Get Escavalier', 'Get Kangaskhan'],
-		"pokemonroom2": ['Get Thundurus', 'Get Angod', 'Get Tapu Bulu', 'Get Tapu Fini', 'Get Mawile', 'Get Flygon-mega', 'Get Zygarde-10%', 'Get Nidoking', 'Get Nidoqueen', 'Get Diancie', 'Get Shuckle-Mega', 'Get Tapu Koko', 'Get Tapu Lele', 'Get Heatran', 'Get Hammer', 'Get Blacephalon', 'Get Urshifu', 'Get Zarude', 'Get Melmetal', 'Get Latios', 'Get Latias', 'Get Hoopa-Unbound', 'Get Genesect', 'Get Regigigas'],
-		'commonroom': ['Evo All', 'All Evs Add 24', 'Rand One Mon All Evs Add 72', 'Rand One Mon Two Evs Fill', 'Retransmission PokemonSet', 'Retransmission Moves Pool', 'Choose One Mon Three Evs Half', 'Choose One Mon All Evs Add 48', 'Choose One Mon Get Specific Item', 'Add life'],
-		'commonroom2': ['All Hp Evs Add 160', 'All Atk Evs Add 160', 'All Def Evs Add 160', 'All Spa Evs Add 160', 'All Spd Evs Add 160', 'All Spe Evs Add 160', 'Choose One Mon Atk Spe fill', 'Choose One Mon Spa Spe fill', 'Choose One Mon Hp Another fill'],
-		'itemroom': ['Get SuperBand', 'Get SuperSpecs', 'Get SuperScarf', 'Get Super Quick Claw', 'Get Super Vest', 'Get Diseviolite', 'Get Berserk Gene', 'Get Super Metronome', 'Get Super Life Orb', 'Get Intact Apple', 'Get Super Muscle Band', 'Get Super Wise Glasses', 'Get Adaptive Slate', 'Get Sight Lens', 'Get Gladiator Helmet', 'Get Super Bright Powder', 'Get Super Expert Belt', 'Get Huge Berry', 'Get Wonderful Berry', 'Get Super Scope Lens', 'Get Eject Station', 'Get Satori No Wheelchair', 'Get Consolation Prize'],
-		'itemroom2': ['Get Explosive Arm', 'Get Double-edged Sword', 'Get Flexible Device', 'Get Pain Connector', 'Get Immunity Herb', 'Get Deep Sea Dew', 'Get Seismic Lever', 'Get Azure Flute'],
-		'moveroom': ['Learn Super Steel Beam', 'Learn No Retreat', 'Learn Surging Strikes', 'Learn PhotonGeyser', 'Learn Boomburst', 'Learn Sheer Colder', 'Learn Aeroblast', 'Learn Double Impression', 'Learn Knock Off', 'Learn Dragon Hammer', 'Learn Super Light of Ruin', 'Learn Secret Sword', 'Learn V-create', 'Learn Poltergeist', 'Learn Apple Acid', 'Learn Swamp Power', 'Learn Triple Axel', 'Learn Shell Side Arm', 'Learn Meteor Beam', 'Learn Moongeist Beam', 'Learn Sleep Powder', 'Learn Stim Pack', 'Learn Super Silver Wind', 'Learn Dragon Energy', 'Learn Super Parabolic Charge', 'Learn Bolt Beak', 'Learn Super Spirit Break', 'Learn Sacred Sword', 'Learn Blue Flare', 'Learn Dual Ace', 'Learn Grav Apple', 'Learn Precipice Blades', 'Learn Freeze-Dry', 'Learn Gunk Shot', 'Learn Diamond Storm','Learn Origin Pulse','Learn Dragon Dance', 'Learn Stasis Ward', 'Learn Psychic Sword', 'Learn Backdraft', 'Learn Spring'],
-		'moveroom2': ['Learn Extreme Speed', 'Learn DoubleIronBash', 'Learn Shell Smash', 'Learn Core Enforcer', 'Learn Slack Off', 'Learn Quiver Dance', 'Learn Baddy Bad', 'Learn Prism Charge', 'Learn Tail Glow', 'Learn Belly Drum'],
-		'abilityroom': ['Become Bomber', 'Become Solar Power', 'Become Download ', 'Become Fur Coat', 'Become Gorilla Tactics', 'Become Ice Scales', 'Become Fluffy', 'Become Hustle', 'Become Intimidate', 'Become Mold Breaker', 'Become Prankster', 'Become Quick Draw', 'Become Tinted Lens', 'Become Unburden', 'Become Guts', 'Become Hide', 'Become Diffuser', 'Become Hard Shell', 'Become Giant Killer', 'Become Irreducible', 'Become Hyperactivity', 'Become Fortitude Shield', 'Become Poison Around'],
-		'abilityroom2': ['Become Sheer Force', 'Become Beast Boost', 'Become Protean', 'Become Regenerator', 'Become Speed Boost', 'Become Concentrator', 'Become Immolating', 'Become Renewal'],
-		'eliteroom': ['Gain Artirain', 'Gain Artisnow', 'Gain Artistorm', 'Gain Artisunny', 'Gain Confident Start', 'Gain Artilightscreen', 'Gain Artireflect', 'Gain Focus Device', 'Gain Angel Halo', 'Gain Acupressure Mat', 'Gain Trick Props', 'Gain Potion Of Rapid Growth', 'Gain Guardian Shield', 'Gain Sword of Trying', 'Gain Sleight of Hand', 'Gain Tri Force', 'Gain Obscenities', 'Gain Overdrive', 'Gain Time Jewel', 'Gain Fairy Egg', 'Gain Misfortune Mirror', 'Gain Healing Area', 'Gain Trueshot Aura', 'Gain Future Scope', 'Gain Future Camera', 'Gain Status Push', 'Gain Lifestream'],
-		'eliteroom2': ['Gain Dragon Thrones', 'Gain Dancing Floor', 'Gain Egg Of Compassion', 'Gain Industrial Plant', 'Gain Ticket Of Colosseum', 'Gain Soy Milk', 'Gain Garden Guardian', 'Gain Pole Tracker', 'Gain Industrial Emissions', 'Gain Sun Shower', 'Gain Combustible', 'Gain Infestation', 'Gain Gang Guarantee', 'Gain False Moon', 'Gain Gun of Nerf', 'Gain Eight Diagrams drawing', 'Gain Psychoanalysis', 'Gain Gravity Generator', 'Gain Stope'],
+		"pokemonroom": [
+			'Get Munchlax', 'Get Tauros', 'Get Ferroseed', 'Get Indeedee', 'Get Growlithe', 
+			'Get Slowbro', 'Get Lapras', 'Get Dreepy', 'Get Beldum', 'Get Onix', 'Get Slakoth', 'Get Solosis', 
+			'Get Pincurchin',  'Get Pinsir', 'Get Sneasel', 'Get Houndour', 'Get Seadra', 'Get Shinx', 
+			'Get Riolu', 'Get Fletchinder', 'Get Roselia', 'Get Larvitar', 'Get Slowpoke', 'Get Dhelmise', 
+			'Get Gastly', 'Get Torkoal', 'Get Spearow', 'Get Golisopod', 'Get Skarmory', 'Get Absol', 
+			'Get Tyrunt', 'Get Drilbur', 'Get Clefairy', 'Get Shellder', 'Get Heracross', 'Get Swinub', 
+			'Get Dugtrio-Alola', 'Get Silicobra', 'Get Togepi', 'Get Vulpix-Alola', 'Get Scyther', 'Get Krabby', 
+			'Get Binacle', 'Get Shuppet', 'Get Druddigon', 'Get Misdreavus', 'Get Ekans', 'Get Wailmer', 
+			'Get Cosmog', 'Get Emzzf', 'Get Psyduck', 'Get White Devil', 'Get Gible', 'Get Arctovish', 
+			'Get Glastrier', 'Get Virizion', 'Get Miracle Singer', 'Get Nihilego', 'Get Meloetta-Pirouette', 
+			'Get Legend-Unown', 'Get Swablu', 'Get Arctozolt', 'Get Beedrill', 'Get Shroomish', 'Get Cubone',
+			'Get Dratini', 'Get Yungoos', 'Get Ralts', 'Get Silvally', 'Get Slowpoke-Galar', 'Get Hoopa',
+			'Get Escavalier', 'Get Kangaskhan','Get Kricketune'
+		],
+		"pokemonroom2": [
+			'Get Thundurus', 'Get Angod', 'Get Tapu Bulu', 'Get Tapu Fini', 'Get Mawile', 'Get Flygon-mega', 
+			'Get Zygarde-10%', 'Get Nidoking', 'Get Nidoqueen', 'Get Diancie', 'Get Shuckle-Mega', 
+			'Get Tapu Koko', 'Get Tapu Lele', 'Get Heatran', 'Get Hammer', 'Get Blacephalon', 
+			'Get Urshifu', 'Get Zarude', 'Get Melmetal', 'Get Latios', 'Get Latias', 'Get Hoopa-Unbound', 
+			'Get Genesect', 'Get Regigigas'
+		],
+		'commonroom': [
+			'Evo All', 'All Evs Add 24', 'Rand One Mon All Evs Add 72', 'Rand One Mon Two Evs Fill', 
+			'Retransmission PokemonSet', 'Retransmission Moves Pool', 'Choose One Mon Three Evs Half', 
+			'Choose One Mon All Evs Add 48', 'Choose One Mon Get Specific Item', 'Add life'
+		],
+		'commonroom2': [
+			'All Hp Evs Add 160', 'All Atk Evs Add 160', 'All Def Evs Add 160', 'All Spa Evs Add 160', 
+			'All Spd Evs Add 160', 'All Spe Evs Add 160', 'Choose One Mon Atk Spe fill', 
+			'Choose One Mon Spa Spe fill', 'Choose One Mon Hp Another fill'
+		],
+		'itemroom': [
+			'Get SuperBand', 'Get SuperSpecs', 'Get SuperScarf', 'Get Super Quick Claw', 
+			'Get Super Vest', 'Get Diseviolite', 'Get Berserk Gene', 'Get Super Metronome', 
+			'Get Super Life Orb', 'Get Intact Apple', 'Get Super Muscle Band', 'Get Super Wise Glasses', 
+			'Get Adaptive Slate', 'Get Sight Lens', 'Get Gladiator Helmet', 'Get Super Bright Powder', 
+			'Get Super Expert Belt', 'Get Huge Berry', 'Get Wonderful Berry', 'Get Super Scope Lens', 
+			'Get Eject Station', 'Get Satori No Wheelchair', 'Get Consolation Prize','Get Effort Berry',
+			'Get Portable Earth'
+		],
+		'itemroom2': [
+			'Get Explosive Arm', 'Get Double-edged Sword', 'Get Flexible Device', 'Get Pain Connector', 
+			'Get Immunity Herb', 'Get Deep Sea Dew', 'Get Seismic Lever', 'Get Azure Flute'
+		],
+		'moveroom': [
+			'Learn Super Steel Beam', 'Learn No Retreat', 'Learn Surging Strikes', 'Learn PhotonGeyser', 
+			'Learn Boomburst', 'Learn Sheer Colder', 'Learn Aeroblast', 'Learn Double Impression', 
+			'Learn Knock Off', 'Learn Dragon Hammer', 'Learn Super Light of Ruin', 'Learn Secret Sword', 
+			'Learn V-create', 'Learn Poltergeist', 'Learn Apple Acid', 'Learn Swamp Power', 
+			'Learn Triple Axel', 'Learn Shell Side Arm', 'Learn Meteor Beam', 'Learn Moongeist Beam', 
+			'Learn Sleep Powder', 'Learn Stim Pack', 'Learn Super Silver Wind', 'Learn Dragon Energy', 
+			'Learn Super Parabolic Charge', 'Learn Bolt Beak', 'Learn Super Spirit Break', 
+			'Learn Sacred Sword', 'Learn Blue Flare', 'Learn Dual Ace', 'Learn Grav Apple', 
+			'Learn Precipice Blades', 'Learn Freeze-Dry', 'Learn Gunk Shot', 'Learn Diamond Storm',
+			'Learn Origin Pulse','Learn Dragon Dance', 'Learn Stasis Ward', 'Learn Psychic Sword', 
+			'Learn Backdraft', 'Learn Spring','Learn Revival Blessing','Learn Life Blessing','Get Death Speaker',
+		],
+		'moveroom2': [
+			'Learn Extreme Speed', 'Learn DoubleIronBash', 'Learn Shell Smash', 'Learn Core Enforcer', 
+			'Learn Slack Off', 'Learn Quiver Dance', 'Learn Baddy Bad', 'Learn Prism Charge', 
+			'Learn Tail Glow', 'Learn Belly Drum','Learn Divine'
+		],
+		'abilityroom': [
+			'Become Bomber', 'Become Solar Power', 'Become Download ', 'Become Fur Coat', 
+			'Become Gorilla Tactics', 'Become Ice Scales', 'Become Fluffy', 'Become Hustle', 
+			'Become Intimidate', 'Become Mold Breaker', 'Become Prankster', 'Become Quick Draw', 
+			'Become Tinted Lens', 'Become Unburden', 'Become Guts', 'Become Hide', 'Become Diffuser', 
+			'Become Hard Shell', 'Become Giant Killer', 'Become Irreducible', 'Become Hyperactivity', 
+			'Become Fortitude Shield', 'Become Poison Around','Become Alpha Bond'
+		],
+		'abilityroom2': [
+			'Become Sheer Force', 'Become Beast Boost', 'Become Protean', 'Become Regenerator', 
+			'Become Speed Boost', 'Become Concentrator', 'Become Immolating', 'Become Renewal','Become Sacrifice',
+		],
+		'eliteroom': [
+			'Gain Artirain', 'Gain Artisnow', 'Gain Artistorm', 'Gain Artisunny', 'Gain Confident Start', 
+			'Gain Artilightscreen', 'Gain Artireflect', 'Gain Focus Device', 'Gain Angel Halo', 
+			'Gain Acupressure Mat', 'Gain Trick Props', 'Gain Potion Of Rapid Growth', 'Gain Guardian Shield',
+			'Gain Sword of Trying', 'Gain Sleight of Hand', 'Gain Tri Force', 'Gain Obscenities', 
+			'Gain Overdrive', 'Gain Time Jewel', 'Gain Fairy Egg', 'Gain Misfortune Mirror', 
+			'Gain Healing Area', 'Gain Trueshot Aura', 'Gain Future Scope', 'Gain Future Camera', 
+			'Gain Status Push', 'Gain Lifestream','Gain Cockatrice Eye','Gain Fall Rise','Gain Order Way Up'
+		],
+		'eliteroom2': [
+			'Gain Dragon Thrones', 'Gain Dancing Floor', 'Gain Egg Of Compassion', 'Gain Industrial Plant', 
+			'Gain Ticket Of Colosseum', 'Gain Soy Milk', 'Gain Garden Guardian', 'Gain Pole Tracker', 
+			'Gain Industrial Emissions', 'Gain Sun Shower', 'Gain Combustible', 'Gain Infestation', 
+			'Gain Gang Guarantee', 'Gain False Moon', 'Gain Gun of Nerf', 'Gain Eight Diagrams drawing', 
+			'Gain Psychoanalysis', 'Gain Gravity Generator', 'Gain Stope','Gain Final Act',
+			'Gain Piercing Attack'
+		],
 		'championroom': ["You've passed the cave.time to go back", 'Entrance to the void'],
 		'championroom2': ["You defeat the void and become a new champion"],
 		'nature':'',
@@ -3994,6 +4074,18 @@ exports.Pokemonpool = {
 		"item": ['Black Glasses', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Dragon Fang', 'Dragonium Z', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Booster Energy', 'Wiki Berry', 'Sitrus Berry', 'Darkinium Z'],
 		"ability": ['Protosynthesis'],
 		"moves": ['Dragon Rush', 'Dragon Claw', 'Outrage',  'Throat Chop', 'Night Slash', 'Crunch', 'Roost', 'Dragon Dance', 'Zen Headbutt', 'Sunny Day', 'U-turn', 'Earthquake', 'Stone Edge', 'Iron Head', 'Brick Break', 'Acrobatics'],
+		'nature': '',
+		'gender': '',
+		'evs': '0,0,0,0,0,0',
+		'ivs': '31,31,31,31,31,31',
+		'level': 10,
+	},
+	"Kricketune": {
+		"name": 'Kricketune',
+		"species": "",
+		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Specs', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry'],
+		"ability": ['Bug to Hero'],
+		"moves": ['Bug Buzz', 'Brick Break', 'Hyper Voice', 'Knock Off', 'Leech Life', 'Power-Up Punch', 'Fell Stinger', 'Swords Dance', 'Throat Chop', 'Trailblaze', 'Facade', 'Bug Punch'],
 		'nature': '',
 		'gender': '',
 		'evs': '0,0,0,0,0,0',

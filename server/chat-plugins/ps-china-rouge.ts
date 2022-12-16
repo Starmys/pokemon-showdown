@@ -1,11 +1,10 @@
 import { PRNG } from "../../sim";
 import { BOTID, PetUtils } from "./ps-china-pet-mode";
 import { sample, unpack } from "../../data/mods/rouge/moves";
-import { Pokemonpool } from "../../config/rouge/pokemonpool";
-import { Championteams } from "../../config/rouge/Championteams";
-import { Enemies } from "../../config/rouge/Enemies";
+import { PokemonPool } from "../../config/rouge/pokemon-pool";
+import { ChampionTeams } from "../../config/rouge/champion-teams";
+import { Enemies } from "../../config/rouge/enemies";
 import { RougeUtils } from "../../data/mods/rouge/rulesets";
-import { createTry } from "typescript";
 
 export class Rouge {
 
@@ -117,7 +116,7 @@ export const commands: Chat.ChatCommands = {
 				if (wave !== 13 && wave !== 19) {
 					botTeam = unpack(sample(Enemies[Math.floor(wave)], Math.min(Math.max(1, Math.floor((1 + wave) * 0.6)), 6), Rouge.prng), Rouge.prng);
 				} else {
-					botTeam = Rouge.prng.sample(Championteams[Math.ceil(wave / 13 )- 1]);
+					botTeam = Rouge.prng.sample(ChampionTeams[Math.ceil(wave / 13 )- 1]);
 				}
 				userTeam = rougeProps[0]
 				RougeUtils.addWave(user.id);
@@ -125,37 +124,37 @@ export const commands: Chat.ChatCommands = {
 				let role = Number(target) || 1;
 				switch (role) {
 					case 0: userTeam = 'Keldeo-Resolute||Azure Flute|justified|secretsword,surf,Calm Mind,airslash|Hasty|,4,,252,,252|||||'; break;
-					case 1: userTeam = unpack(Pokemonpool.Charmander, Rouge.prng); break;
-					case 2: userTeam = unpack(Pokemonpool.Squirtle, Rouge.prng); break;
-					case 3: userTeam = unpack(Pokemonpool.Bulbasaur, Rouge.prng); break;
-					case 4: userTeam = Rouge.prng.next(2) === 1 ? unpack(Pokemonpool.Pikachu, Rouge.prng) : unpack(Pokemonpool["Pikachu-Original"], Rouge.prng); break;
-					case 5: userTeam = unpack(Pokemonpool.Cyndaquil, Rouge.prng); break;
-					case 6: userTeam = unpack(Pokemonpool.Totodile, Rouge.prng); break;
-					case 7: userTeam = unpack(Pokemonpool.Chikorita, Rouge.prng); break;
-					case 8: userTeam = unpack(Pokemonpool.Torchic, Rouge.prng); break;
-					case 9: userTeam = unpack(Pokemonpool.Mudkip, Rouge.prng); break;
-					case 10: userTeam = unpack(Pokemonpool.Treecko, Rouge.prng); break;
-					case 11: userTeam = unpack(Pokemonpool.Chimchar, Rouge.prng); break;
-					case 12: userTeam = unpack(Pokemonpool.Piplup, Rouge.prng); break;
-					case 13: userTeam = unpack(Pokemonpool.Turtwig, Rouge.prng); break;
-					case 14: userTeam = unpack(Pokemonpool.Tepig, Rouge.prng); break;
-					case 15: userTeam = unpack(Pokemonpool.Oshawott, Rouge.prng); break;
-					case 16: userTeam = unpack(Pokemonpool.Snivy, Rouge.prng); break;
-					case 17: userTeam = unpack(Pokemonpool.Fennekin, Rouge.prng); break;
-					case 18: userTeam = unpack(Pokemonpool.Froakie, Rouge.prng); break;
-					case 19: userTeam = unpack(Pokemonpool.Chespin, Rouge.prng); break;
-					case 20: userTeam = unpack(Pokemonpool.Litten, Rouge.prng); break;
-					case 21: userTeam = unpack(Pokemonpool.Popplio, Rouge.prng); break;
-					case 22: userTeam = unpack(Pokemonpool.Rowlet, Rouge.prng); break;
-					case 23: userTeam = unpack(Pokemonpool.Scorbunny, Rouge.prng); break;
-					case 24: userTeam = unpack(Pokemonpool.Sobble, Rouge.prng); break;
-					case 25: userTeam = unpack(Pokemonpool.Grookey, Rouge.prng); break;
-					case 26: userTeam = unpack(Pokemonpool.Fuecoco, Rouge.prng); break;
-					case 27: userTeam = unpack(Pokemonpool.Quaxly, Rouge.prng); break;
-					case 28: userTeam = unpack(Pokemonpool.Sprigatito, Rouge.prng); break;
-					case 29: userTeam = unpack(Pokemonpool.Cscl, Rouge.prng); break;
-					case 30: userTeam = unpack(Pokemonpool["Daiwa Scarlet"], Rouge.prng); break;
-					case 31: userTeam = unpack(Pokemonpool.Wind777, Rouge.prng); break;
+					case 1: userTeam = unpack(PokemonPool.Charmander, Rouge.prng); break;
+					case 2: userTeam = unpack(PokemonPool.Squirtle, Rouge.prng); break;
+					case 3: userTeam = unpack(PokemonPool.Bulbasaur, Rouge.prng); break;
+					case 4: userTeam = Rouge.prng.next(2) === 1 ? unpack(PokemonPool.Pikachu, Rouge.prng) : unpack(PokemonPool["Pikachu-Original"], Rouge.prng); break;
+					case 5: userTeam = unpack(PokemonPool.Cyndaquil, Rouge.prng); break;
+					case 6: userTeam = unpack(PokemonPool.Totodile, Rouge.prng); break;
+					case 7: userTeam = unpack(PokemonPool.Chikorita, Rouge.prng); break;
+					case 8: userTeam = unpack(PokemonPool.Torchic, Rouge.prng); break;
+					case 9: userTeam = unpack(PokemonPool.Mudkip, Rouge.prng); break;
+					case 10: userTeam = unpack(PokemonPool.Treecko, Rouge.prng); break;
+					case 11: userTeam = unpack(PokemonPool.Chimchar, Rouge.prng); break;
+					case 12: userTeam = unpack(PokemonPool.Piplup, Rouge.prng); break;
+					case 13: userTeam = unpack(PokemonPool.Turtwig, Rouge.prng); break;
+					case 14: userTeam = unpack(PokemonPool.Tepig, Rouge.prng); break;
+					case 15: userTeam = unpack(PokemonPool.Oshawott, Rouge.prng); break;
+					case 16: userTeam = unpack(PokemonPool.Snivy, Rouge.prng); break;
+					case 17: userTeam = unpack(PokemonPool.Fennekin, Rouge.prng); break;
+					case 18: userTeam = unpack(PokemonPool.Froakie, Rouge.prng); break;
+					case 19: userTeam = unpack(PokemonPool.Chespin, Rouge.prng); break;
+					case 20: userTeam = unpack(PokemonPool.Litten, Rouge.prng); break;
+					case 21: userTeam = unpack(PokemonPool.Popplio, Rouge.prng); break;
+					case 22: userTeam = unpack(PokemonPool.Rowlet, Rouge.prng); break;
+					case 23: userTeam = unpack(PokemonPool.Scorbunny, Rouge.prng); break;
+					case 24: userTeam = unpack(PokemonPool.Sobble, Rouge.prng); break;
+					case 25: userTeam = unpack(PokemonPool.Grookey, Rouge.prng); break;
+					case 26: userTeam = unpack(PokemonPool.Fuecoco, Rouge.prng); break;
+					case 27: userTeam = unpack(PokemonPool.Quaxly, Rouge.prng); break;
+					case 28: userTeam = unpack(PokemonPool.Sprigatito, Rouge.prng); break;
+					case 29: userTeam = unpack(PokemonPool.Cscl, Rouge.prng); break;
+					case 30: userTeam = unpack(PokemonPool["Daiwa Scarlet"], Rouge.prng); break;
+					case 31: userTeam = unpack(PokemonPool.Wind777, Rouge.prng); break;
 					default: return user.sendTo(room.roomid, `|html|<b>该角色暂未公布</b><br>`);
 				}
 				RougeUtils.setInitial(user.id, role);
@@ -163,17 +162,11 @@ export const commands: Chat.ChatCommands = {
 				RougeUtils.updateUserTeam(user.id, userTeam, true);
 			}
 
-			Rouge.createBattle(user, bot, userTeam, botTeam, 'gen9rougemod @@@pschinarougemode', undefined);
-			//let ll=-1;
-			//if (rooms)
-			//	ll = rooms[user.id].findIndex(x => x.battle?.ended);
-			//if (ll>-1) {
-			//	rooms[user.id][ll].destroy();
-			//	rooms[user.id].splice(ll, 1);
-			//}
-			//let roombattle = Rouge.createBattle(user, bot, userTeam, botTeam, 'gen8rougemod @@@pschinarougemode', undefined);
-			//if (roombattle)
-			//	rooms[user.id].push(roombattle);
+			let battle=Rouge.createBattle(user, bot, userTeam, botTeam, 'gen9rougemod @@@pschinarougemode', undefined);
+			if(!battle){
+				RougeUtils.reduceWave(user.id);
+			}
+			
 		},
 
 		clearcache(target, room, user) {
