@@ -47,8 +47,11 @@ export class AdminUtils {
 		const idEdges: { [userid: string]: { [userid: string]: number } } = {};
 		for (let ip in ipCount) {
 			for (let id1 in ipCount[ip]) {
+				if (!idEdges[id1]) {
+					idEdges[id1] = {};
+					idEdges[id1][id1] = Infinity;
+				}
 				for (let id2 in ipCount[ip]) {
-					if (!idEdges[id1]) idEdges[id1] = {};
 					if (!idEdges[id1][id2]) idEdges[id1][id2] = 0;
 					idEdges[id1][id2] += ipCount[ip][id1] * ipCount[ip][id2];
 				}
@@ -56,7 +59,9 @@ export class AdminUtils {
 		}
 		userAlts = {};
 		for (let userid in idEdges) {
-			userAlts[userid] = Object.keys(idEdges[userid]).sort((id1, id2) => idEdges[userid][id1] < idEdges[userid][id2] ? 1 : -1);
+			userAlts[userid] = Object.keys(idEdges[userid]).sort(
+				(id1, id2) => idEdges[userid][id1] < idEdges[userid][id2] ? 1 : -1
+			);
 		}
 		FS(IPMAPPATH).safeWriteSync(PetUtils.formatJSON(userAlts));
 	}

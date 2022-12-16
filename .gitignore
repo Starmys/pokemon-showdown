@@ -85,6 +85,7 @@ pip-log.txt
 /config/pet-mode/trade-log
 /config/pet-mode/lottery-log
 /config/pet-mode/hyper-config.json
+/config/pet-mode/tmp
 !/config/rouge
 /config/rouge/test.json
 /config/rouge/user-properties
