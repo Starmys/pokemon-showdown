@@ -1,4 +1,4 @@
-﻿exports.PetModeRoomConfig = {
+﻿export const PetModeRoomConfig = {
 	"skypillar": {
 		"minlevel": 2,
 		"maxlevel": 5,

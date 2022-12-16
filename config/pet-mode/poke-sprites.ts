@@ -1,4 +1,4 @@
-exports.PokemonSprites = [
+export const PokemonSprites = [
 	"abomasnow-f",
 	"abomasnow-mega",
 	"abomasnow",
