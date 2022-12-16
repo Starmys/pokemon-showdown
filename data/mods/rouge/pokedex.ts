@@ -45,4 +45,8 @@ export const Pokedex: {[k: string]: ModdedSpeciesData} = {
 		inherit: true,
 		types: ["Water", "Psychic"],
 	},
+	kricketune: {
+		inherit: true,
+		abilities: {0: "bugtohero", H: "Technician"},
+	},
 };
