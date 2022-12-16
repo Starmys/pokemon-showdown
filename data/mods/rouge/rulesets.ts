@@ -1,7 +1,7 @@
 import { FS } from "../../../lib";
 import { Teams, Pokemon } from "../../../sim";
 import { championreward, sample } from "./moves";
-import { Pokemonpool } from "../../../config/rouge/pokemonpool";
+import { PokemonPool } from "../../../config/rouge/pokemon-pool";
 
 
 type rougePassRecord = { 'cave': number[], 'void': number[] };
@@ -94,7 +94,18 @@ export class RougeUtils {
 			return false;
 		}
 	}
-
+	static reduceWave(userid: ID): boolean {
+		let userProperty = this.getUser(userid);
+		if (userProperty?.rouge) {
+			let rougeProps = userProperty['rouge'].split("&");
+			rougeProps[2] = String(Number(rougeProps[2]) - 1);
+			userProperty['rouge'] = rougeProps.join('&');
+			this.saveUser(userid, userProperty);
+			return true;
+		} else {
+			return false;
+		}
+	}
 	static getNextWave(userid: ID | rougeUserProperty): number {
 		let userProperty;
 		if (typeof userid === 'string')
@@ -307,7 +318,7 @@ export class RougeUtils {
 	}
 }
 
-const relicsEffects = {
+export const relicsEffects = {
 	'artirain': (battle: Battle) => {
 		battle.field.setWeather('raindance', battle.p2.active[0]);
 		battle.add('message', 'your Artirain makes it rain');
@@ -633,6 +644,29 @@ const relicsEffects = {
 		battle.field.addPseudoWeather("conjuringshow");
 		battle.add('message', 'Conjuring Show start');
 	},
+	'finalact': (battle: Battle) => {
+		for(let pokemon of battle.p2.pokemon ){
+			pokemon.maxhp*=2;
+			pokemon.hp*=2;
+		}
+		battle.add('message', 'Final Act action');
+	},
+	'piercingattack': (battle: Battle) => {
+		battle.field.addPseudoWeather("piercingattack");
+		battle.add('message', 'Piercing Attack start');
+	},
+	'cockatriceeye': (battle: Battle) => {
+		battle.field.addPseudoWeather("cockatriceeye");
+		battle.add('message', 'Cockatrice Eye start');
+	},
+	'fallrise': (battle: Battle) => {
+		battle.field.addPseudoWeather("fallrise");
+		battle.add('message', 'Fall Rise start');
+	},
+	'orderwayup': (battle: Battle) => {
+		battle.field.addPseudoWeather("orderwayup");
+		battle.add('message', 'Order Way Up start');
+	},
 };
 
 
@@ -643,7 +677,7 @@ function checkWin(pokemonOnFaint: Pokemon, sides: Side[]): Side | undefined {
 	if (aliveSides.length === 1) return aliveSides[0];
 }
 
-export const Rulesets: { [k: string]: FormatData } = {
+export const Rulesets: { [k: string]: ModdedFormatData } = {
 	pschinarougemode: {
 		effectType: 'Rule',
 		name: 'PS China Rouge Mode',
@@ -664,8 +698,8 @@ export const Rulesets: { [k: string]: FormatData } = {
 			if (!user) return;
 			let room = RougeUtils.getRoom(user) || 'pokemonroom';
 			// @ts-ignore
-			let reward = (Pokemonpool.Shop[room] as string[]).concat();
-			let reward2 = (Pokemonpool.Shop[(room + '2') as keyof typeof Pokemonpool.Shop] as string[]).concat();
+			let reward = (PokemonPool.Shop[room] as string[]).concat();
+			let reward2 = (PokemonPool.Shop[(room + '2') as keyof typeof PokemonPool.Shop] as string[]).concat();
 			if (room === 'pokemonroom') {
 				for (let i of RougeUtils.unlock.index[room as keyof typeof RougeUtils.unlock.index]) {
 					if (user?.passrecord?.cave[i])
@@ -867,6 +901,7 @@ export const Rulesets: { [k: string]: FormatData } = {
 				let relics = RougeUtils.getRelics(this.toID(this.p2.name));
 				for (let x of relics) {
 					relicsEffects[x as keyof typeof relicsEffects](this);
+					if(x==='finalact') break;
 				}
 			} else if (pokemon.side === this.p1 && this.prng.next(40) === 1 && !this.field.effectiveWeather()) {
 				this.field.setWeather(this.sample(['raindance', 'hail', 'sunnyday', 'sandstorm']));
@@ -929,5 +964,11 @@ export const Rulesets: { [k: string]: FormatData } = {
 			// }
 		},
 	},
+	standardnatdex:{
+		ruleset: [
+			'Obtainable', '+Unobtainable', '+Past', 'Sketch Post-Gen 7 Moves',  'Nickname Clause', 'HP Percentage Mod', 'Cancel Mod', 'Endless Battle Clause',
+		],
+		inherit:true
+	}
 
 };

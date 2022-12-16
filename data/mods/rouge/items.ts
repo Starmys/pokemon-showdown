@@ -472,7 +472,7 @@ export const Items: { [k: string]: ModdedItemData } = {
 		},
 		onSourceModifyDamage(damage, source, target, move) {
 			if (target.getMoveHitData(move).typeMod > 0) {
-				const hitSub = target.volatiles['substitute'] && !move.flags['authentic'] && !(move.infiltrates && this.gen >= 6);
+				const hitSub = target.volatiles['substitute'] && !move.flags['bypasssub'] && !(move.infiltrates && this.gen >= 6);
 				if (hitSub) return;
 
 				if (target.eatItem()) {
@@ -651,15 +651,74 @@ export const Items: { [k: string]: ModdedItemData } = {
 	micromaster: {
 		name: "Micro Master",
 		spritenum: 86,
-		onModifyAtkPriority: 1,
+		onModifyAtkPriority: 1001,
 		onModifyAtk(atk, pokemon) {
-			if (pokemon.lastMove?.category === 'Special') 
+			if (pokemon.m.micromaster){
+				pokemon.m.micromaster=undefined
 				return this.chainModify(2);
+			}
 		},
-		onModifySpAPriority: 1,
+		onModifySpAPriority: 1001,
 		onModifySpA(spa, pokemon) {
-			if (pokemon.lastMove?.category === 'Physical')
+			if (pokemon.m.micromaster){
+				pokemon.m.micromaster=undefined
 				return this.chainModify(2);
+			}
+		},
+		onBeforeMove(source, target, move) {
+			
+			if (move.category==='Special' &&source.lastMove?.category === 'Physical'
+			||(move.category==='Physical'&&source.lastMove?.category === 'Special'))
+		 		source.m.micromaster=true;
+		},
+	
+		num: 210,
+		gen: 4,
+	},
+	
+	effortberry: {
+		name: "Effort Berry",
+		spritenum: 5,
+		isBerry: true,
+		naturalGift: {
+			basePower: 180,
+			type: "Dragon",
+		},
+		onUpdate(pokemon) {
+			if (pokemon.hp <= pokemon.maxhp / 4 || (pokemon.hp <= pokemon.maxhp / 2 && pokemon.hasAbility('gluttony'))) {
+				pokemon.eatItem();
+			}
+		},
+		onTryEatItem(item, pokemon) {
+			if (!this.runEvent('TryHeal', pokemon)) return false;
+		},
+		onEat(pokemon) {
+			for(let i in pokemon.set.evs){
+				pokemon.set.evs[i as keyof typeof pokemon.set.evs]+=12
+			}
+			
+		},
+		num: 162,
+		gen: 3,
+	},
+	portableearth: {
+		name: "Portable Earth",
+		spritenum: 86,
+		onBeforeMove(source, target, move) {
+			if(move.category!=='Status'&&target&&!target.fainted){
+				this.damage(100,target,source)
+				this.add('message',`${source.name} throw the target and take the damage `)
+			}
+		},
+		num: 210,
+		gen: 4,
+	},
+	deathspeaker: {
+		name: "Death Speaker",
+		spritenum: 86,
+		
+		onHit( target, source, move) {
+			target.addVolatile('Perish Song',source);
 		},
 		num: 210,
 		gen: 4,
