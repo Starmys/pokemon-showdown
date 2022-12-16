@@ -1,7 +1,3 @@
-/**
- * Integration for Smogon tournaments.
- * @author mia-pi-git
- */
 import {FS, Utils} from '../../lib';
 
 type Image = [string, number, number];

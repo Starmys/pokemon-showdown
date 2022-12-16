@@ -1,4 +1,4 @@
-exports.PetModeLotteryConfig = {
+export const PetModeLotteryConfig = {
 	"start": "2022-03-24",
 	"end": "2022-03-30",
 	"host": [
