@@ -338,7 +338,7 @@ export const Rulesets: {[k: string]: FormatData} = {
 
 	pschinagymauramode: {
 		name: 'PS China Gym Aura Mode',
-		ruleset: ['[Gen 8] National Dex'],
+		ruleset: ['[Gen 9] National Dex'],
 		banlist: ['Assault Vest'],
 		onBeforeTurn() {
 			const allTypes: string[] = [];
