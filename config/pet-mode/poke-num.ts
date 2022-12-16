@@ -1,4 +1,4 @@
-exports.PokemonIconIndexes = {
+export const PokemonIconIndexes = {
 	egg: 1020 + 1,
 	pikachubelle: 1020 + 2,
 	pikachulibre: 1020 + 3,
