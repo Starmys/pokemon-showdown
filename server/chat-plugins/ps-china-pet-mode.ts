@@ -56,7 +56,7 @@ type lotteryConfig = {
 const prng = new PRNG();
 
 export const BOTID = 'pschinabot';
-export const SERVER_URL = 'http://39.96.50.192:8000';
+export const SERVER_URL = 'https://39.96.50.192';
 const USERPATH = 'config/pet-mode/user-properties';
 const GIFTPATH = 'config/pet-mode/user-gifts';
 const DEPOSITPATH = 'config/pet-mode/deposit';
@@ -128,6 +128,15 @@ export class PetUtils {
 			hash |= 0;
 		}
 		return hash;
+	}
+
+	static popCount(x: number): number {
+		x -= (x >> 1) & 0x55555555;
+		x = (x & 0x33333333) + ((x >> 2) & 0x33333333);
+		x = ((x >> 4) + x) & 0x0F0F0F0F;
+		x += x >> 8;
+		x += x >> 16;
+		return x & 0x0000003F;
 	}
 
 	static formatJSON(s: AnyObject) {
@@ -237,6 +246,10 @@ export class PetUtils {
 	static popup(user: User | null, msg: string) {
 		if (!user) return;
 		user.popup(`|html|<div class="ps-china-popup" style="text-align: center">${msg}</div>`);
+	}
+
+	static showTeam(team: string[]): string {
+		return team.map(speciesId => `<psicon pokemon="${speciesId}"/>`).join('');
 	}
 }
 
