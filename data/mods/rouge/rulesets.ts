@@ -64,7 +64,7 @@ export class RougeUtils {
 		return this.getUser(userid)?.rouge?.split("&");
 	}
 
-	static updateUserTeam(userid: ID, userTeam: string, reset: boolean = false) {
+	static updateUserTeam(userid: ID, userTeam: string, reset: boolean = false,upWave: boolean=true) {
 		let userProperty = this.getUser(userid) || {};
 		if (userTeam) {
 			let rougePropsStr = userProperty['rouge'];
@@ -72,7 +72,10 @@ export class RougeUtils {
 				userProperty['rouge'] = userTeam.concat('&0&1&&pokemonroom&3');
 			else {
 				let rougeProps = rougePropsStr.split("&");
-				rougeProps[1] = String(Number(rougeProps[1]) + 1);
+				//  判断是否进行下一波
+				if(upWave){
+					rougeProps[1] = String(Number(rougeProps[1]) + 1);
+				}
 				rougeProps[0] = userTeam;
 				userProperty['rouge'] = rougeProps.join("&");
 			}
@@ -952,6 +955,7 @@ export const Rulesets: { [k: string]: ModdedFormatData } = {
 								RougeUtils.updateUserTeam(this.toID(this.p2.name), '');
 								this.add('html', '<div class="broadcast-green">你战败后眼前一黑，醒来后就回到了家里。</div>');
 							} else {
+								RougeUtils.updateUserTeam(this.toID(this.p2.name),Teams.pack(this.p2.team),false,false);
 								this.add('html', '<button class="button" name="send" value="/rouge next">Try again</button>');
 							}
 							break;
