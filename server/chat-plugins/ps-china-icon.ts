@@ -7,7 +7,7 @@ import {SERVER_URL} from './ps-china-pet-mode';
 
 let https = require("https");
 
-const ICONS_FOLDER = 'icons-2022';
+const ICONS_FOLDER = 'icons-2023';
 
 const speciesIdByNumber: {[num: number]: string[]} = {};
 Dex.species.all().forEach(species => {

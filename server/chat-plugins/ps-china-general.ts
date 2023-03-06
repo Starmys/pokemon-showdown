@@ -39,9 +39,10 @@ const PSChinaCommands = {
 		'查看房间赛设置': '/autotour config',
 	},
 	'其他': {
-		'<&> 查看白名单': '/pschinawhitelist',
+		'<@> 查看白名单': '/pschinawhitelist',
 		'<@> 查找并公开replay': '/restorereplay',
 		'<@> 更新 PS China Guide': '/pschinaforums news',
+		'<&> 删除团队头像': '/removegroupavatar',
 		'将对战链接发送到房间': '/reportto',
 		'<&> 天梯decay': '/laddertour decay',
 		'[Gen 8] OU 队伍查询': '/teamdb',
