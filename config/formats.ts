@@ -4979,7 +4979,7 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 					indexes.splice(sideIndex, 1);
 				}
 			}
-			this.add('rule', 'Shuffmon模式规则: http://47.94.147.145/topic/2477/%E5%9B%BD%E6%9C%8D%E4%B8%93%E5%B1%9Eom%E5%88%86%E7%BA%A7/9');
+			this.add('rule', 'Shuffmon模式规则: https://pschina.one/topic/2477/%E5%9B%BD%E6%9C%8D%E4%B8%93%E5%B1%9Eom%E5%88%86%E7%BA%A7/9');
 		},
 	},
 	{
@@ -5171,7 +5171,7 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 		ruleset: ['Standard', 'Dynamax Clause','Overflow Stat Mod'],
 		banlist: ['Uber', 'AG', 'Arena Trap', 'Moody', 'Power Construct', 'Sand Veil', 'Shadow Tag', 'Snow Cloak', 'King\'s Rock', 'Baton Pass'],
 		onBegin() {
-			this.add('rule', 'Stat Gift模式规则: http://47.94.147.145/topic/2477/%E5%9B%BD%E6%9C%8D%E4%B8%93%E5%B1%9Eom%E5%88%86%E7%BA%A7/8');
+			this.add('rule', 'Stat Gift模式规则: https://pschina.one/topic/2477/%E5%9B%BD%E6%9C%8D%E4%B8%93%E5%B1%9Eom%E5%88%86%E7%BA%A7/8');
 		},
 		onModifySpecies(species, target, source) {
 			if (source || !target?.side) return;
@@ -5211,7 +5211,7 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 					indexes.splice(sideIndex, 1);
 				}
 			}
-			this.add('rule', 'Shuffmon模式规则: http://47.94.147.145/topic/2477/%E5%9B%BD%E6%9C%8D%E4%B8%93%E5%B1%9Eom%E5%88%86%E7%BA%A7/9');
+			this.add('rule', 'Shuffmon模式规则: https://pschina.one/topic/2477/%E5%9B%BD%E6%9C%8D%E4%B8%93%E5%B1%9Eom%E5%88%86%E7%BA%A7/9');
 		},
 	},
 	{
@@ -5283,7 +5283,7 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 		ruleset: ['Dynamax Clause', 'Standard NatDex'],
 	},
 	{
-		name: "[Gen 8] Pet Mode 宠物模式",
+		name: "[Gen 9] Pet Mode 宠物模式",
 		desc: `与自己培养的宝可梦并肩作战吧！`,
 
 		mod: 'pet',
@@ -5291,7 +5291,7 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 		ruleset: ['PS China Pet Mode'],
 	},
 	{
-		name: "[Gen 8] Pet Mode Balanced 宠物平衡模式",
+		name: "[Gen 9] Pet Mode Balanced 宠物平衡模式",
 		desc: `与自己培养的宝可梦一起享受公平的对战吧！`,
 
 		mod: 'pet',
@@ -5306,7 +5306,7 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 		ruleset: ['PS China Gym Aura Mode'],
 	},
 	{
-		name: "[Gen 8] Pet Mode Boss Battle",
+		name: "[Gen 9] Pet Mode Boss Battle",
 		desc: `去挑战强大的霸主宝可梦吧！`,
 
 		searchShow: false,
