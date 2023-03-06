@@ -381,5 +381,31 @@ export const commands: Chat.ChatCommands = {
 			AdminUtils.addToWhitelist(userid, days);
 			this.parse('/pschinawhitelist check');
 		},
-	}
+	},
+
+	'removegroupavatars': 'removegroupavatar',
+	removegroupavatar(target, room, user) {
+		this.checkCan('bypassall');
+		const targetAvatar = target.trim().toLowerCase();
+		if (!targetAvatar) return this.parse('/removegroupavatarhelp');
+		let hitTarget = false;
+		const hits: string[] = [];
+		// TODO: startswith(targetAvatar)
+		Object.entries(Users.Avatars!.avatars).forEach(([userId, avatarInfo]) => {
+			avatarInfo.allowed.forEach(avatar => {
+				if (avatar === targetAvatar) {
+					hitTarget = true;
+					hits.push(userId);
+				}
+			});
+		});
+		if (hitTarget) {
+			hits.forEach(userId => this.parse(`/removeavatar ${userId}, ${targetAvatar}`));
+		} else {
+			this.errorReply(`未找到团队头像: ${targetAvatar}`)
+		}
+	},
+	removegroupavatarhelp: [
+		'/removegroupavatar [avatar] - 删除团队头像'
+	],
 };
