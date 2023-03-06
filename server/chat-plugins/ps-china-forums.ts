@@ -3,7 +3,7 @@ import { NetRequest } from "../../lib/net";
 import { escapeHTML } from "../../lib/utils";
 import { PetUtils } from "./ps-china-pet-mode";
 
-const FORUMS_URL = 'http://47.94.147.145';
+const FORUMS_URL = 'https://pschina.one';
 const TOPIC_KEYS = ['中国队', '报名', '公开赛', '地域赛', '联赛', '大联盟', '大满贯', '锦标赛', '季赛', 'PL', 'ShinxCup', 'Suspect'];
 const INTRO_FOLDER = 'config/ps-china/intro';
 const INTRO_MSG_TYPES = ['PS China BGM', 'PS China Guide', 'PS China Intro'];
