@@ -1419,8 +1419,8 @@ export const Conditions: {[k: string]: ModdedConditionData} = {
 
 		onSwitchIn(target) {
 			if(target && target.side === this.p2&&target.ability!=='shopman'&&!target.hasMove('confusion')){
-				target.moveSlots=[{move: 'Confusion',
-				id: Dex.toID('confusion'),
+				target.moveSlots=[{move: 'Confusion Move',
+				id: Dex.toID('confusionmove'),
 				pp: 8,
 				maxpp: 8,
 				target: 'self',
@@ -1486,7 +1486,7 @@ export const Conditions: {[k: string]: ModdedConditionData} = {
 		onFaint(target, source, effect) {
 			if(target && target.side===this.p2){
 				let x:keyof typeof target.set.evs=this.sample(['hp','atk','def','spa','spd','spe']);
-				target.set.evs[x]=Math.min(target.set.evs[x],252);
+				target.set.evs[x]=Math.min(target.set.evs[x]+60,252);
 			}
 		},
 		onFieldStart(battle, source, effect) {
@@ -1514,8 +1514,10 @@ export const Conditions: {[k: string]: ModdedConditionData} = {
 		duration: 0,
 
 		onSwitchIn(pokemon) {
-			const moves=['Take Down','Swift','X-Scissor','Brutal Swing','Dragon Breath','Shock Wave','Disarming Voice','Karate Chop','Incinerate','Wing Attack','Astonish','Vine Whip','Bone Club','Powder Snow','Poison Tail','Confusion','Rock Throw','Magnet Bomb','Water Pulse'];
-			this.actions.useMoveInner(this.sample(moves),pokemon);
+			if(pokemon && pokemon.side===this.p2){
+				const moves=['Take Down','Swift','X-Scissor','Brutal Swing','Dragon Breath','Shock Wave','Disarming Voice','Karate Chop','Incinerate','Wing Attack','Astonish','Vine Whip','Bone Club','Powder Snow','Poison Tail','Confusion','Rock Throw','Magnet Bomb','Water Pulse'];
+				this.actions.useMoveInner(this.sample(moves),pokemon);
+			}
 		},
 		onFieldStart(battle, source, effect) {
 			if (effect?.effectType === 'Ability') {

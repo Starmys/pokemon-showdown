@@ -150,6 +150,7 @@ export const Abilities: { [k: string]: ModdedAbilityData } = {
 	},
 	maliciouspluck: {
 		onModifyPriority(priority, pokemon, target, move) {
+			
 			if (move.name === 'Pluck' || move.name === 'Drill Peck' || move.name === 'Peck' || move.name === 'Mirror Move' || move.name === 'Fearow Drill Peck' || move.name === 'Bolt Beak') return priority + 1;
 		},
 		onAfterHit(target, source, move) {

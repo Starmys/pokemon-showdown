@@ -694,7 +694,7 @@ export const Items: { [k: string]: ModdedItemData } = {
 		},
 		onEat(pokemon) {
 			for(let i in pokemon.set.evs){
-				pokemon.set.evs[i as keyof typeof pokemon.set.evs]+=12
+				pokemon.set.evs[i as keyof typeof pokemon.set.evs]=Math.min( pokemon.set.evs[i as keyof typeof pokemon.set.evs]+12,252);
 			}
 			
 		},
@@ -705,7 +705,7 @@ export const Items: { [k: string]: ModdedItemData } = {
 		name: "Portable Earth",
 		spritenum: 86,
 		onBeforeMove(source, target, move) {
-			if(move.category!=='Status'&&target&&!target.fainted){
+			if(move.category!=='Status'&&target&&!target.fainted&&target!==source){
 				this.damage(100,target,source)
 				this.add('message',`${source.name} throw the target and take the damage `)
 			}
