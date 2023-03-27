@@ -49,4 +49,21 @@ export const Pokedex: {[k: string]: ModdedSpeciesData} = {
 		inherit: true,
 		abilities: {0: "bugtohero", H: "Technician"},
 	},
+	kricketunehero: {
+		num: 401,
+		name: "Kricketune-Hero",
+		baseSpecies: "kricketune",
+		forme: "Hero",
+		types: ["Bug"],
+		baseStats: {hp: 77, atk: 160, def: 97, spa: 119, spd: 97, spe: 100},
+		abilities: {0: "bugtohero"},
+		heightm: 1,
+		weightkg: 25.5,
+		color: "Red",
+		evos: ["Kricketune"],
+		eggGroups: ["Bug"],
+		requiredAbility: "Bug to Hero",
+		battleOnly: "kricketune",
+	},
+
 };

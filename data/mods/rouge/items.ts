@@ -637,10 +637,9 @@ export const Items: { [k: string]: ModdedItemData } = {
 		onFractionalPriorityPriority: -2,
 		onFractionalPriority(priority, pokemon) {
 			if (
-				priority <= 0 &&
-				(pokemon.hp <= pokemon.maxhp / 4 )
+				priority <= 0 && pokemon.hp <= pokemon.maxhp / 4 
 			) {
-				
+					this.add('-activate', pokemon, 'item: Custap Element');
 					return 0.1;
 				}
 			
@@ -694,7 +693,7 @@ export const Items: { [k: string]: ModdedItemData } = {
 		},
 		onEat(pokemon) {
 			for(let i in pokemon.set.evs){
-				pokemon.set.evs[i as keyof typeof pokemon.set.evs]=Math.min( pokemon.set.evs[i as keyof typeof pokemon.set.evs]+12,252);
+				pokemon.set.evs[i as keyof typeof pokemon.set.evs]=Math.min( pokemon.set.evs[i as keyof typeof pokemon.set.evs]+16,252);
 			}
 			
 		},
@@ -705,11 +704,33 @@ export const Items: { [k: string]: ModdedItemData } = {
 		name: "Portable Earth",
 		spritenum: 86,
 		onBeforeMove(source, target, move) {
-			if(move.category!=='Status'&&target&&!target.fainted&&target!==source){
-				this.damage(100,target,source)
+			if(move.category!=='Status'&&target&&!target.fainted&&target!==source&&source.useItem()){
+				this.damage(Math.floor(source.level*1.5),target,source)
 				this.add('message',`${source.name} throw the target and take the damage `)
 			}
 		},
+		num: 210,
+		gen: 4,
+	},
+	giantclothes: {
+		name: "Giant Clothes",
+		spritenum: 86,
+		
+		onModifyAtkPriority: 1,
+		onModifyAtk(atk, pokemon) {
+			return this.chainModify(1+pokemon.hp/1000);
+		},
+		onModifySpAPriority: 1,
+		onModifySpA(atk, pokemon) {
+			return this.chainModify(1+pokemon.hp/1000);
+		},
+		onBeforeMove(source, target, move) {
+			
+			if (move.category==='Special' &&source.lastMove?.category === 'Physical'
+			||(move.category==='Physical'&&source.lastMove?.category === 'Special'))
+		 		source.m.micromaster=true;
+		},
+	
 		num: 210,
 		gen: 4,
 	},
@@ -723,4 +744,29 @@ export const Items: { [k: string]: ModdedItemData } = {
 		num: 210,
 		gen: 4,
 	},
+	damagesimplification: {
+		name: "Damage Simplification",
+		spritenum: 86,
+		
+		onModifyMove( move, pokemon, target) {
+			if(!move.damageCallback&&move.category!=="Status"){
+				if(move.category==="Physical"){
+					move.damageCallback=(pokemon,target)=>{
+				
+						return (move.basePower+pokemon.level+pokemon.storedStats.atk-target.storedStats.def)*Math.pow(2, this.dex.getEffectiveness(move.type,target.types))
+					}
+				}else{
+					move.damageCallback=(pokemon,target)=>{
+				
+						return (move.basePower+pokemon.level+pokemon.storedStats.spa-target.storedStats.spd)*Math.pow(2, this.dex.getEffectiveness(move.type,target.types))
+					}
+				}
+				
+			}
+			
+		},
+		num: 210,
+		gen: 4,
+	},
+	
 };

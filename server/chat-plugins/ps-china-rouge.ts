@@ -1,6 +1,6 @@
 import { PRNG } from "../../sim";
 import { BOTID, PetUtils } from "./ps-china-pet-mode";
-import { sample, unpack } from "../../data/mods/rouge/moves";
+import { sample, getRougeSet } from "../../data/mods/rouge/moves";
 import { PokemonPool } from "../../config/rouge/pokemon-pool";
 import { ChampionTeams } from "../../config/rouge/champion-teams";
 import { Enemies } from "../../config/rouge/enemies";
@@ -17,6 +17,7 @@ export class Rouge {
 	].map(x => x.map(x => PetUtils.button(`/rouge start ${x}`, '', PetUtils.iconStyle(RougeUtils.initMons[x - 1]))).join('')).join('<br>');
 	static specialInitButtons = [PetUtils.button(`/rouge start ${RougeUtils.initMons.length + 1}`, '', PetUtils.iconStyle(Rouge.specialInitMons[0])), PetUtils.button(`/rouge start ${RougeUtils.initMons.length + 2}`, '', PetUtils.iconStyle(Rouge.specialInitMons[1])), PetUtils.button(`/rouge start ${RougeUtils.initMons.length+3}`, '', PetUtils.iconStyle(Rouge.specialInitMons[2]))].join('');
 	static leadbButtons = [2, 3, 4, 5, 6].map(x => PetUtils.button(`/rouge chooselead ${x}`, `${x}`)).join('');
+	static difficult=['正常','困难'];
 	static prng: PRNG = new PRNG();
 	static createBattle(
 		user: User, bot: User, userTeam: string, botTeam: string, format: string, hidden: boolean | undefined,
@@ -83,6 +84,7 @@ export const commands: Chat.ChatCommands = {
 				PetUtils.button('/rouge showrougeteam', '查看队伍'), 
 				PetUtils.button('/rouge chooselead', '更改首发'),
 				PetUtils.button('/rouge showpassrecord', '查看成就'),
+				PetUtils.button('/rouge choosediff', '更改难度'),
 			]);
 			user.sendTo(room.roomid, `|uhtml|rouge-welcome|${buttons.map(line => line.join(' ')).join('<br>')}`);
 		},
@@ -114,7 +116,7 @@ export const commands: Chat.ChatCommands = {
 			if (rougeProps && rougeProps.length > 2 && !isRebegin) {
 				let wave = (4 + Number(rougeProps[1]) * 6) / 10;
 				if (wave !== 13 && wave !== 19) {
-					botTeam = unpack(sample(Enemies[Math.floor(wave)], Math.min(Math.max(1, Math.floor((1 + wave) * 0.6)), 6), Rouge.prng), Rouge.prng);
+					botTeam = getRougeSet(sample(Enemies[Math.floor(wave)], Math.min(Math.max(1, Math.floor((1 + wave) * 0.6)), 6), Rouge.prng), Rouge.prng);
 				} else {
 					botTeam = Rouge.prng.sample(ChampionTeams[Math.ceil(wave / 13 )- 1]);
 				}
@@ -124,45 +126,48 @@ export const commands: Chat.ChatCommands = {
 				let role = Number(target) || 1;
 				switch (role) {
 					case 0: userTeam = 'Keldeo-Resolute||Azure Flute|justified|secretsword,surf,Calm Mind,airslash|Hasty|,4,,252,,252|||||'; break;
-					case 1: userTeam = unpack(PokemonPool.Charmander, Rouge.prng); break;
-					case 2: userTeam = unpack(PokemonPool.Squirtle, Rouge.prng); break;
-					case 3: userTeam = unpack(PokemonPool.Bulbasaur, Rouge.prng); break;
-					case 4: userTeam = Rouge.prng.next(2) === 1 ? unpack(PokemonPool.Pikachu, Rouge.prng) : unpack(PokemonPool["Pikachu-Original"], Rouge.prng); break;
-					case 5: userTeam = unpack(PokemonPool.Cyndaquil, Rouge.prng); break;
-					case 6: userTeam = unpack(PokemonPool.Totodile, Rouge.prng); break;
-					case 7: userTeam = unpack(PokemonPool.Chikorita, Rouge.prng); break;
-					case 8: userTeam = unpack(PokemonPool.Torchic, Rouge.prng); break;
-					case 9: userTeam = unpack(PokemonPool.Mudkip, Rouge.prng); break;
-					case 10: userTeam = unpack(PokemonPool.Treecko, Rouge.prng); break;
-					case 11: userTeam = unpack(PokemonPool.Chimchar, Rouge.prng); break;
-					case 12: userTeam = unpack(PokemonPool.Piplup, Rouge.prng); break;
-					case 13: userTeam = unpack(PokemonPool.Turtwig, Rouge.prng); break;
-					case 14: userTeam = unpack(PokemonPool.Tepig, Rouge.prng); break;
-					case 15: userTeam = unpack(PokemonPool.Oshawott, Rouge.prng); break;
-					case 16: userTeam = unpack(PokemonPool.Snivy, Rouge.prng); break;
-					case 17: userTeam = unpack(PokemonPool.Fennekin, Rouge.prng); break;
-					case 18: userTeam = unpack(PokemonPool.Froakie, Rouge.prng); break;
-					case 19: userTeam = unpack(PokemonPool.Chespin, Rouge.prng); break;
-					case 20: userTeam = unpack(PokemonPool.Litten, Rouge.prng); break;
-					case 21: userTeam = unpack(PokemonPool.Popplio, Rouge.prng); break;
-					case 22: userTeam = unpack(PokemonPool.Rowlet, Rouge.prng); break;
-					case 23: userTeam = unpack(PokemonPool.Scorbunny, Rouge.prng); break;
-					case 24: userTeam = unpack(PokemonPool.Sobble, Rouge.prng); break;
-					case 25: userTeam = unpack(PokemonPool.Grookey, Rouge.prng); break;
-					case 26: userTeam = unpack(PokemonPool.Fuecoco, Rouge.prng); break;
-					case 27: userTeam = unpack(PokemonPool.Quaxly, Rouge.prng); break;
-					case 28: userTeam = unpack(PokemonPool.Sprigatito, Rouge.prng); break;
-					case 29: userTeam = unpack(PokemonPool.Cscl, Rouge.prng); break;
-					case 30: userTeam = unpack(PokemonPool["Daiwa Scarlet"], Rouge.prng); break;
-					case 31: userTeam = unpack(PokemonPool.Wind777, Rouge.prng); break;
+					case 1: userTeam = getRougeSet(PokemonPool.Charmander, Rouge.prng); break;
+					case 2: userTeam = getRougeSet(PokemonPool.Squirtle, Rouge.prng); break;
+					case 3: userTeam = getRougeSet(PokemonPool.Bulbasaur, Rouge.prng); break;
+					case 4: userTeam = Rouge.prng.next(2) === 1 ? getRougeSet(PokemonPool.Pikachu, Rouge.prng) : getRougeSet(PokemonPool["Pikachu-Original"], Rouge.prng); break;
+					case 5: userTeam = getRougeSet(PokemonPool.Cyndaquil, Rouge.prng); break;
+					case 6: userTeam = getRougeSet(PokemonPool.Totodile, Rouge.prng); break;
+					case 7: userTeam = getRougeSet(PokemonPool.Chikorita, Rouge.prng); break;
+					case 8: userTeam = getRougeSet(PokemonPool.Torchic, Rouge.prng); break;
+					case 9: userTeam = getRougeSet(PokemonPool.Mudkip, Rouge.prng); break;
+					case 10: userTeam = getRougeSet(PokemonPool.Treecko, Rouge.prng); break;
+					case 11: userTeam = getRougeSet(PokemonPool.Chimchar, Rouge.prng); break;
+					case 12: userTeam = getRougeSet(PokemonPool.Piplup, Rouge.prng); break;
+					case 13: userTeam = getRougeSet(PokemonPool.Turtwig, Rouge.prng); break;
+					case 14: userTeam = getRougeSet(PokemonPool.Tepig, Rouge.prng); break;
+					case 15: userTeam = getRougeSet(PokemonPool.Oshawott, Rouge.prng); break;
+					case 16: userTeam = getRougeSet(PokemonPool.Snivy, Rouge.prng); break;
+					case 17: userTeam = getRougeSet(PokemonPool.Fennekin, Rouge.prng); break;
+					case 18: userTeam = getRougeSet(PokemonPool.Froakie, Rouge.prng); break;
+					case 19: userTeam = getRougeSet(PokemonPool.Chespin, Rouge.prng); break;
+					case 20: userTeam = getRougeSet(PokemonPool.Litten, Rouge.prng); break;
+					case 21: userTeam = getRougeSet(PokemonPool.Popplio, Rouge.prng); break;
+					case 22: userTeam = getRougeSet(PokemonPool.Rowlet, Rouge.prng); break;
+					case 23: userTeam = getRougeSet(PokemonPool.Scorbunny, Rouge.prng); break;
+					case 24: userTeam = getRougeSet(PokemonPool.Sobble, Rouge.prng); break;
+					case 25: userTeam = getRougeSet(PokemonPool.Grookey, Rouge.prng); break;
+					case 26: userTeam = getRougeSet(PokemonPool.Fuecoco, Rouge.prng); break;
+					case 27: userTeam = getRougeSet(PokemonPool.Quaxly, Rouge.prng); break;
+					case 28: userTeam = getRougeSet(PokemonPool.Sprigatito, Rouge.prng); break;
+					case 29: userTeam = getRougeSet(PokemonPool.Cscl, Rouge.prng); break;
+					case 30: userTeam = getRougeSet(PokemonPool["Daiwa Scarlet"], Rouge.prng); break;
+					case 31: userTeam = getRougeSet(PokemonPool.Wind777, Rouge.prng); break;
 					default: return user.sendTo(room.roomid, `|html|<b>该角色暂未公布</b><br>`);
 				}
 				RougeUtils.setInitial(user.id, role);
-				botTeam = unpack(Rouge.prng.sample(Enemies[0]), Rouge.prng);
+				botTeam = getRougeSet(Rouge.prng.sample(Enemies[0]), Rouge.prng);
 				RougeUtils.updateUserTeam(user.id, userTeam, true);
 			}
-
-			let battle=Rouge.createBattle(user, bot, userTeam, botTeam, 'gen9rougemod @@@pschinarougemode', undefined);
+			let format='gen9rougemod @@@pschinarougemode';
+			if(RougeUtils.getDifficulty(user.id)===1){
+				format='gen9rougemod @@@pschinarougemode,pschinarougehardmode'
+			}
+			let battle=Rouge.createBattle(user, bot, userTeam, botTeam, format, undefined);
 			if(!battle){
 				RougeUtils.reduceWave(user.id);
 			}
@@ -211,7 +216,25 @@ export const commands: Chat.ChatCommands = {
 				return user.sendTo(room!.roomid, `|uhtml|rouge|<b>请选择要改成首发的位置：</b><br>${Rouge.leadbButtons}`);
 			}
 		},
-
+		choosediff(target, room, user) {
+			if (!user.registered) return PetUtils.popup(user, "请先注册账号!");
+			if (!room) return PetUtils.popup(user, "请在房间里使用Rouge系统");
+			if (Rouge.inBattle(user.id)) {
+				return user.popup(`|html|<div style="text-align: center">请先完成对战再改难度</div>`);
+			}
+			let num = Number(target)
+			if ( num && Number.isInteger(num) && num <= 2 && num >= 1) {
+				let x = RougeUtils.setDifficulty(user.id, num-1);
+				if (x)
+					return user.sendTo(room!.roomid, `|uhtml|rouge|<b>当前难度改为${Rouge.difficult[num-1]}</b><br>`);
+				else
+					return user.sendTo(room!.roomid, `|uhtml|rouge|<b>选择失败</b><br>`);
+			} else {
+				this.parse('/rouge clear');
+				return user.sendTo(room!.roomid, `|uhtml|rouge|<b>请选择难度：</b><br>${PetUtils.button(`/rouge choosediff 1`,Rouge.difficult[0] )+PetUtils.button(`/rouge choosediff 2`,Rouge.difficult[1] )}
+				<br> 困难难度下敌人全属性都得到了增强并且学会了钛晶话和极具化。`);
+			}
+		},
 		showpassrecord(target, room, user) {
 			if (!user.registered) return PetUtils.popup(user, "请先注册账号!");
 			if (!room) return PetUtils.popup(user, "请在房间里使用Rouge系统");
