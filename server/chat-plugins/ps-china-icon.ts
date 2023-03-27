@@ -20,8 +20,7 @@ Dex.species.all().forEach(species => {
 });
 export const iconURLs: {[speciesId: string]: string} = {};
 Object.entries(speciesIdByNumber).forEach(([num, speciesIdList]) => speciesIdList.forEach((speciesId, index) => {
-	const numStr = `00${num}`.slice(-3);
-	const fileName = `${numStr}.${speciesId}.gif`;
+	const fileName = `${num}.${speciesId}.gif`;
 	if (FS(`./config/avatars/${ICONS_FOLDER}/${fileName}`).existsSync()) {
 		iconURLs[speciesId] = `${SERVER_URL}/avatars/${ICONS_FOLDER}/${fileName}`;
 	}
@@ -30,7 +29,7 @@ Object.entries(speciesIdByNumber).forEach(([num, speciesIdList]) => speciesIdLis
 let icons: {[username: string]: string} = JSON.parse(FS("config/icons.json").readIfExistsSync() || '{}');
 
 function reloadCSS() {
-	let req = https.get('https://play.pokemonshowdown.com/customcss.php?server=' + (Config.serverid), () => {});
+	let req = https.get(`https://play.pokemonshowdown.com/customcss.php?server=${Config.serverid}&invalidate`, () => {});
 	req.end();
 }
 
@@ -88,7 +87,7 @@ export const commands: Chat.ChatCommands = {
 			if (icons[targetName]) return this.errorReply("This user already has a custom userlist icon.  Do /icon delete [user] and then set their new icon.");
 			this.sendReply(`|raw|You have given ${targets[0]} an icon.`);
 			Monitor.log(`${targets[0]} has received an icon from ${user.name}.`);
-			this.sendReplyBox(`${targets[0]} has received icon: <img src="${iconLink}" width="32" height="32"> from ${user.name}.`);
+			this.sendReplyBox(`${targets[0]} has received icon: <img src="${iconLink}"> from ${user.name}.`);
 			this.modlog("ICON", targets[0], `Set icon to ${iconLink}`);
 			icons[targetName] = iconLink;
 			updateIcons();
@@ -132,12 +131,12 @@ export const commands: Chat.ChatCommands = {
 	showicons(target, room, user) {
 		if (toID(target).indexOf("detail") > -1 || toID(target).indexOf("table") > -1 ) {
 			const iconTable = `<table>${Object.entries(icons).map(
-				([k, v], e) => `<tr><td>${k}</td><td><img src="${v}" width=32 height=32></td></tr>`
+				([k, v], e) => `<tr><td>${k}</td><td><img src="${v}" width=40 height=32></td></tr>`
 			).join('')}</table>`;
 			this.sendReplyBox(`<details><summary><strong>Users with Icons</strong></summary>${iconTable}</details>`);
 		} else {
 			const iconList = Array.from(new Set(Object.values(icons).sort())).map(
-				x => `<img src="${x}" width=32 height=32>`
+				x => `<img src="${x}" width=40 height=32>`
 			).join('');	
 			this.sendReplyBox(`<details><summary><strong>Already Used Icons</strong></summary>${iconList}</details>`);
 		}
