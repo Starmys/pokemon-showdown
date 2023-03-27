@@ -5401,6 +5401,45 @@ export const Formats: FormatList = [
 				return [`${set.name}'s item ${item.name} does not exist in Gen ${this.dex.gen}.`];
 			}
 		},
+		
+	},
+	{
+		name: "[Gen 9] Infinite Fusion Random Battle 无限融合",
+		desc: `将（几乎）任意两只精灵融合成新精灵！<br/>\
+			<details><summary>具体规则（点击展开）</summary>\
+			&bullet; 正常选择精灵作为融合的<strong>身体</strong>部分，在昵称栏写上一只精灵的英文名，由它组成<strong>头部</strong><br/>\
+			&bullet; 融合后精灵的ＨＰ、特攻、特防种族 = 头部对应种族的 2 / 3 + 身体对应种族的 1 / 3<br/>\
+			&bullet; 融合后精灵的攻击、防御、速度种族 = 头部对应种族的 1 / 3 + 身体对应种族的 2 / 3<br/>\
+			&bullet; 融合后精灵的属性为头部精灵的第一属性 + 身体精灵的第二属性（如没有则为第一属性）<br/>\
+			&bullet; 融合后精灵的特性池包含头部精灵的第一特性、身体精灵的第二特性，以及头部精灵的隐藏特性<br/>\
+			&bullet; 融合后精灵的技能池为头身精灵技能池之和<br/>\
+			&bullet; 禁止选择任何特殊形态作为融合组件，如：胡帕-解放形态<br/>\
+			&bullet; 有部分精灵间存在特殊融合，如：酋雷姆 + 雷希拉姆 = 焰白酋雷姆<br/>\
+			</details><br/>\
+			Fusion (almost) any two Pok&eacute;mon together!<br/>\
+			<details><summary>Fusion Mechanism (Click to Show)</summary>\
+			&bullet; Choose a Pok&eacute;mon as usual to be the <strong>Body Part</strong>, while giving it the name of a Pok&eacute;mon as nickname which is to be the <strong>Head Part</strong> of the fusioned Pok&eacute;mon<br/>\
+			&bullet; Fusioned Pok&eacute;mon's base stats of H P, SpA, SpD = That base stats of Head * 2 / 3 + That base stats of Body * 1 / 3<br/>\
+			&bullet; Fusioned Pok&eacute;mon's base stats of Atk, Def, Spe = That base stats of Head * 1 / 3 + That base stats of Body * 2 / 3<br/>\
+			&bullet; Fusioned Pok&eacute;mon's Types includes: First Type of Head + Second (or First if no Second) Type of Body<br/>\
+			&bullet; Fusioned Pok&eacute;mon's Abilities includes: First Ability of Head, Second Ability of Body, and Hidden Ability of Head<br/>\
+			&bullet; Fusioned Pok&eacute;mon's Moves includes: ALL moves learnt by Head and Body<br/>\
+			&bullet; Pok&eacute;mon in Formes cannot be used in fusion. E.g. Hoopa-Unbound<br/>\
+			&bullet; There are several special Fusions. E.g. Kyurem + Reshiram = Kyurem-White</details>`,
+		threads: [
+			`&bullet; <a href="https://infinitefusion.fandom.com/wiki/Pok%C3%A9mon_Infinite_Fusion_Wiki">Infinite Fusion Wiki</a>`,
+			`&bullet; <a href="https://aegide.github.io/">Infinite Fusion Calculator</a>`,
+		],
+
+		mod: 'infinitefusion',
+		ruleset: [
+			'Obtainable',   '!!EV Limit = 1020', 'Species Clause','infinitefusion',
+			'HP Percentage Mod', 'Cancel Mod', 'Endless Battle Clause', 'Sketch Post-Gen 7 Moves', 'Dynamax Clause', 
+			'OHKO Clause', 'Evasion Moves Clause',// 'Setup Clause = 2','Team Species Preview',
+		],
+		
+		team: 'random',
+		
 	},
 	//////////////////非对战分级
 	{
