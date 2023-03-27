@@ -161,7 +161,7 @@ export class RandomTeams {
 		this.prng = prng && !Array.isArray(prng) ? prng : new PRNG(prng);
 
 		this.moveEnforcementCheckers = {
-			Bug: (movePool, moves, abilities, types, counter) => movePool.includes('megahorn')||!counter.get('Bug'),
+			Bug: (movePool) => movePool.includes('megahorn'),
 			Dark: (movePool, moves, abilities, types, counter) => !counter.get('Dark'),
 			Dragon: (movePool, moves, abilities, types, counter) => (
 				!counter.get('Dragon') &&
@@ -181,7 +181,7 @@ export class RandomTeams {
 			),
 			Ground: (movePool, moves, abilities, types, counter) => !counter.get('Ground'),
 			Ice: (movePool, moves, abilities, types, counter) => (movePool.includes('freezedry') || !counter.get('Ice')),
-			Normal: (movePool, moves, abilities, types, counter) => (movePool.includes('boomburst') || movePool.includes('hypervoice')||!counter.get('Dark')),
+			Normal: (movePool, moves, types, counter) => (movePool.includes('boomburst') || movePool.includes('hypervoice')),
 			Poison: (movePool, moves, abilities, types, counter) => {
 				if (types.includes('Ground')) return false;
 				return !counter.get('Poison');
@@ -668,29 +668,29 @@ export class RandomTeams {
 		// }
 
 		// Enforce Revival Blessing
-		if (movePool.includes('revivalblessing')&&this.randomChance(1,2) && moves.size < this.maxMoveCount) {
+		if (movePool.includes('revivalblessing')&&this.randomChance(1,2)) {
 			counter = this.addMove('revivalblessing', moves, types, abilities, teamDetails, species, isLead, isDoubles,
 				movePool, teraType);
 		}
 
 		// Enforce Salt Cure
-		if (movePool.includes('saltcure')&&this.randomChance(1,2) && moves.size < this.maxMoveCount) {
+		if (movePool.includes('saltcure')&&this.randomChance(1,2)) {
 			counter = this.addMove('saltcure', moves, types, abilities, teamDetails, species, isLead, isDoubles,
 				movePool, teraType);
 		}
-		if(itemin.name=='Normalium Z'&&movePool.includes('happyhour') && moves.size < this.maxMoveCount){
+		if(itemin.name=='Normalium Z'&&movePool.includes('happyhour')){
 			counter = this.addMove('happyhour', moves, types, abilities, teamDetails, species, isLead, isDoubles,
 				movePool, teraType);
 		}
-		if(itemin.name=='Normalium Z'&&movePool.includes('celebrate') && moves.size < this.maxMoveCount){
+		if(itemin.name=='Normalium Z'&&movePool.includes('celebrate')){
 			counter = this.addMove('celebrate', moves, types, abilities, teamDetails, species, isLead, isDoubles,
 				movePool, teraType);
 		}
-		if(itemin.zMoveFrom&&movePool.includes(this.dex.toID(itemin.zMoveFrom)) && moves.size < this.maxMoveCount){
+		if(itemin.zMoveFrom&&movePool.includes(this.dex.toID(itemin.zMoveFrom))){
 			counter = this.addMove(this.dex.toID(itemin.zMoveFrom), moves, types, abilities, teamDetails, species, isLead, isDoubles,
 				movePool, teraType);
 		}
-		if(itemin.name=='Power Herb' && moves.size < this.maxMoveCount){
+		if(itemin.name=='Power Herb'){
 			const chargeMoves = movePool.filter(moveid => Charge.includes(moveid));
 			if (chargeMoves.length) {
 				const moveid = this.sample(chargeMoves);
