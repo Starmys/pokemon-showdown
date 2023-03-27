@@ -6,7 +6,7 @@ import { PetUtils } from "./ps-china-pet-mode";
 const FORUMS_URL = 'https://pschina.one';
 const TOPIC_KEYS = ['中国队', '报名', '公开赛', '地域赛', '联赛', '大联盟', '大满贯', '锦标赛', '季赛', 'PL', 'ShinxCup', 'Suspect'];
 const INTRO_FOLDER = 'config/ps-china/intro';
-const INTRO_MSG_TYPES = ['PS China BGM', 'PS China Guide', 'PS China Intro'];
+const INTRO_MSG_TYPES = ['PS China Intro'];
 const NEWS_EDIT_CD = 60000;
 
 export const loginMsgs: {[msgType: string]: string} = {};
@@ -40,14 +40,14 @@ async function loadPSChinaNews(update: boolean = false): Promise<number> {
 	newsTable = Object.entries(await getRecentTopics())
 	.filter(([index, title]) => TOPIC_KEYS.some(key => title.includes(key)))
 	.map(([index, title]) => [title, `${FORUMS_URL}/topic/${index}`]);
-	if (update) updatePSChinaGuide();
+	if (update) updatePSChinaIntro();
 	return newsTable.length;
 }
 
-function updatePSChinaGuide() {
+function updatePSChinaIntro() {
 	const newsStr = newsTable.map(([title, url]) => `<p><a href="${url}">${title}</a></p>`).join('');
-	loadMsgType('PS China Guide');
-	loginMsgs['PS China Guide'] = loginMsgs['PS China Guide'].replace('{}', newsStr);
+	loadMsgType('PS China Intro');
+	loginMsgs['PS China Intro'] = loginMsgs['PS China Intro'].replace('{}', newsStr);
 }
 
 let lastEditTime = -1;
@@ -132,7 +132,7 @@ export const commands: Chat.ChatCommands = {
 				if (!requireWriteAccess(user.id)) {
 					return this.errorReply(`${Users.get(currentEditor)?.name} 正在编辑新闻列表。`);
 				}
-				updatePSChinaGuide();
+				updatePSChinaIntro();
 				currentEditor = '';
 				this.sendReply('新闻列表更新成功!');
 				this.stafflog(`${user.name} 更新了新闻列表。`)
