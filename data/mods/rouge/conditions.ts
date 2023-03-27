@@ -38,6 +38,92 @@ export const Conditions: {[k: string]: ModdedConditionData} = {
 			pokemon.storedStats.spe = Math.floor(pokemon.storedStats.spe * 1.2);
 		},
 	},
+	dynamax:{
+		inherit:true,
+		onStart(pokemon) {
+			this.effectState.turns = 0;
+			pokemon.removeVolatile('minimize');
+			pokemon.removeVolatile('substitute');
+			if (pokemon.volatiles['torment']) {
+				delete pokemon.volatiles['torment'];
+				this.add('-end', pokemon, 'Torment', '[silent]');
+			}
+			if (['cramorantgulping', 'cramorantgorging'].includes(pokemon.species.id) && !pokemon.transformed) {
+				pokemon.formeChange('cramorant');
+			}
+			this.add('-start', pokemon, 'Dynamax', pokemon.gigantamax ? 'Gmax' : '');
+			if (pokemon.baseSpecies.name === 'Shedinja'||pokemon.volatiles['elite']) return;
+
+			// Changes based on dynamax level, 2 is max (at LVL 10)
+			const ratio = 1.5 + (pokemon.dynamaxLevel * 0.05);
+
+			pokemon.maxhp = Math.floor(pokemon.maxhp * ratio);
+			pokemon.hp = Math.floor(pokemon.hp * ratio);
+			this.add('-heal', pokemon, pokemon.getHealth, '[silent]');
+			
+		},
+		onEnd(pokemon) {
+			this.add('-end', pokemon, 'Dynamax');
+			if (pokemon.baseSpecies.name === 'Shedinja'||pokemon.volatiles['elite']) return;
+			pokemon.hp = pokemon.getUndynamaxedHP();
+			pokemon.maxhp = pokemon.baseMaxhp;
+			this.add('-heal', pokemon, pokemon.getHealth, '[silent]');
+		},
+	},
+	hardmode:{
+		name: 'Hard Mode',
+		effectType: 'Weather',
+		duration: 0,
+		onModifyAtkPriority:-101,
+		onModifyAtk(relayVar, source, target, move) {
+			if(source.side===this.p1){
+				return this.chainModify(1.1)
+			}
+		},
+		onModifySpAPriority:-101,
+		onModifySpA(relayVar, source, target, move) {
+			if(source.side===this.p1){
+				return this.chainModify(1.1)
+			}
+		},
+		onModifyDefPriority:-101,
+		onModifyDef(relayVar, source, target, move) {
+			if(source.side===this.p1){
+				return this.chainModify(1.1)
+			}
+		},
+		onModifySpDPriority:-101,
+		onModifySpD(relayVar, source, target, move) {
+			if(source.side===this.p1){
+				return this.chainModify(1.1)
+			}
+		},
+		onModifySpePriority:-101,
+		onModifySpe(this, spe, pokemon)  {
+			if(pokemon.side===this.p1){
+				return this.chainModify(1.1)
+			}
+		},
+		onFieldStart(battle, source, effect) {
+			if (effect?.effectType === 'Ability') {
+				this.add('-fieldstart', 'Hard Mode', '[from] ability: ' + effect, '[of] ' + source);
+			} else {
+				this.add('-fieldstart', 'Hard Mode');
+			}
+			this.add('-message', 'Hard Mode is radiated.');
+		},
+
+
+		onFieldResidualOrder: 1,
+		onFieldResidual() {
+			this.add('-weather', 'Hard Mode', '[upkeep]');
+			this.eachEvent('Weather');
+		},
+		onFieldEnd() {
+			this.add('-fieldend', 'Hard Mode');
+			this.add('-message', 'The Hard Mode subsided.');
+		},
+	},
 	raindance: {
 		inherit: true,
 		onFieldStart(field, source, effect) {
