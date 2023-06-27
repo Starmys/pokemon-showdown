@@ -1701,7 +1701,10 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 		name: "Divine",
 		pp: 10,
 		priority: 0,
-		flags: {charge: 1, nonsky: 1},
+		flags: {recharge: 1,charge: 1, nonsky: 1},
+		self: {
+			volatileStatus: 'mustrecharge',
+		},
 		onTryMove(attacker, defender, move) {
 			this.attrLastMove('[still]');
 			if (attacker.removeVolatile(move.id)) {
@@ -9414,6 +9417,7 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 		flags: {},
 		onHit(pokemon) {
 			this.add('html', `<div class="broadcast-green"><strong>You get into the void ,you find a lot of reward.<br>But more enemies are coming</strong></div>`);
+			RougeUtils.setPassRecord(this.toID(this.p2.name), 'cave');
 			championreward(pokemon,'itemroom');
 
 
