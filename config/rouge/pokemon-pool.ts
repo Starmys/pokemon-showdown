@@ -79,7 +79,7 @@ export const PokemonPool = {
 		],
 		'abilityroom2': [
 			'Become Sheer Force', 'Become Beast Boost', 'Become Protean', 'Become Regenerator', 
-			'Become Speed Boost', 'Become Concentrator', 'Become Immolating', 'Become Renewal','Become Sacrifice',
+			'Become Speed Boost', 'Become Concentrator', 'Become Immolating', 'Become Renewal','Become Sacrifice'
 		],
 		'eliteroom': [
 			'Gain Artirain', 'Gain Artisnow', 'Gain Artistorm', 'Gain Artisunny', 'Gain Confident Start', 
@@ -3718,7 +3718,7 @@ export const PokemonPool = {
 		'nature': '',
 		'gender': '',
 		'evs': '0,0,0,0,0,0',
-		'ivs': '0,31,31,31,31,31',
+		'ivs': '31,31,31,31,31,31',
 		'level': 10,
 	},
 	"Flaaffy": {
@@ -3730,7 +3730,7 @@ export const PokemonPool = {
 		'nature': '',
 		'gender': '',
 		'evs': '0,0,0,0,0,0',
-		'ivs': '0,31,31,31,31,31',
+		'ivs': '31,31,31,31,31,31',
 		'level': 10,
 	},
 	"Ampharos": {
@@ -3742,7 +3742,7 @@ export const PokemonPool = {
 		'nature': '',
 		'gender': '',
 		'evs': '0,0,0,0,0,0',
-		'ivs': '0,31,31,31,31,31',
+		'ivs': '31,31,31,31,31,31',
 		'level': 10,
 	},
 	"Tympole": {
@@ -3754,7 +3754,7 @@ export const PokemonPool = {
 		'nature': '',
 		'gender': '',
 		'evs': '0,0,0,0,0,0',
-		'ivs': '0,31,31,31,31,31',
+		'ivs': '31,31,31,31,31,31',
 		'level': 10,
 	},
 	"Palpitoad": {
@@ -3766,7 +3766,7 @@ export const PokemonPool = {
 		'nature': '',
 		'gender': '',
 		'evs': '0,0,0,0,0,0',
-		'ivs': '0,31,31,31,31,31',
+		'ivs': '31,31,31,31,31,31',
 		'level': 10,
 	},
 	"Seismitoad": {
@@ -3778,7 +3778,7 @@ export const PokemonPool = {
 		'nature': '',
 		'gender': '',
 		'evs': '0,0,0,0,0,0',
-		'ivs': '0,31,31,31,31,31',
+		'ivs': '31,31,31,31,31,31',
 		'level': 10,
 	},
 	"Tentacool": {
@@ -3790,7 +3790,7 @@ export const PokemonPool = {
 		'nature': '',
 		'gender': '',
 		'evs': '0,0,0,0,0,0',
-		'ivs': '0,31,31,31,31,31',
+		'ivs': '31,31,31,31,31,31',
 		'level': 10,
 	},
 	"Tentacruel": {
@@ -3802,7 +3802,7 @@ export const PokemonPool = {
 		'nature': '',
 		'gender': '',
 		'evs': '0,0,0,0,0,0',
-		'ivs': '0,31,31,31,31,31',
+		'ivs': '31,31,31,31,31,31',
 		'level': 10,
 	},
 	"Scraggy": {
@@ -3814,7 +3814,7 @@ export const PokemonPool = {
 		'nature': '',
 		'gender': '',
 		'evs': '0,0,0,0,0,0',
-		'ivs': '0,31,31,31,31,31',
+		'ivs': '31,31,31,31,31,31',
 		'level': 10,
 	},
 	"Scrafty": {
@@ -3826,7 +3826,7 @@ export const PokemonPool = {
 		'nature': '',
 		'gender': '',
 		'evs': '0,0,0,0,0,0',
-		'ivs': '0,31,31,31,31,31',
+		'ivs': '31,31,31,31,31,31',
 		'level': 10,
 	},
 	"Nacli": {
@@ -3838,7 +3838,7 @@ export const PokemonPool = {
 		'nature': '',
 		'gender': '',
 		'evs': '0,0,0,0,0,0',
-		'ivs': '0,31,31,31,31,31',
+		'ivs': '31,31,31,31,31,31',
 		'level': 10,
 	},
 	"Naclstack": {
@@ -3850,7 +3850,7 @@ export const PokemonPool = {
 		'nature': '',
 		'gender': '',
 		'evs': '0,0,0,0,0,0',
-		'ivs': '0,31,31,31,31,31',
+		'ivs': '31,31,31,31,31,31',
 		'level': 10,
 	},
 	"Garganacl": {
@@ -3862,7 +3862,7 @@ export const PokemonPool = {
 		'nature': '',
 		'gender': '',
 		'evs': '0,0,0,0,0,0',
-		'ivs': '0,31,31,31,31,31',
+		'ivs': '31,31,31,31,31,31',
 		'level': 10,
 	},
 	"Mankey": {
@@ -3874,7 +3874,7 @@ export const PokemonPool = {
 		'nature': '',
 		'gender': '',
 		'evs': '0,0,0,0,0,0',
-		'ivs': '0,31,31,31,31,31',
+		'ivs': '31,31,31,31,31,31',
 		'level': 10,
 	},
 	"Primeape": {
@@ -3886,7 +3886,7 @@ export const PokemonPool = {
 		'nature': '',
 		'gender': '',
 		'evs': '0,0,0,0,0,0',
-		'ivs': '0,31,31,31,31,31',
+		'ivs': '31,31,31,31,31,31',
 		'level': 10,
 	},
 	"Annihilape": {
@@ -3898,7 +3898,7 @@ export const PokemonPool = {
 		'nature': '',
 		'gender': '',
 		'evs': '0,0,0,0,0,0',
-		'ivs': '0,31,31,31,31,31',
+		'ivs': '31,31,31,31,31,31',
 		'level': 10,
 	},
 	"Capsakid": {
@@ -3910,7 +3910,7 @@ export const PokemonPool = {
 		'nature': '',
 		'gender': '',
 		'evs': '0,0,0,0,0,0',
-		'ivs': '0,31,31,31,31,31',
+		'ivs': '31,31,31,31,31,31',
 		'level': 10,
 	},
 	"Scovillain": {
@@ -3922,7 +3922,7 @@ export const PokemonPool = {
 		'nature': '',
 		'gender': '',
 		'evs': '0,0,0,0,0,0',
-		'ivs': '0,31,31,31,31,31',
+		'ivs': '31,31,31,31,31,31',
 		'level': 10,
 	},
 	"Frigibax": {
@@ -3934,7 +3934,7 @@ export const PokemonPool = {
 		'nature': '',
 		'gender': '',
 		'evs': '0,0,0,0,0,0',
-		'ivs': '0,31,31,31,31,31',
+		'ivs': '31,31,31,31,31,31',
 		'level': 10,
 	},
 	"Arctibax": {
@@ -3946,7 +3946,7 @@ export const PokemonPool = {
 		'nature': '',
 		'gender': '',
 		'evs': '0,0,0,0,0,0',
-		'ivs': '0,31,31,31,31,31',
+		'ivs': '31,31,31,31,31,31',
 		'level': 10,
 	},
 	"Baxcalibur": {
@@ -3958,7 +3958,7 @@ export const PokemonPool = {
 		'nature': '',
 		'gender': '',
 		'evs': '0,0,0,0,0,0',
-		'ivs': '0,31,31,31,31,31',
+		'ivs': '31,31,31,31,31,31',
 		'level': 10,
 	},
 	"Tandemaus": {
@@ -3970,7 +3970,7 @@ export const PokemonPool = {
 		'nature': '',
 		'gender': '',
 		'evs': '0,0,0,0,0,0',
-		'ivs': '0,31,31,31,31,31',
+		'ivs': '31,31,31,31,31,31',
 		'level': 10,
 	},
 	"Maushold": {
@@ -3982,7 +3982,7 @@ export const PokemonPool = {
 		'nature': '',
 		'gender': '',
 		'evs': '0,0,0,0,0,0',
-		'ivs': '0,31,31,31,31,31',
+		'ivs': '31,31,31,31,31,31',
 		'level': 10,
 	},
 	"Pawniard": {
@@ -3994,7 +3994,7 @@ export const PokemonPool = {
 		'nature': '',
 		'gender': '',
 		'evs': '0,0,0,0,0,0',
-		'ivs': '0,31,31,31,31,31',
+		'ivs': '31,31,31,31,31,31',
 		'level': 10,
 	},
 	"Bisharp": {
@@ -4006,7 +4006,7 @@ export const PokemonPool = {
 		'nature': '',
 		'gender': '',
 		'evs': '0,0,0,0,0,0',
-		'ivs': '0,31,31,31,31,31',
+		'ivs': '31,31,31,31,31,31',
 		'level': 10,
 	},
 	"Kingambit": {
@@ -4018,7 +4018,7 @@ export const PokemonPool = {
 		'nature': '',
 		'gender': '',
 		'evs': '0,0,0,0,0,0',
-		'ivs': '0,31,31,31,31,31',
+		'ivs': '31,31,31,31,31,31',
 		'level': 10,
 	},
 	"Tinkatink": {
@@ -4030,7 +4030,7 @@ export const PokemonPool = {
 		'nature': '',
 		'gender': '',
 		'evs': '0,0,0,0,0,0',
-		'ivs': '0,31,31,31,31,31',
+		'ivs': '31,31,31,31,31,31',
 		'level': 10,
 	},
 	"Tinkatuff": {
@@ -4042,7 +4042,7 @@ export const PokemonPool = {
 		'nature': '',
 		'gender': '',
 		'evs': '0,0,0,0,0,0',
-		'ivs': '0,31,31,31,31,31',
+		'ivs': '31,31,31,31,31,31',
 		'level': 10,
 	},
 	"Tinkaton": {
@@ -4054,7 +4054,7 @@ export const PokemonPool = {
 		'nature': '',
 		'gender': '',
 		'evs': '0,0,0,0,0,0',
-		'ivs': '0,31,31,31,31,31',
+		'ivs': '31,31,31,31,31,31',
 		'level': 10,
 	},
 	"Iron Valiant": {

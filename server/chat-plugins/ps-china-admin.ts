@@ -4,6 +4,7 @@ import { SERVER_URL, PetUtils, getUser as getPetUser, dropUser as dropPetModeUse
 import { loginMsgs } from './ps-china-forums';
 
 export const MAX_USERS = 500;
+export const ALTS_RECORD = 16;
 
 const WHITELISTPATH = 'config/ps-china/whitelist.json';
 const REPLAYHEADPATH = 'config/ps-china/replay/replay-head.txt';
@@ -29,7 +30,7 @@ export class AdminUtils {
 	static updateUserAlts() {
 		const ipCount: { [ip: string]: { [userid: string]: number } } = {};
 		const idCount: { [userid: string]: number } = {};
-		FS(IPLOGDIR).readdirIfExistsSync().slice(-16).forEach(fileName => {
+		FS(IPLOGDIR).readdirIfExistsSync().slice(-ALTS_RECORD).forEach(fileName => {
 			FS(`${IPLOGDIR}/${fileName}`).readIfExistsSync().split('\n').forEach(line => {
 				const entry = line.split(',');
 				if (entry.length !== 3) return;
@@ -91,13 +92,13 @@ export class AdminUtils {
 		let noteMsg = msg.replace('{}', '您');
 		let logMsg = '自动定向加分: ' + msg.replace('{}', userid + ' ');
 		if (mainId) {
-			const scores = await this.addScore(mainId, score, msg.replace('{}', ''));
+			const [oldScore, newScore] = await this.addScore(mainId, score, msg.replace('{}', ''));
 			if (!isMain) {
 				noteMsg += `您的积分账号 ${mainId} `;
 				logMsg += `积分账号 ${mainId} `;
 			}
 			noteMsg += `获得国服积分 ${score} 分`;
-			logMsg += `获得国服积分: ${scores[0]} + ${score} = ${scores[1]}`;
+			logMsg += `获得国服积分: ${oldScore} + ${score} = ${newScore}`;
 		} else {
 			noteMsg += `由于未查到您的积分记录, 请联系管理员为您发放国服积分 ${score} 分。`;
 			logMsg += `未查到积分记录, 请管理员核实账号后手动发放 ${score} 分。`
@@ -117,11 +118,17 @@ export class AdminUtils {
 		}
 		return 0;
 	}
-	static async addScore(userid: string, score: number, reason: string = '', formatid: string = 'gen8ps'): Promise<number[]> {
+	static async addScore(
+		userid: string,
+		score: number,
+		reason: string = '',
+		formatid: string = 'gen8ps',
+	): Promise<number[]> {
 		while (addingScore) await PetUtils.sleep(1);
 		addingScore = true;
+
 		// @ts-ignore
-		let ladder: (string | number)[][] = await Ladders(formatid).getLadder();
+		let ladder: [string, number, string, number, number, number, string][] = await Ladders(formatid).getLadder();
 		let userIndex = ladder.length;
 		for (let [i, entry] of ladder.entries()) {
 			if (toID(userid) ? (toID(entry[2]) === toID(userid)) : (entry[2] === userid)) {
@@ -131,17 +138,13 @@ export class AdminUtils {
 		}
 		if (userIndex === ladder.length) ladder.push([userid, 0, userid, 0, 0, 0, '']);
 		let oldScore = +ladder[userIndex][1];
-		if (score === 0) {
-			addingScore = false;
-			return [oldScore, oldScore];
-		}
 		let newScore = oldScore + score;
 		if (newScore < 0) {
 			addingScore = false;
 			return [];
 		}
 		ladder[userIndex][1] = newScore;
-	
+
 		let newIndex = userIndex;
 		while (newIndex > 0 && ladder[newIndex - 1][1] <= newScore) newIndex--;
 		while (ladder[newIndex] && ladder[newIndex][1] >= newScore) newIndex++;
@@ -150,11 +153,11 @@ export class AdminUtils {
 			if (newIndex > userIndex) newIndex--;
 			ladder.splice(newIndex, 0, row);
 		}
-	
+
 		let lastIndex = ladder.length - 1;
 		while (ladder[lastIndex][1] <= 0) lastIndex--;
 		ladder.splice(lastIndex + 1, ladder.length);
-	
+
 		// @ts-ignore
 		await Ladders(formatid).save();
 		if (formatid === 'gen8ps') {
@@ -227,17 +230,17 @@ export const commands: Chat.ChatCommands = {
 			return this.parse("/pschinascorehelp");
 		}
 		const parsedScore = parseInt(score);
-		const changeScore = await AdminUtils.addScore(userid, parsedScore, reason);
-		if (changeScore.length !== 2) return this.errorReply("错误: 将造成负分。");
+		if (await AdminUtils.getScore(userid) + parsedScore < 0) return this.errorReply("错误: 将造成负分。");
 
+		const [oldScore, newScore] = await AdminUtils.addScore(userid, parsedScore, reason);
 		AdminUtils.adminPM(userid, `您因为 ${reason} ${parsedScore > 0 ? '获得': '失去'}了 ${Math.abs(parsedScore)} 国服积分`);
 		const message = `用户ID: ${userid}, PS国服积分: ` +
-			`${changeScore[0]} ${parsedScore < 0 ? "-" : "+"} ${Math.abs(parsedScore)} = ${changeScore[1]}, ` +
+			`${oldScore} ${parsedScore < 0 ? "-" : "+"} ${Math.abs(parsedScore)} = ${newScore}, ` +
 			`原因: ${reason}, 操作人: ${user.name}.`;
 		this.globalModlog(message);
 		this.addModAction(message);
 
-		if (changeScore[0] === 0) {
+		if (oldScore === 0) {
 			const alts = AdminUtils.getAlts(toID(userid));
 			if (!alts) {
 				room.add(`|html|<b>注意: 未找到用户 ${userid} 的登录记录</b>`);
