@@ -76,6 +76,7 @@ pip-log.txt
 *.zip
 !/config/ps-china
 /config/ps-china/team-db
+/config/ps-china/intro/news.json
 /config/ps-china/auto-chess/*.json
 /config/ps-china/whitelist.json
 !/config/pet-mode
