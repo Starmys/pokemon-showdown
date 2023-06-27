@@ -38,7 +38,7 @@ const SCORE_BONUS = [0, 5, 10, 20, 30, 50, 70];
 const AUTO_TOUR_CONFIG_FILE = 'config/tours.json';
 const TOUR_LOG_DIR = 'logs/tour';
 
-if (!FS(TOUR_LOG_DIR).existsSync()) FS(TOUR_LOG_DIR).mkdir();
+FS(TOUR_LOG_DIR).mkdirIfNonexistent();
 
 class BroadcastContext {
 	private room: ChatRoom;
@@ -70,10 +70,13 @@ class ScoreTourUtils {
 			onTournamentEnd() {
 				super.onTournamentEnd();
 				const bracketData = this.getBracketData();
-				const logDir = `${TOUR_LOG_DIR}/${PetUtils.getDate()}`;
-				if (!FS(logDir).existsSync()) FS(logDir).mkdirSync();
+				const roomDir = `${TOUR_LOG_DIR}/${this.roomid}`;
+				FS(roomDir).mkdirIfNonexistentSync();
+				const logDir = `${roomDir}/${PetUtils.getDate()}`;
+				FS(logDir).mkdirIfNonexistentSync();
 				const tourLog = ScoreTourUtils.parseTourLog(bracketData);
-				FS(`${logDir}/${toID(this.name)}.json`).safeWriteSync(PetUtils.formatJSON(tourLog));
+				const timeStr = PetUtils.getTime().replace(/\:/g, '');
+				FS(`${logDir}/${toID(this.name)}-${timeStr}.json`).safeWriteSync(PetUtils.formatJSON(tourLog));
 				AdminUtils.updateUserAlts();
 				ScoreTourUtils.addTourScore(this.name, tourLog);
 				const winnerId = toID(bracketData?.rootNode?.team);
@@ -240,7 +243,8 @@ class TourQueue {
 	}
 
 	check() {
-		return `<b>下一场比赛:</b> 分级: ${this.schedule[0].settings.format} 时间: ${this.schedule[0].nexttime.toString()}`;
+		// TODO: PetUtils.formatTime(time.toString())
+		return `<b>下一场比赛:</b> 分级: ${this.schedule[0].settings.format} 时间: ${this.schedule[0].nexttime.toLocaleString()}`;
 	}
 
 	static calcNextTime(timing: TourTiming): Date {
@@ -500,14 +504,13 @@ export const commands: Chat.ChatCommands = {
 							}
 							return this.parse(`/autotour config edit ${index}`);
 						case 'bonus':
+							this.checkCan('bypassall');
 						case 'forcetimer':
 						case 'allowscouting':
 							if (rules[command] === undefined) {
 								rules[command] = command === 'allowscouting';
 							}
-							if (command !== 'bonus' || room!.roomid === 'skypillar') {
-								rules[command] = !rules[command];
-							}
+							rules[command] = !rules[command];
 							return this.parse(`/autotour config edit ${index}`);
 						case 'playercap':
 						case 'autostart':

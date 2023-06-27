@@ -1670,6 +1670,10 @@ export class GlobalRoomState {
 			// 	'roomid': 'ndwc',
 			// 	'format': (format: string) => format.includes('nationaldex'),
 			// }
+			// {
+			// 	'roomid': 'rcop',
+			// 	'format': (format: string) => /\bgen[1-8]ou\b/.test(format),
+			// }
 		]
 		chinaTeamRooms.forEach(roomInfo => {
 			if (roomInfo['format'](toID(room.format))) {
@@ -1688,20 +1692,22 @@ export class GlobalRoomState {
 				if (aboutTeam) {
 					room.setPrivate('hidden');
 					room.settings.modjoin = null;
+					room.battle!.replaySaved = true;
 				}
 				if (reportToRoom) {
-					teamRoom?.add(`|html|<a href='${room.roomid}'>${room.game.title} started: ${room.title}<a>`).update();
+					// TODO: replay url (button)
+					teamRoom?.add(`|html|<a href='${room.roomid}'>${room.game.title} started: ${room.title}</a>`).update();
 					// teamRoom?.add(`|b|${room.roomid}|${players[0].getIdentity()}|${players[1].getIdentity()}`).update();
 					FS(`logs/${teamRoomId}room.txt`).appendSync(`${new Date().toString()}, ${room.game.title}, ${room.title}\n`);
 				}
 			}
 		})
 
-		if (!toID(room.format).includes('petmode') && !toID(room.format).includes('rougemod')) {
-			const reportButtons = ['Sky Pillar', 'Shinx']
-			.map(roomTitle => `<button class="button" name="send" value="/reportto ${toID(roomTitle)}">${roomTitle}</button>`);
-			room.add(`|uhtml|report-battle|<b>将对战链接公开到:</b> ${reportButtons.join('')}`).update();
-		}
+		// if (!toID(room.format).includes('petmode') && !toID(room.format).includes('rougemod')) {
+		// 	const reportButtons = ['Sky Pillar', 'Shinx']
+		// 	.map(roomTitle => `<button class="button" name="send" value="/reportto ${toID(roomTitle)}">${roomTitle}</button>`);
+		// 	room.add(`|uhtml|report-battle|<b>将对战链接公开到:</b> ${reportButtons.join('')}`).update();
+		// }
 	}
 
 	deregisterChatRoom(id: string) {
