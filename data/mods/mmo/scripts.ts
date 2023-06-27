@@ -100,9 +100,8 @@ export const Scripts: ModdedBattleScriptsData = {
 				defBoosts = 0;
 			}
 
-			if (move.isFutureMove && !source.isActive && move.recentForme) attacker.setSpecies(move.recentForme);
-			let attack = attacker.calculateStat(attackStat, atkBoosts);
-			let defense = defender.calculateStat(defenseStat, defBoosts);
+			let attack = attacker.calculateStat(attackStat, atkBoosts, 1, source);
+			let defense = defender.calculateStat(defenseStat, defBoosts, 1, target);
 
 			attackStat = (category === 'Physical' ? 'atk' : 'spa');
 
