@@ -3,17 +3,15 @@
 	Author: Starmind
 
 	P2
-		1. translations/chinese
-		2. Pet特效 ( Steel Terrain, Acid Rain, Mercy Aura, Ball Aura )
-		3. 精灵球
-		4. TeamDB: 小分级 & 旧时代
-		5. Forums: 自动发Sus帖
-		6. PokeMMO分级合法性数据
+		1. Pet特效 ( Steel Terrain, Acid Rain, Mercy Aura, Ball Aura )
+		2. 精灵球
+		3. Forums: 自动发Sus帖
 	P1
 		1. 修ModLog
 		2. 华丽大赛
 		3. Pet联盟
 		4. 更新GitHub Projects
+		5. 交易所 / 魔法交换
 	P0
 		1. GMod /ip 不显示隐藏房间
 		2. 自动定向加分选择加给谁
@@ -1930,7 +1928,7 @@ export const commands: Chat.ChatCommands = {
 			},
 
 			async ex(target, room, user) {
-				if (!(await AdminUtils.addScore(user.name, 0))[0]) {
+				if (await AdminUtils.getScore(user.name) === 0) {
 					return PetUtils.popup(user, "您没有国服积分, 不能与其他玩家交换宝可梦哦");
 				}
 				if (!room) return PetUtils.popup(user, "请在房间里使用宠物系统");
@@ -1944,7 +1942,7 @@ export const commands: Chat.ChatCommands = {
 				if (!target) { petUser.operation = 'ex'; return this.parse('/pet box showat'); }
 				const friend = Users.get(target);
 				if (!friend) return PetUtils.popup(user, `没有找到用户 ${target} !`)
-				if (!(await AdminUtils.addScore(friend.name, 0))[0]) {
+				if (await AdminUtils.getScore(friend.name) === 0) {
 					return PetUtils.popup(user, `${friend.name}没有国服积分, 不能与您交换宝可梦哦`);
 				}
 				const petFriend = getUser(friend.id);
@@ -2488,9 +2486,11 @@ export const commands: Chat.ChatCommands = {
 				if (toID(goodname) === 'box') price *= petUser.getBoxPriceBase();
 				petUser.load();
 				if (price > 0) {
-					const changeScores = await AdminUtils.addScore(user.name, -price * num, `购买 ${num} 个 ${goodname}`);
-					if (changeScores.length !== 2) return PetUtils.popup(user, `积分不足!`);
-					PetUtils.popup(user, `您获得了${num}个 ${goodname} ! 您现在的积分是: ${changeScores[1]}`);
+					const expense = price * num;
+					const score = await AdminUtils.getScore(user.name);
+					if (score < expense) return PetUtils.popup(user, `积分不足!`);
+					const [oldScore, newScore] = await AdminUtils.addScore(user.name, -expense, `购买 ${num} 个 ${goodname}`);
+					PetUtils.popup(user, `您获得了${num}个 ${goodname} ! 您现在的积分是: ${newScore}`);
 				} else {
 					if (Date.now() - petUser.property['time']['ball'] < BALLCD) {
 						return PetUtils.popup(user, `您在${Math.floor(BALLCD / 60000)}分钟内已领取过 ${goodname} !`);
@@ -2575,10 +2575,14 @@ export const commands: Chat.ChatCommands = {
 				const endTimeStamp = new Date(Shop.lotteryConfig['end']).getTime();
 				if (Date.now() > endTimeStamp) return PetUtils.popup(user, '本期彩票已截止发售!');
 				const nums = target.split(',').map(x => parseInt(x));
-				if (nums.length !== 6 || nums.some(x => !(x >= 0 && x <= 31))) return PetUtils.popup(user, '请输入6个0到31之间的整数!');
-				const changeScores = await AdminUtils.addScore(user.name, -Shop.lotteryConfig['price'], '购买彩票');
-				if (changeScores.length !== 2) return PetUtils.popup(user, `积分不足!`);
-				PetUtils.popup(user, `购买成功!`);
+				if (nums.length !== 6 || nums.some(x => !(x >= 0 && x <= 31))) {
+					return PetUtils.popup(user, '请输入6个0到31之间的整数!');
+				}
+				const expense = Shop.lotteryConfig['price'];
+				const score = await AdminUtils.getScore(user.name);
+				if (score < expense) return PetUtils.popup(user, `积分不足!`);
+				const [oldScore, newScore] = await AdminUtils.addScore(user.name, -expense, `购买彩票`);
+				PetUtils.popup(user, `购买成功! 您现在的积分是: ${newScore}`);
 				petUser.setLottery(nums.join(','));
 				this.parse(`/pet shop show lottery`);
 			},

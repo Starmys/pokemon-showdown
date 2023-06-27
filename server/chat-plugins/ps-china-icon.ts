@@ -135,10 +135,12 @@ export const commands: Chat.ChatCommands = {
 			).join('')}</table>`;
 			this.sendReplyBox(`<details><summary><strong>Users with Icons</strong></summary>${iconTable}</details>`);
 		} else {
-			const iconList = Array.from(new Set(Object.values(icons).sort())).map(
+			const iconList = Array.from(new Set(Object.values(icons).sort(
+				(v1, v2) => parseInt(v1.split('/')[5]) - parseInt(v2.split('/')[5])
+			))).map(
 				x => `<img src="${x}" width=40 height=32>`
 			).join('');	
-			this.sendReplyBox(`<details><summary><strong>Already Used Icons</strong></summary>${iconList}</details>`);
+			this.sendReplyBox(`<details><summary><strong>已被占用的宠物图标</strong></summary>${iconList}</details>`);
 		}
 	},
 
