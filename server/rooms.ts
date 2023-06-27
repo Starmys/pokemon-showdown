@@ -1671,6 +1671,10 @@ export class GlobalRoomState {
 			// 	'roomid': 'ndwc',
 			// 	'format': (format: string) => format.includes('nationaldex'),
 			// }
+			{
+				'roomid': 'rcop',
+				'format': (format: string) => /\bgen[1-8]ou\b/.test(format),
+			}
 		]
 		chinaTeamRooms.forEach(roomInfo => {
 			if (roomInfo['format'](toID(room.format))) {
