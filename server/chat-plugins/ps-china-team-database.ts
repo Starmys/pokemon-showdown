@@ -275,7 +275,7 @@ export const commands: Chat.ChatCommands = {
 		async search(target, room, user) {
 			this.requireRoom();
 			if (userLastSearch[user.id] && Date.now() - userLastSearch[user.id] < SEARCH_CD) {
-				if (!['wcop', 'ndwc'].includes(room!.roomid)) {
+				if (!['wcop', 'ndwc', 'rcop'].includes(room!.roomid)) {
 					this.parse('/teamdb guide');
 					return this.errorReply(`您的查询频率过高, 请稍候再来`);
 				}
@@ -292,6 +292,9 @@ export const commands: Chat.ChatCommands = {
 			// if (format.id.includes('nationaldex') && room!.roomid !== 'ndwc') {
 			// 	return this.errorReply('Access denied.');
 			// }
+			if (/\bgen[1-8]ou\b/.test(format.id) && room!.roomid !== 'rcop') {
+				return this.errorReply('Access denied.');
+			}
 			const teamDB = teamDBs[format.id];
 			if (!teamDB) {
 				this.parse('/teamdb guide');
