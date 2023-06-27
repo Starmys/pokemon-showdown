@@ -427,16 +427,16 @@ export class Tournament extends Rooms.RoomGame<TournamentPlayer> {
 			return;
 		}
 
-		if (!Config.noipchecks) {
-			for (const otherPlayer of this.players) {
-				if (!otherPlayer) continue;
-				const otherUser = Users.get(otherPlayer.id);
-				if (otherUser && otherUser.latestIp === user.latestIp) {
-					output.sendReply('|tournament|error|AltUserAlreadyAdded');
-					return;
-				}
-			}
-		}
+		// if (!Config.noipchecks) {
+		// 	for (const otherPlayer of this.players) {
+		// 		if (!otherPlayer) continue;
+		// 		const otherUser = Users.get(otherPlayer.id);
+		// 		if (otherUser && otherUser.latestIp === user.latestIp) {
+		// 			output.sendReply('|tournament|error|AltUserAlreadyAdded');
+		// 			return;
+		// 		}
+		// 	}
+		// }
 
 		if (this.isTournamentStarted) {
 			output.sendReply(`|tournament|error|BracketFrozen`);

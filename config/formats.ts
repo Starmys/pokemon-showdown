@@ -5030,12 +5030,6 @@ export const Formats: FormatList = [
 		gameType: 'doubles',
 		ruleset: ['Flat Rules', '!! Adjust Level = 50', 'Min Source Gen = 8', 'VGC Timer'],
 	},
-		unbanlist: [
-			'Normal Gem', 'Bug Gem', 'Dark Gem', 'Dragon Gem', 'Electric Gem', 'Fairy Gem', 'Fighting Gem', 'Fire Gem', 'Flying Gem', 'Ghost Gem', 'Grass Gem', 'Ground Gem',
-			'Ice Gem', 'Poison Gem', 'Psychic Gem', 'Rock Gem', 'Steel Gem', 'Water Gem', 'Landorus'
-		]
-	},
-	////////////////////   奈亚子杯
 	{
 		name: "[Gen 8] VGC 2021 Series 10",
 
@@ -5135,10 +5129,18 @@ export const Formats: FormatList = [
 		rated: false,
 		gameType: 'multi',
 		timer: { starting: 300, addPerTurn: 45, maxPerTurn: 300, maxFirstTurn: 300, grace: 300 },
-		ruleset: ['Obtainable', 'Team Preview', 'Gravity Sleep Clause', 'Species Clause', 'Nickname Clause', 'OHKO Clause', 'Evasion Moves Clause', 'Endless Battle Clause', 'HP Percentage Mod', 'Cancel Mod', 'Dynamax Clause'],
-		banlist: ['Uber', 'AG', 'Arena Trap', 'Moody', 'Power Construct', 'Sand Veil', 'Shadow Tag', 'Snow Cloak',
-			'Bright Powder', 'King\'s Rock', 'Lax Incense', 'Baton Pass','Tatsugiri'],
-		
+		ruleset: [
+			'Obtainable', 'Team Preview', 'Gravity Sleep Clause', 'Species Clause', 'Nickname Clause', 'OHKO Clause',
+			'Evasion Moves Clause', 'Endless Battle Clause', 'HP Percentage Mod', 'Cancel Mod', 'Dynamax Clause',
+		],
+		banlist: [
+			'Uber', 'AG', 'Arena Trap', 'Moody', 'Power Construct', 'Sand Veil', 'Shadow Tag', 'Snow Cloak',
+			'Bright Powder', 'Lax Incense', 'Baton Pass', 'Tatsugiri', 'Ursaluna', 'Basculegion',
+		],
+		unbanlist: [
+			'Chien-Pao', 'Chi-Yu', 'Espathra', 'Flutter Mane', 'Iron Bundle', 'Landorus', 'Palafin', 'Regieleki',
+			'Spectrier', 'Volcarona',
+		],
 		onModifyMove(move, pokemon, target) {
 			if (move.id === 'defog') {
 				move.onHit = (target, source, move) => {
@@ -5180,9 +5182,18 @@ export const Formats: FormatList = [
 		rated: false,
 		gameType: 'multi',
 		timer: { starting: 300, addPerTurn: 45, maxPerTurn: 300, maxFirstTurn: 300, grace: 300 },
-		ruleset: ['Obtainable', 'Team Preview', 'Gravity Sleep Clause', 'Species Clause', 'Nickname Clause', 'OHKO Clause', 'Evasion Moves Clause', 'Endless Battle Clause', 'HP Percentage Mod', 'Cancel Mod', 'Dynamax Clause'],
-		banlist: ['Jirachi', 'Kartana', 'Melmetal', 'swagger', 'Uber', 'AG', 'Arena Trap', 'Moody', 'Power Construct', 'Sand Veil', 'Shadow Tag', 'Snow Cloak',
-			'Bright Powder', 'King\'s Rock', 'Lax Incense', 'Baton Pass',],
+		ruleset: [
+			'Obtainable', 'Team Preview', 'Gravity Sleep Clause', 'Species Clause', 'Nickname Clause', 'OHKO Clause',
+			'Evasion Moves Clause', 'Endless Battle Clause', 'HP Percentage Mod', 'Cancel Mod', 'Dynamax Clause',
+		],
+		banlist: [
+			'Jirachi', 'Melmetal', 'swagger', 'Uber', 'AG', 'Arena Trap', 'Moody', 'Sand Veil', 'Shadow Tag',
+			'Snow Cloak','Power Construct', 'Bright Powder', 'Lax Incense', 'Baton Pass',
+		],
+		unbanlist: [
+			'Genesect', 'Genesect-Burn', 'Genesect-Chill', 'Genesect-Douse', 'Genesect-Shock', 'Pheromosa', 'Landorus',
+			'Naganadel', 'Zygarde', 'Cinderace', 'Darmanitan-Galar', 'Dracovish', 'Spectrier', 'Kyurem-Black',
+		],
 		onModifyMove(move, pokemon, target) {
 			if (move.id === 'defog') {
 				move.onHit = (target, source, move) => {
@@ -5224,8 +5235,19 @@ export const Formats: FormatList = [
 		rated: false,
 		gameType: 'multi',
 		timer: { starting: 300, addPerTurn: 45, maxPerTurn: 300, maxFirstTurn: 300, grace: 300 },
-		ruleset: ['Obtainable', 'Team Preview', 'Gravity Sleep Clause','Species Clause', 'Nickname Clause', 'OHKO Clause', 'Moody Clause', 'Evasion Moves Clause', 'Endless Battle Clause', 'HP Percentage Mod', 'Cancel Mod'],
-		banlist: ['Jirachi', 'Magearna', 'Snorlax', 'swagger', 'Uber', 'Arena Trap', 'Power Construct', 'Shadow Tag', 'Baton Pass'],
+		ruleset: [
+			'Obtainable', 'Team Preview', 'Gravity Sleep Clause','Species Clause', 'Nickname Clause', 'OHKO Clause',
+			'Moody Clause', 'Evasion Moves Clause', 'Endless Battle Clause', 'HP Percentage Mod', 'Cancel Mod',
+		],
+		banlist: [
+			'Jirachi', 'Magearna', 'swagger', 'Uber', 'Arena Trap', 'Power Construct', 'Shadow Tag', 'Baton Pass',
+			'Dark Void',
+		],
+		unbanlist: [
+			'Aegislash', 'Genesect', 'Genesect-Burn', 'Genesect-Chill', 'Genesect-Douse', 'Genesect-Shock', 'Pheromosa',
+			'Salamence-Mega', 'Blaziken', 'Blaziken-Mega', 'Metagross-Mega', 'Lucario-Mega', 'Landorus', 'Naganadel',
+			'Shaymin-Sky', 'Zygarde', 'Deoxys', 'Deoxys-Attack', 'Deoxys-Defense', 'Deoxys-Speed',
+		],
 		onModifyMove(move, pokemon, target) {
 			if (move.id === 'defog') {
 				move.onHit = (target, source, move) => {
@@ -5266,10 +5288,14 @@ export const Formats: FormatList = [
 		rated: false,
 		gameType: 'multi',
 		timer: { starting: 300, addPerTurn: 45, maxPerTurn: 300, maxFirstTurn: 300, grace: 300 },
-		ruleset: ['Obtainable', 'Team Preview', 'Gravity Sleep Clause', 'Species Clause', 'Nickname Clause', 'OHKO Clause', 'Evasion Moves Clause', 'Endless Battle Clause', 'HP Percentage Mod', 'Cancel Mod', 'Dynamax Clause'],
-		banlist: [ 'Uber', 'AG', 'Arena Trap', 'Moody', 'Power Construct', 'Sand Veil', 'Shadow Tag', 'Snow Cloak',
-			'Bright Powder', 'King\'s Rock', 'Lax Incense', 'Baton Pass','Tatsugiri'],
-		
+		ruleset: [
+			'Obtainable', 'Team Preview', 'Gravity Sleep Clause', 'Species Clause', 'Nickname Clause', 'OHKO Clause',
+			'Evasion Moves Clause', 'Endless Battle Clause', 'HP Percentage Mod', 'Cancel Mod', 'Dynamax Clause',
+		],
+		banlist: [
+			'Uber', 'AG', 'Arena Trap', 'Moody', 'Power Construct', 'Sand Veil', 'Shadow Tag', 'Snow Cloak',
+			'Bright Powder', 'King\'s Rock', 'Lax Incense', 'Baton Pass', 'Tatsugiri',
+		],
 		onModifyMove(move, pokemon, target) {
 			if (move.id === 'defog') {
 				move.onHit = (target, source, move) => {
@@ -5308,7 +5334,6 @@ export const Formats: FormatList = [
 		section: "PSChina Special Of The Month",
 		column: 1,
 	},
-	////////////////////   每月特殊分级
 	{
 		name: "[Gen 8] Stat Gift",
 		desc: `1号位精灵hp种族翻倍, 2号位精灵atk种族翻倍, 3号位精灵def种族翻倍, 4号位精灵spa种族翻倍, 5号位精灵spd种族翻倍, 6号位精灵spe种族翻倍,最高255.\n` +
@@ -5359,7 +5384,6 @@ export const Formats: FormatList = [
 			}
 			this.add('rule', 'Shuffmon模式规则: https://pschina.one/topic/2477/%E5%9B%BD%E6%9C%8D%E4%B8%93%E5%B1%9Eom%E5%88%86%E7%BA%A7/9');
 		},
-		
 	},
 	{
 		name: "[Gen 8] VGC Nation Dex limit 2 Restricted",

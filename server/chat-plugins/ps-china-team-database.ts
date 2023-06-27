@@ -19,7 +19,7 @@ class TeamDB {
 	private pokeIndex: {[speciesId: string]: number};
 	private teams: {
 		'teamCode': number[], // Uint32Array does not make it significantly faster
-		'players': [{'playerId': string, 'replays': string[]}],
+		'players': [{'playerId': string, 'replays': string[]}], // TODO: {[playerId: string]: string[]}
 	}[];
 	private teamsFile: string;
 
@@ -151,7 +151,7 @@ class TeamDB {
 				let isNewPlayer = true;
 				for (let playerInfo of players) {
 					if (playerInfo['playerId'] === playerId) {
-						if (playerInfo['replays'].includes(replayUrl)) {
+						if (!playerInfo['replays'].includes(replayUrl)) {
 							playerInfo['replays'].push(replayUrl);
 						}
 						isNewPlayer = false;
@@ -227,7 +227,7 @@ export const commands: Chat.ChatCommands = {
 			buf += `${SAMPLE_TEAM.join(' / ')}</textarea>`;
 			buf += `<p>分级: <select name="format">${Object.keys(teamDBs).map(formatId => {
 				const formatName = Dex.formats.get(formatId).name;
-				const extraAttr = formatId === 'gen7ou' ? 'selected' : '';
+				const extraAttr = formatId === 'gen7ou' ? 'selected' : '';  // TODO: gen9ou if not rcop
 				return `<option ${extraAttr} value="${formatId}">${formatName}</option>`;
 			}).join('')}</select></p>`;
 			buf += `<p>模糊匹配: <input name="s4" type="checkbox" value="+"/>4&emsp;`;
@@ -275,7 +275,7 @@ export const commands: Chat.ChatCommands = {
 		async search(target, room, user) {
 			this.requireRoom();
 			if (userLastSearch[user.id] && Date.now() - userLastSearch[user.id] < SEARCH_CD) {
-				if (!['wcop', 'ndwc'].includes(room!.roomid)) {
+				if (!['wcop', 'ndwc', 'rcop'].includes(room!.roomid)) {
 					this.parse('/teamdb guide');
 					return this.errorReply(`您的查询频率过高, 请稍候再来`);
 				}
@@ -290,6 +290,9 @@ export const commands: Chat.ChatCommands = {
 			// 	return this.errorReply('Access denied.');
 			// }
 			// if (format.id.includes('nationaldex') && room!.roomid !== 'ndwc') {
+			// 	return this.errorReply('Access denied.');
+			// }
+			// if (/\bgen[1-8]ou\b/.test(format.id) && room!.roomid !== 'rcop') {
 			// 	return this.errorReply('Access denied.');
 			// }
 			const teamDB = teamDBs[format.id];
