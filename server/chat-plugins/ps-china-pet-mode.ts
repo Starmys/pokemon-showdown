@@ -3,17 +3,15 @@
 	Author: Starmind
 
 	P2
-		1. translations/chinese
-		2. Pet特效 ( Steel Terrain, Acid Rain, Mercy Aura, Ball Aura )
-		3. 精灵球
-		4. TeamDB: 小分级 & 旧时代
-		5. Forums: 自动发Sus帖
-		6. PokeMMO分级合法性数据
+		1. Pet特效 ( Steel Terrain, Acid Rain, Mercy Aura, Ball Aura )
+		2. 精灵球
+		3. Forums: 自动发Sus帖
 	P1
 		1. 修ModLog
 		2. 华丽大赛
 		3. Pet联盟
 		4. 更新GitHub Projects
+		5. 交易所 / 魔法交换
 	P0
 		1. GMod /ip 不显示隐藏房间
 		2. 自动定向加分选择加给谁
