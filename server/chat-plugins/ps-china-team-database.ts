@@ -19,7 +19,7 @@ class TeamDB {
 	private pokeIndex: {[speciesId: string]: number};
 	private teams: {
 		'teamCode': number[], // Uint32Array does not make it significantly faster
-		'players': [{'playerId': string, 'replays': string[]}],
+		'players': [{'playerId': string, 'replays': string[]}], // TODO: {[playerId: string]: string[]}
 	}[];
 	private teamsFile: string;
 
@@ -151,7 +151,7 @@ class TeamDB {
 				let isNewPlayer = true;
 				for (let playerInfo of players) {
 					if (playerInfo['playerId'] === playerId) {
-						if (playerInfo['replays'].includes(replayUrl)) {
+						if (!playerInfo['replays'].includes(replayUrl)) {
 							playerInfo['replays'].push(replayUrl);
 						}
 						isNewPlayer = false;
@@ -227,7 +227,7 @@ export const commands: Chat.ChatCommands = {
 			buf += `${SAMPLE_TEAM.join(' / ')}</textarea>`;
 			buf += `<p>分级: <select name="format">${Object.keys(teamDBs).map(formatId => {
 				const formatName = Dex.formats.get(formatId).name;
-				const extraAttr = formatId === 'gen7ou' ? 'selected' : '';
+				const extraAttr = formatId === 'gen7ou' ? 'selected' : '';  // TODO: gen9ou if not rcop
 				return `<option ${extraAttr} value="${formatId}">${formatName}</option>`;
 			}).join('')}</select></p>`;
 			buf += `<p>模糊匹配: <input name="s4" type="checkbox" value="+"/>4&emsp;`;
