@@ -232,7 +232,7 @@ export const commands: Chat.ChatCommands = {
 			} else {
 				this.parse('/rouge clear');
 				return user.sendTo(room!.roomid, `|uhtml|rouge|<b>请选择难度：</b><br>${PetUtils.button(`/rouge choosediff 1`,Rouge.difficult[0] )+PetUtils.button(`/rouge choosediff 2`,Rouge.difficult[1] )}
-				<br> 困难难度下敌人全属性都得到了增强并且学会了钛晶话和极具化。`);
+				 <br> 困难难度下敌人全属性都得到了增强并且学会了钛晶化和极巨化。`);
 			}
 		},
 		showpassrecord(target, room, user) {
@@ -261,8 +261,9 @@ export const commands: Chat.ChatCommands = {
 			user.sendTo(room.roomid, `|uhtmlchange|rouge|`);
 		},
 		fullpassrecord(target, room, user) {
+			if (!user.registered) return PetUtils.popup(user, "请先注册账号!");
 			if (!room) return PetUtils.popup(user, "请在房间里使用Rouge系统");
-			this.checkCan('lock');
+			this.checkCan('bypassall');
 			let rougeUser = RougeUtils.getUser(user.id);
 			if (rougeUser) {
 				rougeUser.passrecord = { 'cave': Array(RougeUtils.initMons.length).fill(1), 'void': Array(RougeUtils.initMons.length).fill(1) };
