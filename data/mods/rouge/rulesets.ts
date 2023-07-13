@@ -872,13 +872,17 @@ export const Rulesets: { [k: string]: ModdedFormatData } = {
 					let event:'mega' | 'zmove' | 'ultra' | 'dynamax' | 'terastallize' | ''  = activePoke.canMegaEvo ? 'mega' : '';
 					if(!event && this.toID(activePoke.ability)!=='shopman'){
 						// this.add('html',`${this.p1.pokemonLeft}        ${this.p1.team.length}`)
-						//调整极巨化概率的变量
-						let p=this.p1.team.length>2?(this.p1.team.length>5?0:1):2;
-						if(!this.p1.dynamaxUsed&&this.randomChance(1,(this.p1.pokemonLeft-2)*(8-this.p1.team.length)+p)&&!this.p1.isChoiceDone()){
+						//调整极巨化和钛晶化概率的变量
+						let p=this.p1.team.length>1?1:0;
+						if(activePoke.hp>activePoke.maxhp/2)
+							p*=2;
+						else if(activePoke.hp<activePoke.maxhp/4)
+							p/=2;
+						if(!this.p1.dynamaxUsed&&this.randomChance(2*p,(this.p1.pokemonLeft-2)*(9-this.p1.team.length)*2)&&!this.p1.isChoiceDone()){
 							activePoke.addVolatile('dynamax');
 							this.p1.dynamaxUsed=true;
 						}
-						else if(activePoke.canTerastallize&&this.randomChance(1,(this.p1.pokemonLeft-2)*(8-this.p1.team.length))&&!activePoke.volatiles['dynamax'])
+						else if(activePoke.canTerastallize&&this.randomChance(2*p,(this.p1.pokemonLeft-2)*(9-this.p1.team.length)*2)&&!activePoke.volatiles['dynamax'])
 							event='terastallize';
 					}
 					const boostlv = eval(Object.values(activePoke.boosts).join('+'));
