@@ -705,7 +705,7 @@ export const Items: { [k: string]: ModdedItemData } = {
 		spritenum: 86,
 		onBeforeMove(source, target, move) {
 			if(move.category!=='Status'&&target&&!target.fainted&&target!==source&&source.useItem()){
-				this.damage(Math.floor(source.level*1.5),target,source)
+				this.damage(Math.floor(source.level+100),target,source)
 				this.add('message',`${source.name} throw the target and take the damage `)
 			}
 		},
@@ -724,13 +724,7 @@ export const Items: { [k: string]: ModdedItemData } = {
 		onModifySpA(atk, pokemon) {
 			return this.chainModify(1+pokemon.hp/1000);
 		},
-		onBeforeMove(source, target, move) {
-			
-			if (move.category==='Special' &&source.lastMove?.category === 'Physical'
-			||(move.category==='Physical'&&source.lastMove?.category === 'Special'))
-		 		source.m.micromaster=true;
-		},
-	
+		
 		num: 210,
 		gen: 4,
 	},
