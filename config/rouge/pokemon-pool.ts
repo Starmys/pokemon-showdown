@@ -79,7 +79,7 @@ export const PokemonPool = {
 		],
 		'abilityroom2': [
 			'Become Sheer Force', 'Become Beast Boost', 'Become Protean', 'Become Regenerator', 
-			'Become Speed Boost', 'Become Concentrator', 'Become Immolating', 'Become Renewal','Become Sacrifice',
+			'Become Speed Boost', 'Become Concentrator', 'Become Immolating', 'Become Renewal','Become Sacrifice'
 		],
 		'eliteroom': [
 			'Gain Artirain', 'Gain Artisnow', 'Gain Artistorm', 'Gain Artisunny', 'Gain Confident Start', 
