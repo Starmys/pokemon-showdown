@@ -227,7 +227,7 @@ export const commands: Chat.ChatCommands = {
 			buf += `${SAMPLE_TEAM.join(' / ')}</textarea>`;
 			buf += `<p>分级: <select name="format">${Object.keys(teamDBs).map(formatId => {
 				const formatName = Dex.formats.get(formatId).name;
-				const extraAttr = formatId === 'gen7ou' ? 'selected' : '';  // TODO: gen9ou if not rcop
+				const extraAttr = formatId === 'gen7ou' ? 'selected' : '';
 				return `<option ${extraAttr} value="${formatId}">${formatName}</option>`;
 			}).join('')}</select></p>`;
 			buf += `<p>模糊匹配: <input name="s4" type="checkbox" value="+"/>4&emsp;`;
