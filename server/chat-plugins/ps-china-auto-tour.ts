@@ -240,8 +240,7 @@ class TourQueue {
 	}
 
 	check() {
-		// TODO: PetUtils.formatTime(time.toString())
-		return `<b>下一场比赛:</b> 分级: ${this.schedule[0].settings.format} 时间: ${this.schedule[0].nexttime.toString()}`;
+		return `<b>下一场比赛:</b> 分级: ${this.schedule[0].settings.format} 时间: ${this.schedule[0].nexttime.toLocaleString()}`;
 	}
 
 	static calcNextTime(timing: TourTiming): Date {
