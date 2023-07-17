@@ -120,6 +120,7 @@ export class AdminUtils {
 	static async addScore(userid: string, score: number, reason: string = '', formatid: string = 'gen8ps'): Promise<number[]> {
 		while (addingScore) await PetUtils.sleep(1);
 		addingScore = true;
+		// @ts-ignore
 		let ladder: [string, number, string, number, number, number, string][] = await Ladders(formatid).getLadder();
 		let userIndex = ladder.length;
 		for (let [i, entry] of ladder.entries()) {

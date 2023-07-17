@@ -1695,8 +1695,7 @@ export class GlobalRoomState {
 					room.battle!.replaySaved = true;
 				}
 				if (reportToRoom) {
-					// TODO: replay url (button)
-					teamRoom?.add(`|html|<a href='${room.roomid}'>${room.game.title} started: ${room.title}<a>`).update();
+					teamRoom?.add(`|html|<a href='${room.roomid}'>${room.game.title} started: ${room.title}</a>`).update();
 					// teamRoom?.add(`|b|${room.roomid}|${players[0].getIdentity()}|${players[1].getIdentity()}`).update();
 					FS(`logs/${teamRoomId}room.txt`).appendSync(`${new Date().toString()}, ${room.game.title}, ${room.title}\n`);
 				}
