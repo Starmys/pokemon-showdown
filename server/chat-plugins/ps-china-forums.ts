@@ -4,20 +4,26 @@ import { escapeHTML } from "../../lib/utils";
 import { PetUtils } from "./ps-china-pet-mode";
 
 const FORUMS_URL = 'https://pschina.one';
-const TOPIC_KEYS = ['中国队', '报名', '公开赛', '地域赛', '联赛', '大联盟', '大满贯', '锦标赛', '季赛', 'PL', 'ShinxCup', 'Suspect'];
+const TOPIC_KEYS = ['中国队', '报名', '公开赛', '地域赛', '联赛', '大联盟', '大满贯', '锦标赛', '季赛', 'PL', 'Shinx', 'Suspect'];
 const INTRO_FOLDER = 'config/ps-china/intro';
 const INTRO_MSG_TYPES = ['PS China Intro'];
 const NEWS_EDIT_CD = 60000;
 
+let lastEditTime = -1;
+let currentEditor = '';
+let currentCursor = -1;
+let newsTable: string[][] = [];
+
 export const loginMsgs: {[msgType: string]: string} = {};
 INTRO_MSG_TYPES.forEach(msgType => loadMsgType(msgType));
-loadPSChinaNews(true);
+loadPSChinaNews();
 
 function loadMsgType(msgType: string) {
-	loginMsgs[msgType] = FS(`${INTRO_FOLDER}/${msgType.toLowerCase().replace(/\s/g, '-')}.html`).readIfExistsSync().replace(/[\n|\t]/g, '');
+	loginMsgs[msgType] = FS(`${INTRO_FOLDER}/${msgType.toLowerCase().replace(/\s/g, '-')}.html`)
+		.readIfExistsSync().replace(/[\n|\t]/g, '');
 }
 
-async function getRecentTopics(): Promise<{[index: string]: string}> {
+async function scanPSChinaNews(): Promise<number> {
 	const topics: {[index: string]: string} = {};
 	let recentPage = await new NetRequest(`${FORUMS_URL}/recent`).get();
 	let tagIndex = recentPage.indexOf(`<a href="/topic/`);
@@ -33,15 +39,28 @@ async function getRecentTopics(): Promise<{[index: string]: string}> {
 		recentPage = recentPage.slice(tagEndIndex + 4);
 		tagIndex = recentPage.indexOf(`<a href="/topic/`);
 	}
-	return topics;
+	let oldUrls = new Set(newsTable.map(([index, url]) => url));
+	Object.entries(topics)
+		.filter(([index, title]) => TOPIC_KEYS.some(key => title.includes(key)))
+		.map(([index, title]) => [title, `${FORUMS_URL}/topic/${index}`])
+		.filter(([index, url]) => !oldUrls.has(url))
+		.forEach(([index, url]) => newsTable.push([index, url]));
+	return newsTable.length;
 }
 
-async function loadPSChinaNews(update: boolean = false): Promise<number> {
-	newsTable = Object.entries(await getRecentTopics())
-	.filter(([index, title]) => TOPIC_KEYS.some(key => title.includes(key)))
-	.map(([index, title]) => [title, `${FORUMS_URL}/topic/${index}`]);
-	if (update) updatePSChinaIntro();
-	return newsTable.length;
+async function loadPSChinaNews() {
+	let newsData = FS(`${INTRO_FOLDER}/news.json`).readIfExistsSync();
+	if (newsData) {
+		newsTable = JSON.parse(newsData);
+	} else {
+		await scanPSChinaNews();
+		savePSChinaNews();
+	}
+	updatePSChinaIntro();
+}
+
+function savePSChinaNews() {
+	FS(`${INTRO_FOLDER}/news.json`).writeSync(JSON.stringify(newsTable, null, '\t'));
 }
 
 function updatePSChinaIntro() {
@@ -49,11 +68,6 @@ function updatePSChinaIntro() {
 	loadMsgType('PS China Intro');
 	loginMsgs['PS China Intro'] = loginMsgs['PS China Intro'].replace('{}', newsStr);
 }
-
-let lastEditTime = -1;
-let currentEditor = '';
-let currentCursor = -1;
-let newsTable: string[][] = [];
 
 function requireWriteAccess(userid: string): boolean {
 	if (currentEditor !== userid && !!Users.get(currentEditor) && Date.now() < lastEditTime + NEWS_EDIT_CD) {
@@ -69,6 +83,7 @@ function showNewsTable(roomid: string): string {
 	.map((row, i) => row.map((text, j) => {
 		if (text.startsWith('http')) text = `<a href="${text}">${text}</a>`;
 		if (currentCursor === i * 2 + j) {
+			// TODO: Move Up & Move Down
 			let buf = '';
 			buf += `<form data-submitsend="/msgroom ${roomid}, /pschinaforums news edit ${i * 2 + j},{cn-forums-news-text}">`;
 			buf += `<input name="cn-forums-news-text" value="${escapeHTML(text)}"/> `;
@@ -102,7 +117,7 @@ export const commands: Chat.ChatCommands = {
 				}
 				const [cursorStr, text] = target.split(',');
 				const cursor = ((parseInt(cursorStr) + 1) || 0) - 1;
-				const rowIndex = Math.floor(cursor / 2);
+				const rowIndex = cursor >> 1;
 				if (text === '-') {
 					newsTable.splice(rowIndex, 1);
 					currentCursor = -1;
@@ -110,7 +125,7 @@ export const commands: Chat.ChatCommands = {
 					newsTable.push(['(请编辑标题)', '(请编辑链接)']);
 					currentCursor = -1;
 				} else if (cursor >= 0 && cursor === currentCursor) {
-					newsTable[rowIndex][cursor % 2] = text;
+					newsTable[rowIndex][cursor & 1] = text;
 					currentCursor = -1;
 				} else {
 					currentCursor = cursor;
@@ -123,7 +138,7 @@ export const commands: Chat.ChatCommands = {
 				if (!requireWriteAccess(user.id)) {
 					return this.errorReply(`${Users.get(currentEditor)?.name} 正在编辑新闻列表。`);
 				}
-				await loadPSChinaNews();
+				await scanPSChinaNews();
 				this.parse('/pschinaforums news edit');
 			},
 			update(target, room, user) {
@@ -133,6 +148,7 @@ export const commands: Chat.ChatCommands = {
 					return this.errorReply(`${Users.get(currentEditor)?.name} 正在编辑新闻列表。`);
 				}
 				updatePSChinaIntro();
+				savePSChinaNews();
 				currentEditor = '';
 				this.sendReply('新闻列表更新成功!');
 				this.stafflog(`${user.name} 更新了新闻列表。`)
