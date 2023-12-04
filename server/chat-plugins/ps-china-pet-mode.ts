@@ -54,7 +54,7 @@ type lotteryConfig = {
 const prng = new PRNG();
 
 export const BOTID = 'pschinabot';
-export const SERVER_URL = 'https://39.96.50.192';
+export const SERVER_URL = 'https://play.pschina.one';
 const USERPATH = 'config/pet-mode/user-properties';
 const GIFTPATH = 'config/pet-mode/user-gifts';
 const DEPOSITPATH = 'config/pet-mode/deposit';
