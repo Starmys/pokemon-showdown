@@ -92,7 +92,7 @@ export const Avatars = new class {
 		saveCustomAvatars(instant);
 	}
 	src(avatar: AvatarID) {
-		if (avatar.includes('.')) return `https://39.96.50.192/avatars/${avatar}`;
+		if (avatar.includes('.')) return `https://play.pschina.one/avatars/${avatar}`;
 		const avatarUrl = avatar.startsWith('#') ? `trainers-custom/${avatar.slice(1)}.png` : `trainers/${avatar}.png`;
 		return `https://${Config.routes.client}/sprites/${avatarUrl}`;
 	}
