@@ -58,6 +58,28 @@ export class RandomPSChinaForFunTeams extends RandomTeams {
 		}
 		return team;
 	}
+	randomKOFTeam() {
+		const team = [];
+		// let names = FS('config/ps-china/kof-names.txt').readSync('utf8').split(',');
+		const species = this.dex.species.get('Hitmonchan');
+		while (team.length < 6) {
+			const set = {
+				// name: this.sample(names),
+				name: species.name,
+				species: species.name,
+				gender: species.gender,
+				item: 'Ring Target',
+				ability: 'Shadow Tag',
+				shiny: false,
+				evs: {hp: 0, atk: 252, def: 4, spa: 0, spd: 0, spe: 252},
+				nature: 'Jolly',
+				ivs: {hp: 31, atk: 31, def: 31, spa: 31, spd: 31, spe: 31},
+				moves: ['Mach Punch', 'Focus Punch', 'Upper Hand'],
+			};
+			team.push(set);
+		}
+		return team;
+	}
 }
 
 export default RandomPSChinaForFunTeams;
