@@ -4269,6 +4269,21 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 		column: 1,
 	},
 	{
+		name: "[Gen 9] KOF",
+		desc: `拳王争霸赛！`,
+
+		mod: 'pschinaforfun',
+		team: 'randomKOF',
+		ruleset: ['Team Preview', 'Dynamax Clause','Terastal Clause'],
+
+		onBegin() {
+			const allPokemon = this.getAllPokemon();
+			for (let pokemon of allPokemon) {
+				pokemon.hp = 1;
+			}
+		}
+	},
+	{
 		name: "[Gen 9] Durants",
 		desc: `男人的决斗！`,
 
@@ -4388,7 +4403,7 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 	},
 	///////////////国服多人分级
 	{
-		section: "PSChina multi player",
+		section: "PSChina Multi-Player",
 		column: 1,
 	},
 	{
@@ -4671,7 +4686,7 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 	},
 	////////////////////   每月特殊分级
 	{
-		section: "PSChina Special Of The Month",
+		section: "PSChina Special Of the Month",
 		column: 1,
 	},
 	{
@@ -4817,7 +4832,7 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 	},
 	//////////////////非对战分级
 	{
-		section: "PSChina Not to play",
+		section: "PSChina Not to Play",
 		column: 1,
 	},
 	{
