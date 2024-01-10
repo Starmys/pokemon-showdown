@@ -3,12 +3,17 @@ import {FS} from '../../../lib';
 
 export class RandomPSChinaForFunTeams extends RandomTeams {
 	randomDurantsTeam() {
-		const pokemon = [];
+		const team = [];
+		const sampled_names: Set<String> = new Set();
 		let names = FS('config/ps-china/durant-names.txt').readSync('utf8').split(',');
 		const species = this.dex.species.get('Durant');
-		while (pokemon.length < 6) {
+		while (team.length < 6) {
+			let next_name = this.sample(names);
+			while (next_name in sampled_names) {
+				next_name = this.sample(names);
+			}
 			const set = {
-				name: this.sample(names),
+				name: next_name,
 				species: species.name,
 				gender: species.gender,
 				item: this.random(2) < 1 ? 'Choice Scarf' : 'Leppa Berry',
@@ -39,17 +44,17 @@ export class RandomPSChinaForFunTeams extends RandomTeams {
 				set.item = 'Leppa Berry';
 				set.moves.push('Imprison');
 			}
-			pokemon.push(set);
+			team.push(set);
 		}
-		pokemon[0].shiny = true;
+		team[0].shiny = true;
 		if (this.random(4) < 1) {
-			pokemon[0].moves.push('Inferno');
-			pokemon[0].ability = 'Truant';
+			team[0].moves.push('Inferno');
+			team[0].ability = 'Truant';
 		} else {
-			pokemon[0].item = 'Watmel Berry';
-			pokemon[0].moves.push('Natural Gift');
+			team[0].item = 'Watmel Berry';
+			team[0].moves.push('Natural Gift');
 		}
-		return pokemon;
+		return team;
 	}
 	randomMetronomeTeam() {
 		let team = this.randomCCTeam();
@@ -60,12 +65,16 @@ export class RandomPSChinaForFunTeams extends RandomTeams {
 	}
 	randomKOFTeam() {
 		const team = [];
-		// let names = FS('config/ps-china/kof-names.txt').readSync('utf8').split(',');
+		const sampled_names: Set<String> = new Set();
+		let names = FS('config/ps-china/kof-names.txt').readSync('utf8').split(',');
 		const species = this.dex.species.get('Hitmonchan');
 		while (team.length < 6) {
+			let next_name = this.sample(names);
+			while (next_name in sampled_names) {
+				next_name = this.sample(names);
+			}
 			const set = {
-				// name: this.sample(names),
-				name: species.name,
+				name: next_name,
 				species: species.name,
 				gender: species.gender,
 				item: 'Ring Target',
