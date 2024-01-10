@@ -1,4 +1,4 @@
-export const BattlePokemonIconIndexes: {[id: string]: number} = {
+export const PokemonIconIndexes: {[id: string]: number} = {
 	// alt forms
 	egg: 1032 + 1,
 	pikachubelle: 1032 + 2,
