@@ -22,7 +22,7 @@ export class Rouge {
 	static createBattle(
 		user: User, bot: User, userTeam: string, botTeam: string, format: string, hidden: boolean | undefined,
 		delayedStart: boolean | 'multi' | undefined = false
-	): GameRoom | undefined {
+	): GameRoom | null {
 		if (rougeBattleRooms[user.id]) {
 			try {
 				rougeBattleRooms[user.id]?.destroy();
@@ -34,22 +34,21 @@ export class Rouge {
 		}
 		rougeBattleRooms[user.id] = Rooms.createBattle({
 			format: format,
-			p1: {
-				user: bot,
-				team: botTeam,
-				rating: 0,
-				hidden: hidden,
-				inviteOnly: false,
-			},
-			p2: {
-				user: user,
-				team: userTeam,
-				rating: 0,
-				hidden: hidden,
-				inviteOnly: false,
-			},
-			p3: undefined,
-			p4: undefined,
+			players: [
+				{
+					user: bot,
+					team: botTeam,
+					rating: 0,
+					hidden: hidden,
+					inviteOnly: false,
+				},{
+					user: user,
+					team: userTeam,
+					rating: 0,
+					hidden: hidden,
+					inviteOnly: false,
+				}
+			],
 			rated: 0,
 			challengeType: 'unrated',
 			delayedStart: delayedStart,
@@ -67,7 +66,7 @@ export class Rouge {
 		return [...user.inRooms].find(x => toID(x).indexOf('rougemod') >= 0 && battleWithBot(x));
 	}
 }
-const rougeBattleRooms: { [userid: string]: GameRoom | undefined } = {};
+const rougeBattleRooms: { [userid: string]: GameRoom | null } = {};
 export const commands: Chat.ChatCommands = {
 
 	rouge: {
