@@ -568,7 +568,7 @@ Dex.species.all().forEach(species => {
 	species.cosmeticFormes?.forEach(forme => Pet.typeIcons[forme] = img);
 });
 
-const petBattleRooms: { [userid: string]: GameRoom | undefined } = {};
+const petBattleRooms: { [userid: string]: GameRoom | null } = {};
 class PetBattle {
 
 	static legends: { [roomid: string]: string } = {};
@@ -677,29 +677,28 @@ class PetBattle {
 	static createBattle(
 		user: User, bot: User, userTeam: string, botTeam: string, format: string, hidden: boolean,
 		delayedStart: boolean | 'multi' | undefined = false
-	): GameRoom | undefined {
+	): GameRoom | null {
 		if (petBattleRooms[user.id]) {
 			petBattleRooms[user.id]?.destroy();
 			delete petBattleRooms[user.id];
 		}
 		petBattleRooms[user.id] = Rooms.createBattle({
 			format: format,
-			p1: {
-				user: bot,
-				team: botTeam,
-				rating: 0,
-				hidden: hidden,
-				inviteOnly: false,
-			},
-			p2: {
-				user: user,
-				team: userTeam,
-				rating: 0,
-				hidden: hidden,
-				inviteOnly: false,
-			},
-			p3: undefined,
-			p4: undefined,
+			players: [
+				{
+					user: bot,
+					team: botTeam,
+					rating: 0,
+					hidden: hidden,
+					inviteOnly: false,
+				},{
+					user: user,
+					team: userTeam,
+					rating: 0,
+					hidden: hidden,
+					inviteOnly: false,
+				}
+			],
 			rated: 0,
 			challengeType: 'unrated',
 			delayedStart: delayedStart,
@@ -2124,7 +2123,7 @@ export const commands: Chat.ChatCommands = {
 				const wantLegend = target.indexOf('!') >= 0 && !!PetBattle.legends[room.roomid];
 
 				petUser.load();
-				let battleRoom: GameRoom | undefined;
+				let battleRoom: GameRoom | null;
 				if (room.roomid === 'gym') { // Gym
 					// Gym Existence Check
 					if (!PetBattle.gymConfig[target]) return this.parse('/pet help lawn');
