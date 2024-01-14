@@ -5272,11 +5272,11 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 		},
 	},
 	{
-		name: "[Gen 8] VGC Nation Dex limit 2 Restricted",
+		name: "[Gen 9] VGC Nation Dex",
 
-		mod: 'gen8',
+		mod: 'gen9',
 		gameType: 'doubles',
-		ruleset: ['Flat Rules', '!! Adjust Level = 50', 'VGC Timer', '+Unobtainable', '+Past', 'Limit Two Restricted'],
+		ruleset: ['Flat Rules', '!! Adjust Level = 50', 'VGC Timer', '+Unobtainable', '+Past', ],
 		restricted: ['Restricted Legendary'],
 		onValidateSet(set) {
 			// These Pokemon are still unobtainable
