@@ -1159,14 +1159,13 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 				this.add('-message', 'The battlefield was covered in Steel!');
 			},
 			onDamagePriority: -100,
-			onDamage(damage, source, target, move) {
+			onSourceModifyDamage(damage, source, target, move) {
 				if (target&&target.side === this.p2 && target.isGrounded())
-					if (source.getMoveHitData(move as ActiveMove).typeMod > 0) {
+					if (target.getMoveHitData(move).typeMod > 0) {
 						this.debug('Filter neutralize');
 						return this.chainModify(0.85);
 					}
 			},
-			
 			onFieldResidualOrder: 21,
 			onFieldResidualSubOrder: 3,
 			onFieldEnd() {
