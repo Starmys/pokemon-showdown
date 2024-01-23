@@ -1320,7 +1320,7 @@ export const Formats: FormatList = [
 		name: "[Gen 7] Pure Hackmons",
 		desc: `Anything that can be hacked in-game and is usable in local battles is allowed.`,
 		threads: [
-			`&bullet; <a href="https://www.smogon.com/forums/threads/3734057/">USUM Pure Hackmons</a>`,
+			`&bullet; <a href="https://www.smogon.com/forums/posts/9142994">USUM Pure Hackmons</a>`,
 		],
 
 		mod: 'gen7',
@@ -5349,16 +5349,16 @@ export const Formats: FormatList = [
 		section: "PSChina Special Of the Month",
 		column: 1,
 	},
-	{
-		name: "[Gen 7] Pure Hackmons",
-		desc: `Anything that can be hacked in-game and is usable in local battles is allowed.`,
-		threads: [
-			`&bullet; <a href="https://www.smogon.com/forums/posts/9142994">USUM Pure Hackmons</a>`,
-		],
+	// {
+	// 	name: "[Gen 7] Pure Hackmons",
+	// 	desc: `Anything that can be hacked in-game and is usable in local battles is allowed.`,
+	// 	threads: [
+	// 		`&bullet; <a href="https://www.smogon.com/forums/posts/9142994">USUM Pure Hackmons</a>`,
+	// 	],
 
-		mod: 'gen7',
-		ruleset: ['-Nonexistent', 'Team Preview', 'HP Percentage Mod', 'Cancel Mod', 'Endless Battle Clause'],
-	},
+	// 	mod: 'gen7',
+	// 	ruleset: ['-Nonexistent', 'Team Preview', 'HP Percentage Mod', 'Cancel Mod', 'Endless Battle Clause'],
+	// },
 	{
 		name: "[Gen 8] Stat Gift",
 		desc: `1号位精灵hp种族翻倍, 2号位精灵atk种族翻倍, 3号位精灵def种族翻倍, 4号位精灵spa种族翻倍, 5号位精灵spd种族翻倍, 6号位精灵spe种族翻倍,最高255.\n` +
