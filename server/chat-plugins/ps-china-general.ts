@@ -39,6 +39,8 @@ const PSChinaCommands = {
 		'查看房间赛设置': '/autotour config',
 	},
 	'其他': {
+		'<&> 查看用户列表': '/userlist',
+		'<@> 释放服务器容量': '/clearguests',
 		'<@> 查看白名单': '/pschinawhitelist',
 		'<@> 查找并公开replay': '/restorereplay',
 		'<@> 更新 PS China Guide': '/pschinaforums news',
@@ -87,9 +89,9 @@ export const commands: Chat.ChatCommands = {
 		if (target.endsWith('!')) {
 			let buf = `<a href='${room.roomid}'>`;
 			buf += `${room.game.title}: `;
-			buf += `<username class="username">${room.getPlayer(0).name}</username>`;
+			buf += `<username class="username">${room.p1?.name}</username>`;
 			buf += ` v.s. `;
-			buf += `<username class="username">${room.getPlayer(1).name}</username>`;
+			buf += `<username class="username">${room.p2?.name}</username>`;
 			buf += `</a>`;
 			targetRoom.add(`|uhtml|${room.roomid}|${buf}`).update();
 			buf = `<username class="username">${user.name}</username> `;
