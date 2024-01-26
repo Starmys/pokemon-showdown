@@ -206,9 +206,42 @@ export class AdminUtils {
 	static onUserDisconnect(user: User) {
 		dropPetModeUser(user.getLastId());
 	}
+	static clearGuests(prefix: string = 'msnbot'): number {
+		let cnt = 0;
+		for (let user of Users.users.values()) {
+			if (!user.registered && user.latestHost.startsWith(prefix)) {
+				user.disconnectAll();
+				cnt++;
+			}
+		}
+		return cnt;
+	}
 }
 
 export const commands: Chat.ChatCommands = {
+
+	userlist(target, room, user) {
+		this.checkCan('bypassall');
+		const userTable: string[][] = [];
+		for (let user of Users.users.values()) {
+			userTable.push([user.id, user.name, user.ips.join(', ')]);
+		}
+		const buf = PetUtils.table([], ['ID', 'Name', 'IP List'], userTable, '400px', 'left', 'left', true);
+		this.sendReply(`|uhtml|pschinauserlist|${buf}`);
+	},
+	userlisthelp: [
+		`/userlist - 查看内存中的所有用户`,
+	],
+
+	clearguests(target, room, user) {
+		this.checkCan('lock');
+		const releaseCount = AdminUtils.clearGuests();
+		this.sendReply(`Released ${releaseCount} unregistered guests.`)
+	},
+	clearguestshelp: [
+		`/clearguests - 切断未注册访客的连接以释放服务器容量`,
+	],
+
 	async score(target, room, user) {
 		let targetUser = target.replace('!', '') || user.id;
 		const score = await AdminUtils.getScore(targetUser);
