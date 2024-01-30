@@ -5074,7 +5074,7 @@ export const Formats: FormatList = [
 				}
 			}
 			if (gods.size > 1) {
-				return [`You have too many Gods.`, `(${Array.from(gods).join(', ')} are Gods.)`];
+				return [`你有超过1只uber`, `(${Array.from(gods).join(', ')} 是uber宝可梦.)`];
 			}
 		},
 	},
