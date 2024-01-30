@@ -4898,6 +4898,47 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 			'Ice Gem', 'Poison Gem', 'Psychic Gem', 'Rock Gem', 'Steel Gem', 'Water Gem', 'Landorus'
 		]
 	},
+	////////////////////   吧主甲群赛
+	{
+		name: "[Gen 9] Reshiram Cup莱西拉姆杯",
+		desc: `详情咨询吧主甲舰长群`,
+
+
+		mod: 'gen9',
+		ruleset: ['Standard NatDex', 'OHKO Clause', 'Evasion Clause', 'Species Clause', 'Sleep Clause Mod'],
+		banlist: [
+			'Zygarde', 'Zygarde-Complete','Ultranecrozium Z','Xerneas','Red Orb','Terapagos','Blue Orb','Eternatus','ND AG', 'Arena Trap', 'Moody', 'Power Construct', 'Shadow Tag', 'King\'s Rock',
+			'Quick Claw', 'Razor Fang', 'Assist', 'Baton Pass', 'Last Respects', 'Shed Tail',
+		],
+		restricted: [
+			'ND Uber'
+		],
+		onValidateTeam(team) {
+			const gods = new Set<string>();
+			for (const set of team) {
+				let species = this.dex.species.get(set.species);
+				if (typeof species.battleOnly === 'string') species = this.dex.species.get(species.battleOnly);
+				if (
+					(species.baseSpecies === 'Zamazenta' && this.toID(set.item) === 'rustedshield') ||
+					(species.baseSpecies === 'Zacian' && this.toID(set.item) === 'rustedsword')
+				) {
+					species = this.dex.species.get(`${species.baseSpecies}-Crowned`);
+				}
+				if (set.item && this.dex.items.get(set.item).megaStone) {
+					const item = this.dex.items.get(set.item);
+					if (item.megaEvolves === species.baseSpecies) {
+						species = this.dex.species.get(item.megaStone);
+					}
+				}
+				if (this.ruleTable.isRestrictedSpecies(species)) {
+					gods.add(species.name);
+				}
+			}
+			if (gods.size > 1) {
+				return [`You have too many Gods.`, `(${Array.from(gods).join(', ')} are Gods.)`];
+			}
+		},
+	},
 	////////////////////   奈亚子杯
 	{
 		name: "[Gen 8] VGC 2021 Series 9",
