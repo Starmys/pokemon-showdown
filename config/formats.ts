@@ -4915,6 +4915,9 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 		],
 		onValidateTeam(team) {
 			const gods = new Set<string>();
+			let healnum=0;
+			let regenerator=0;
+			let healmoves=['rest','recover','softboiled','morningsun','moonlight','wish','slackoff','roost'];
 			for (const set of team) {
 				let species = this.dex.species.get(set.species);
 				if (typeof species.battleOnly === 'string') species = this.dex.species.get(species.battleOnly);
@@ -4933,6 +4936,20 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 				if (this.ruleTable.isRestrictedSpecies(species)) {
 					gods.add(species.name);
 				}
+				if (this.dex.toID(set.ability)=='regenerator'){
+					regenerator++;
+				}
+				for(let move of set.moves){
+					if(healmoves.includes(this.toID(move))){
+						healnum++;
+					}
+				}
+			}
+			if (regenerator > 1) {
+				return [`你有超过1只再生力.)`];
+			}
+			if (healnum > 2) {
+				return [`你有超过2个回复技能)`];
 			}
 			if (gods.size > 1) {
 				return [`你有超过1只uber`, `(${Array.from(gods).join(', ')} 是uber宝可梦.)`];
