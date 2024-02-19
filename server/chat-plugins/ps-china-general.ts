@@ -7,6 +7,7 @@ const PSChinaCommands = {
 		'查看国服积分': '/score',
 		'查看国服积分记录': '/scorelog',
 		'<@> 修改国服积分': '/pschinascore',
+		'<&> 清空赛年积分': '/clearannualscore',
 		'查看关联账号': '/checkalts',
 		'<@> 更新用户关系表 (慎用)': '/updatealts',
 	},
