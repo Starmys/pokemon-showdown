@@ -75,6 +75,7 @@ pip-log.txt
 # PS China
 *.zip
 !/config/ps-china
+/config/ps-china/score.json
 /config/ps-china/team-db
 /config/ps-china/intro/news.json
 /config/ps-china/auto-chess/*.json
