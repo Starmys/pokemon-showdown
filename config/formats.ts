@@ -5554,19 +5554,6 @@ export const Formats: FormatList = [
 		column: 1,
 	},
 	{
-		name: "[Gen 8] PS 国服积分",
-		desc: `用于国服论坛积分显示, 天梯对战不计分。`,
-
-		mod: 'gen8',
-		team: 'random',
-		challengeShow: false,
-		rated: false,
-		ruleset: ['PotD', 'Obtainable', 'Sleep Clause Mod', 'HP Percentage Mod', 'Cancel Mod'],
-		onBegin() {
-			this.add('html', `<div class="broadcast-red"><strong>本分级仅用于国服论坛积分显示, 天梯对战不计分。具体积分规则见<a href="http://chinapsim.org./topic/63/">国服积分说明帖</a>.</strong></div>`);
-		},
-	},
-	{
 		name: "[Gen 9] Rouge Mod",
 		desc: `出发, 去往未知洞穴里探险`,
 
