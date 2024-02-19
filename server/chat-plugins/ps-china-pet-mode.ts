@@ -1927,7 +1927,7 @@ export const commands: Chat.ChatCommands = {
 			},
 
 			async ex(target, room, user) {
-				if (await AdminUtils.getScore(user.name) === 0) {
+				if (AdminUtils.getAccumulateScore(user.name) === 0) {
 					return PetUtils.popup(user, "您没有国服积分, 不能与其他玩家交换宝可梦哦");
 				}
 				if (!room) return PetUtils.popup(user, "请在房间里使用宠物系统");
@@ -1941,7 +1941,7 @@ export const commands: Chat.ChatCommands = {
 				if (!target) { petUser.operation = 'ex'; return this.parse('/pet box showat'); }
 				const friend = Users.get(target);
 				if (!friend) return PetUtils.popup(user, `没有找到用户 ${target} !`)
-				if (await AdminUtils.getScore(friend.name) === 0) {
+				if (AdminUtils.getAccumulateScore(friend.name) === 0) {
 					return PetUtils.popup(user, `${friend.name}没有国服积分, 不能与您交换宝可梦哦`);
 				}
 				const petFriend = getUser(friend.id);
@@ -2486,9 +2486,9 @@ export const commands: Chat.ChatCommands = {
 				petUser.load();
 				if (price > 0) {
 					const expense = price * num;
-					const score = await AdminUtils.getScore(user.name);
+					const score = AdminUtils.getAccumulateScore(user.name);
 					if (score < expense) return PetUtils.popup(user, `积分不足!`);
-					const [oldScore, newScore] = await AdminUtils.addScore(user.name, -expense, `购买 ${num} 个 ${goodname}`);
+					const [_, newScore] = AdminUtils.addScore(user.name, -expense, `购买 ${num} 个 ${goodname}`, false, 'PET');
 					PetUtils.popup(user, `您获得了${num}个 ${goodname} ! 您现在的积分是: ${newScore}`);
 				} else {
 					if (Date.now() - petUser.property['time']['ball'] < BALLCD) {
@@ -2578,9 +2578,9 @@ export const commands: Chat.ChatCommands = {
 					return PetUtils.popup(user, '请输入6个0到31之间的整数!');
 				}
 				const expense = Shop.lotteryConfig['price'];
-				const score = await AdminUtils.getScore(user.name);
+				const score = AdminUtils.getAccumulateScore(user.name);
 				if (score < expense) return PetUtils.popup(user, `积分不足!`);
-				const [oldScore, newScore] = await AdminUtils.addScore(user.name, -expense, `购买彩票`);
+				const [_, newScore] = AdminUtils.addScore(user.name, -expense, `购买彩票`, false, 'PET');
 				PetUtils.popup(user, `购买成功! 您现在的积分是: ${newScore}`);
 				petUser.setLottery(nums.join(','));
 				this.parse(`/pet shop show lottery`);
