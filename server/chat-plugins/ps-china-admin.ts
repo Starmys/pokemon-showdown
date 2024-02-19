@@ -13,13 +13,15 @@ const REPLAYTAILPATH = 'config/ps-china/replay/replay-tail.txt';
 const IPLOGDIR = 'logs/iplog';
 const IPMAPPATH = 'logs/ipmap.json';
 const SCORELOGDIR = 'logs/score';
+const SCOREPATH = 'config/ps-china/score.json';
 
 if (!FS(IPLOGDIR).existsSync()) FS(IPLOGDIR).mkdir();
 if (!FS(SCORELOGDIR).existsSync()) FS(SCORELOGDIR).mkdir();
 
 let userAlts: { [userid: string]: string[] } = JSON.parse(FS(IPMAPPATH).readIfExistsSync() || '{}');
 let whitelist: { [userid: string]: number } = JSON.parse(FS(WHITELISTPATH).readIfExistsSync() || '{}');
-let addingScore: boolean = false;
+let scoreTable: { [userid: string]: [string, number, number] } = JSON.parse(FS(SCOREPATH).readIfExistsSync() || '{}');
+let scoreLadderBuffer: string;
 
 export class AdminUtils {
 	static adminPM(userid: string, msg: string) {
@@ -71,7 +73,7 @@ export class AdminUtils {
 	}
 	static async getMainId(userid: string): Promise<string> {
 		for (let id of this.getAlts(userid) || [userid]) {
-			if (!!(await this.getScore(id))) return id;
+			if (id in scoreTable) return id;
 		}
 		return '';
 	}
@@ -92,13 +94,13 @@ export class AdminUtils {
 		let noteMsg = msg.replace('{}', '您');
 		let logMsg = '自动定向加分: ' + msg.replace('{}', userid + ' ');
 		if (mainId) {
-			const [oldScore, newScore] = await this.addScore(mainId, score, msg.replace('{}', ''));
+			const [_, newScore] = this.addScore(mainId, score, msg.replace('{}', ''), false, 'AUTOTOUR');
 			if (!isMain) {
 				noteMsg += `您的积分账号 ${mainId} `;
 				logMsg += `积分账号 ${mainId} `;
 			}
 			noteMsg += `获得国服积分 ${score} 分`;
-			logMsg += `获得国服积分: ${oldScore} + ${score} = ${newScore}`;
+			logMsg += `获得国服积分: ${newScore - score} + ${score} = ${newScore}`;
 		} else {
 			noteMsg += `由于未查到您的积分记录, 请联系管理员为您发放国服积分 ${score} 分。`;
 			logMsg += `未查到积分记录, 请管理员核实账号后手动发放 ${score} 分。`
@@ -108,64 +110,78 @@ export class AdminUtils {
 		Rooms.get('staff')?.add(`|c|&|/log ${logMsg}`).update();
 		this.adminPM(userid, noteMsg);
 	}
-	static async getScore(userid: string): Promise<number> {
-		// @ts-ignore
-		let ladder = await Ladders("gen8ps").getLadder();
-		for (let entry of ladder) {
-			if (toID(userid) ? (toID(entry[2]) === toID(userid)) : (entry[2] === userid)) {
-				return entry[1];
-			}
+	static getAccumulateScore(userid: string): number {
+		if (scoreTable[userid]) {
+			return scoreTable[userid][2];
+		} else {
+			return 0;
 		}
-		return 0;
 	}
-	static async addScore(
-		userid: string,
+	static getAnnualScore(userid: string): number {
+		if (scoreTable[userid]) {
+			return scoreTable[userid][1];
+		} else {
+			return 0;
+		}
+	}
+	static getScoreLadderBuffer() {
+		const scoreLadder = Object.values(scoreTable).sort(
+			(a, b) => (a[1] == b[1]) ? (b[2] - a[2]) : (b[1] - a[1])
+		).map(
+			([username, annualScore, accumulateScore], idx) =>
+				[(idx + 1).toString(), username, annualScore.toString(), accumulateScore.toString()]
+		);
+		let buf = '';
+		buf += `<div class="ladder pad">`;
+		buf += `<h3>PS China 积分榜 2024</h3>`;
+		buf += `<p><button class="button" name="send" value="/j view-scoreladder"><i class="fa fa-refresh"></i> 刷新</button></p>`;
+		buf += AdminUtils.table([], ['', '用户名', '赛年积分', '累计积分'], scoreLadder);
+		buf += `</div>`;
+		return buf;
+	}
+	static addScore(
+		username: string,
 		score: number,
 		reason: string = '',
-		formatid: string = 'gen8ps',
-	): Promise<number[]> {
-		while (addingScore) await PetUtils.sleep(1);
-		addingScore = true;
-
-		// @ts-ignore
-		let ladder: [string, number, string, number, number, number, string][] = await Ladders(formatid).getLadder();
-		let userIndex = ladder.length;
-		for (let [i, entry] of ladder.entries()) {
-			if (toID(userid) ? (toID(entry[2]) === toID(userid)) : (entry[2] === userid)) {
-				userIndex = i;
-				break;
-			}
+		annual: boolean = false,
+		moderator: string = '',
+	): number[] {
+		let userid = toID(username);
+		let lastUsername = username, annualScore = 0, accumulateScore = 0;
+		if (userid in scoreTable) {
+			[lastUsername, annualScore, accumulateScore] = scoreTable[userid];
 		}
-		if (userIndex === ladder.length) ladder.push([userid, 0, userid, 0, 0, 0, '']);
-		let oldScore = +ladder[userIndex][1];
-		let newScore = oldScore + score;
-		if (newScore < 0) {
-			addingScore = false;
-			return [];
+		let lastScore = accumulateScore;
+		accumulateScore += score;
+		if (annual) {
+			annualScore += score;
 		}
-		ladder[userIndex][1] = newScore;
-
-		let newIndex = userIndex;
-		while (newIndex > 0 && ladder[newIndex - 1][1] <= newScore) newIndex--;
-		while (ladder[newIndex] && ladder[newIndex][1] >= newScore) newIndex++;
-		if (newIndex !== userIndex && newIndex !== userIndex + 1) {
-			let row = ladder.splice(userIndex, 1)[0];
-			if (newIndex > userIndex) newIndex--;
-			ladder.splice(newIndex, 0, row);
+		if (annualScore == 0 && accumulateScore == 0) {
+			delete scoreTable[userid];
+		} else {
+			scoreTable[userid] = [username, annualScore, accumulateScore];
 		}
-
-		let lastIndex = ladder.length - 1;
-		while (ladder[lastIndex][1] <= 0) lastIndex--;
-		ladder.splice(lastIndex + 1, ladder.length);
-
-		// @ts-ignore
-		await Ladders(formatid).save();
-		if (formatid === 'gen8ps') {
-			const logMsg = `${PetUtils.getDate()},${oldScore}${score < 0 ? "-" : "+"}${Math.abs(score)}=${newScore},${reason}\n`;
-			FS(`${SCORELOGDIR}/${toID(userid) || userid}.txt`).appendSync(logMsg);
+		scoreLadderBuffer = this.getScoreLadderBuffer();
+		this.saveScoreTable();
+		const logMsg = [
+			`${PetUtils.getDate()}`,
+			`${lastScore}${score < 0 ? "-" : "+"}${Math.abs(score)}=${accumulateScore}`,
+			reason,
+			annual ? '计入赛年积分' : '',
+			moderator,
+		].join(',') + '\n';
+		FS(`${SCORELOGDIR}/${toID(userid) || userid}.txt`).appendSync(logMsg);
+		return [annualScore, accumulateScore];
+	}
+	static clearAnnualScore() {
+		for (let userid in scoreTable) {
+			scoreTable[userid][1] = 0;
 		}
-		addingScore = false;
-		return [oldScore, newScore];
+		scoreLadderBuffer = this.getScoreLadderBuffer();
+		this.saveScoreTable();
+	}
+	static saveScoreTable() {
+		FS(SCOREPATH).safeWriteSync(PetUtils.formatJSON(scoreTable));
 	}
 	static saveWhitelist() {
 		FS(WHITELISTPATH).safeWriteSync(PetUtils.formatJSON(whitelist));
@@ -216,7 +232,24 @@ export class AdminUtils {
 		}
 		return cnt;
 	}
+	static table(
+		rowNames: (string | number)[], colNames: (string | number)[], content: (string | number)[][],
+	): string {
+		const tr = (s: string) => `<tr>${s}</tr>`;
+		const th = (s: string | number) => `<th>${s}</th>`;
+		const td = (s: string | number) => `<td>${s}</td>`;
+		const tableBody = content.map(row => row.map(td));
+		if (rowNames.length === content.length) {
+			rowNames.forEach((rowName, i) => tableBody[i].unshift(th(rowName)));
+			colNames.unshift('');
+		}
+		if (colNames.length === tableBody[0].length) tableBody.unshift(colNames.map(th));
+		const tableBodyStr = tableBody.map((row, i) => tr(row.join(''))).join('');
+		return `<table>${tableBodyStr}</table>`;
+	}
 }
+
+scoreLadderBuffer = AdminUtils.getScoreLadderBuffer();
 
 export const commands: Chat.ChatCommands = {
 
@@ -242,11 +275,15 @@ export const commands: Chat.ChatCommands = {
 		`/clearguests - 切断未注册访客的连接以释放服务器容量`,
 	],
 
-	async score(target, room, user) {
-		let targetUser = target.replace('!', '') || user.id;
-		const score = await AdminUtils.getScore(targetUser);
-		let msg = score ? `${targetUser} 的PS国服积分是: ${score}` : `未找到用户 ${targetUser} 的PS国服积分记录`;
-		return target.includes('!') ? PetUtils.popup(user, msg) : score ? this.sendReply(msg) : this.errorReply(msg);
+	score(target, room, user) {
+		let targetId = toID(target) || user.id;
+		let msg: string;
+		if (targetId in scoreTable) {
+			msg = `用户 ${targetId} 赛年积分: ${scoreTable[targetId][1]}; 累计积分: ${scoreTable[targetId][2]}`;
+		} else {
+			msg = `未找到用户 ${targetId} 的PS国服积分记录`;
+		}
+		return target.includes('!') ? PetUtils.popup(user, msg) : this.sendReply(msg);
 	},
 	scorehelp: [
 		`/score [user] - 查看user用户(默认为自己)的国服积分`,
@@ -256,39 +293,63 @@ export const commands: Chat.ChatCommands = {
 		this.checkCan('lock');
 		if (!room || !room.settings.staffRoom) return this.errorReply("在 Staff 房间更新PS国服积分");
 
-		const userid = target.split(',')[0]?.trim();
+		const username = target.split(',')[0]?.trim();
 		const score = target.split(',')[1]?.trim();
 		const reason = target.split(',')[2]?.trim();
-		if (!userid || !score || !reason || isNaN(parseInt(score))) {
+		const tag = target.split(',')[3]?.trim();
+		if (!username || !score || !reason || isNaN(parseInt(score))) {
 			return this.parse("/pschinascorehelp");
 		}
-		const parsedScore = parseInt(score);
-		if (await AdminUtils.getScore(userid) + parsedScore < 0) return this.errorReply("错误: 将造成负分。");
+		const delta = parseInt(score);
 
-		const [oldScore, newScore] = await AdminUtils.addScore(userid, parsedScore, reason);
-		AdminUtils.adminPM(userid, `您因为 ${reason} ${parsedScore > 0 ? '获得': '失去'}了 ${Math.abs(parsedScore)} 国服积分`);
-		const message = `用户ID: ${userid}, PS国服积分: ` +
-			`${oldScore} ${parsedScore < 0 ? "-" : "+"} ${Math.abs(parsedScore)} = ${newScore}, ` +
-			`原因: ${reason}, 操作人: ${user.name}.`;
-		this.globalModlog(message);
-		this.addModAction(message);
+		const annual = !toID(tag).startsWith('c');
+		const annualDelta = annual ? delta : 0;
+		const lastAccumulateScore = AdminUtils.getAccumulateScore(toID(username));
+		const lastAnnualScore = AdminUtils.getAnnualScore(toID(username));
+		if (lastAccumulateScore + delta < 0) return this.errorReply("错误: 累计积分不足。");
+		if (annual && lastAnnualScore + delta < 0) return this.errorReply("错误: 赛年积分不足。");
 
-		if (oldScore === 0) {
-			const alts = AdminUtils.getAlts(toID(userid));
+		const [annualScore, accumulateScore] = AdminUtils.addScore(username, delta, reason, annual, user.name);
+
+		const userMsg = `您因为 ${reason} ` +
+			`${delta > 0 ? '获得': '失去'}了 ` +
+			`${Math.abs(delta)} 积分, ` +
+			`${annual ? '' : '不'}计入赛年积分。` +
+			`欢迎使用 /score 指令查询国服积分状态。`;
+		AdminUtils.adminPM(username, userMsg);
+		const logMsg = `用户: ${username}, ` +
+			`累计积分: ${lastAccumulateScore} ${delta < 0 ? "-" : "+"} ${Math.abs(delta)} = ${accumulateScore}, ` +
+			`赛年积分: ${lastAnnualScore} ${annualDelta < 0 ? "-" : "+"} ${Math.abs(annualDelta)} = ${annualScore}, ` +
+			`原因: ${reason}, 操作人: ${user.name}`;
+		this.globalModlog(logMsg);
+		this.addModAction(logMsg);
+
+		if (lastAccumulateScore === 0 && lastAnnualScore === 0) {
+			const alts = AdminUtils.getAlts(toID(username));
 			if (!alts) {
-				room.add(`|html|<b>注意: 未找到用户 ${userid} 的登录记录</b>`);
+				room.add(`|html|<b>注意: 未找到用户 ${username} 的登录记录</b>`);
 				return;
 			}
 			const content: (string | number)[][] = alts.map(alt => [alt]);
 			for (let [i, alt] of alts.entries()) {
-				content[i].push('&ensp;积分:&ensp;');
-				content[i].push(alt === toID(userid) ? 0 : await AdminUtils.getScore(alt));
+				content[i].push('&ensp;累计积分:&ensp;');
+				content[i].push(alt === toID(username) ? 0 : AdminUtils.getAccumulateScore(alt));
 			}
-			room.add(`|html|<b>注意: ${userid} 此前没有国服积分, 关联账号:</b><br>${PetUtils.table([], [], content, 'auto')}`);
+			room.add(`|html|<b>注意: ${username} 此前没有国服积分, 关联账号:</b><br>${PetUtils.table([], [], content, 'auto')}`);
 		}
 	},
 	pschinascorehelp: [
-		`/pschinascore [user], [score], [reason] - 给user用户的国服积分增加score分, 说明原因. Requires: & ~`,
+		`/pschinascore [user], [score], [reason], [tag] - 给user用户的国服积分增加score分, 说明原因; ` +
+		`消费积分时请将tag设为"C", 此时将不计入赛年积分. Requires: & ~`,
+	],
+
+	clearannualscore(target, room, user) {
+		this.checkCan('bypassall');
+		AdminUtils.clearAnnualScore();
+		this.sendReply(`[${PetUtils.getDate()}] 已清空赛年积分。`);
+	},
+	clearannualscorehelp: [
+		`/clearannualscore - 清空所有用户的赛年积分`,
 	],
 
 	'scorelog': 'pschinascorelog',
@@ -299,7 +360,7 @@ export const commands: Chat.ChatCommands = {
 		const limit = parseInt(targets[1]) || 20;
 		const logs = FS(`${SCORELOGDIR}/${userId}.txt`).readIfExistsSync();
 		if (!logs) return this.errorReply(`未查到用户 ${userId} 在2021年9月1日之后的国服积分记录`);
-		const lines = logs.trim().split('\n').slice(-limit).map(line => line.split(',').map(s => `&ensp;${s}&ensp;`));
+		const lines = logs.trim().split('\n').slice(-limit).map(line => line.split(',').slice(0, 3).map(s => `&ensp;${s}&ensp;`));
 		this.sendReply(`用户 ${userId} 的最近${lines.length}条国服积分记录:`);
 		this.sendReply(`|html|${PetUtils.table([], ['日期', '积分', '原因'], lines, 'auto')}`);
 	},
@@ -445,3 +506,11 @@ export const commands: Chat.ChatCommands = {
 		'/removegroupavatar [avatar] - 删除团队头像'
 	],
 };
+
+export const pages: Chat.PageTable = {
+	scoreladder(args, user) {
+		// /j view-scoreladder
+		this.title = `PS China 积分榜`;
+		return scoreLadderBuffer;
+	}
+}
