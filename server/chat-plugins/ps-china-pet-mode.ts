@@ -1941,7 +1941,7 @@ export const commands: Chat.ChatCommands = {
 				if (!target) { petUser.operation = 'ex'; return this.parse('/pet box showat'); }
 				const friend = Users.get(target);
 				if (!friend) return PetUtils.popup(user, `没有找到用户 ${target} !`)
-				if (AdminUtils.getAccumulateScore(friend.name) === 0) {
+				if (AdminUtils.getAccumulateScore(friend.id) === 0) {
 					return PetUtils.popup(user, `${friend.name}没有国服积分, 不能与您交换宝可梦哦`);
 				}
 				const petFriend = getUser(friend.id);
@@ -2486,7 +2486,7 @@ export const commands: Chat.ChatCommands = {
 				petUser.load();
 				if (price > 0) {
 					const expense = price * num;
-					const score = AdminUtils.getAccumulateScore(user.name);
+					const score = AdminUtils.getAccumulateScore(user.id);
 					if (score < expense) return PetUtils.popup(user, `积分不足!`);
 					const [_, newScore] = AdminUtils.addScore(user.name, -expense, `购买 ${num} 个 ${goodname}`, false, 'PET');
 					PetUtils.popup(user, `您获得了${num}个 ${goodname} ! 您现在的积分是: ${newScore}`);
