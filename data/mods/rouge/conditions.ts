@@ -698,8 +698,18 @@ export const Conditions: {[k: string]: ModdedConditionData} = {
 		onModifyMove(move, pokemon, target) {
 			if (move.category !== 'Status' && move.type === 'Dark' && pokemon.side === this.p2) {
 				if (move.basePower) move.basePower += 15;
-				move.stab=2
 			}
+		},
+		onModifySTAB(stab, source, target, move) {
+			if ( move.type === 'Dark' && source.side === this.p2) {
+				if (move.forceSTAB || source.hasType(move.type)) {
+					if (stab === 2) {
+						return 2.25;
+					}
+					return 2;
+				}
+			}
+			
 		},
 
 		onFieldStart(battle, source, effect) {
@@ -780,7 +790,7 @@ export const Conditions: {[k: string]: ModdedConditionData} = {
 
 				if (!(move.isZ && move.category !== 'Status') && !noModifyType.includes(move.id)) {
 					move.type = 'Normal';
-					move.normalizeBoosted = true;
+					move.typeChangerBoosted = this.effect;
 				}
 			}
 		},
@@ -795,7 +805,7 @@ export const Conditions: {[k: string]: ModdedConditionData} = {
 		},
 		onBasePowerPriority: 1000,
 		onBasePower(basePower, pokemon, target, move) {
-			if (move.normalizeBoosted) return this.chainModify([4915, 4096]);
+			if (move.typeChangerBoosted === this.effect) return this.chainModify([4915, 4096]);
 		},
 		onModifyPriority(priority, pokemon, target, move) {
 			if (pokemon.side === this.p2 && pokemon.hasType('Normal')&&move?.category === 'Status') {

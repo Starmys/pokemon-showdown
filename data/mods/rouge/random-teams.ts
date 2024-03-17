@@ -161,7 +161,7 @@ export class RandomTeams {
 		this.prng = prng && !Array.isArray(prng) ? prng : new PRNG(prng);
 
 		this.moveEnforcementCheckers = {
-			Bug: (movePool, moves, abilities, types, counter) => movePool.includes('megahorn')||!counter.get('Bug'),
+			Bug: (movePool, moves, abilities, types, counter) => !counter.get('Bug'),
 			Dark: (movePool, moves, abilities, types, counter) => !counter.get('Dark'),
 			Dragon: (movePool, moves, abilities, types, counter) => (
 				!counter.get('Dragon') &&
@@ -180,8 +180,8 @@ export class RandomTeams {
 				)
 			),
 			Ground: (movePool, moves, abilities, types, counter) => !counter.get('Ground'),
-			Ice: (movePool, moves, abilities, types, counter) => (movePool.includes('freezedry') || !counter.get('Ice')),
-			Normal: (movePool, moves, abilities, types, counter) => (movePool.includes('boomburst') || movePool.includes('hypervoice')||!counter.get('Dark')),
+			Ice: (movePool, moves, abilities, types, counter) => (!counter.get('Ice')),
+			Normal: (movePool, moves, abilities, types, counter) => (movePool.includes('boomburst') || movePool.includes('hypervoice')||!counter.get('Normal')),
 			Poison: (movePool, moves, abilities, types, counter) => {
 				if (types.includes('Ground')) return false;
 				return !counter.get('Poison');
@@ -193,7 +193,6 @@ export class RandomTeams {
 			},
 			Rock: (movePool, moves, abilities, types, counter, species) => !counter.get('Rock') && species.baseStats.atk >= 80,
 			Steel: (movePool, moves, abilities, types, counter, species) => {
-				if (species.baseStats.atk <= 95 && !movePool.includes('makeitrain')) return false;
 				return !counter.get('Steel');
 			},
 			Water: (movePool, moves, abilities, types, counter, species) => {

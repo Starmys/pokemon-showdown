@@ -707,16 +707,24 @@ export const relicsEffects = {
 		}
 	},
 	'teratypeshield':(battle: Battle) => {
-		const types=battle.dex.types.names()
+		const types=battle.dex.types
 		for(let pokemon of battle.p2.pokemon){
 			if(!pokemon.canTerastallize){
 				
+				const weelnessTypes:string[] = [];
 				const possibleTypes = [];
-				for (const type of types) {
-					if (pokemon.hasType(type)) continue;
+				for (const type of types.names()) {
 					const typeCheck = battle.dex.getEffectiveness(type,pokemon);
 					if (typeCheck >0) {
-						possibleTypes.push(type);
+						weelnessTypes.push(type);
+					}
+				}
+				for (const type of types.all()) {
+					for (const weelnessType of weelnessTypes){
+						if(type.damageTaken[weelnessType]>=2){
+							possibleTypes.push(type.name);
+							break;
+						}
 					}
 				}
 				pokemon.teraType=battle.sample(possibleTypes);
