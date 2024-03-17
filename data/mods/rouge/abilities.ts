@@ -37,7 +37,7 @@ export const Abilities: { [k: string]: ModdedAbilityData } = {
 				pokemon.maybeTrapped = true;
 			}
 		},
-		isPermanent: true,
+		flags: {failroleplay: 1, noreceiver: 1, noentrain: 1, notrace: 1, failskillswap: 1, cantsuppress: 1},
 		name: "Shop Man",
 		rating: 4,
 		num: 98,
@@ -89,7 +89,7 @@ export const Abilities: { [k: string]: ModdedAbilityData } = {
 			}
 
 		},
-		isBreakable: true,
+		flags: {breakable: 1},
 		name: "Snorlax",
 		rating: 2,
 		num: 17,
@@ -104,7 +104,7 @@ export const Abilities: { [k: string]: ModdedAbilityData } = {
 			this.debug('richloli - decreasing accuracy');
 			return this.chainModify([1024, 4096]);
 		},
-		isBreakable: true,
+		flags: {breakable: 1},
 		num: 255,
 		gen: 3,
 	},
@@ -257,7 +257,7 @@ export const Abilities: { [k: string]: ModdedAbilityData } = {
 			if (pokemon.species.name.toLowerCase() === 'kartana') return
 			return this.chainModify(1.5);
 		},
-		isBreakable: false,
+		
 		name: "Core",
 		rating: 4,
 		num: 91,
@@ -408,7 +408,7 @@ export const Abilities: { [k: string]: ModdedAbilityData } = {
 				this.boost({ atk: 2, spa: 2 }, target, target, null, true);
 			}
 		},
-		isBreakable: true,
+		flags: {breakable: 1},
 		name: "Umbraking",
 		rating: 3,
 		num: 5,
@@ -420,7 +420,7 @@ export const Abilities: { [k: string]: ModdedAbilityData } = {
 				return dmg;
 			}
 		},
-		isPermanent: true,
+		flags: {failroleplay: 1, noreceiver: 1, noentrain: 1, notrace: 1, failskillswap: 1, cantsuppress: 1},
 		name: "Static Damage",
 		rating: 3,
 		num: 62,
@@ -541,7 +541,7 @@ export const Abilities: { [k: string]: ModdedAbilityData } = {
 			];
 			if (move.type === 'Normal' && !noModifyType.includes(move.id) && !(move.isZ && move.category !== 'Status')) {
 				move.type = 'Fairy';
-				move.pixilateBoosted = true;
+				move.typeChangerBoosted = this.effect;
 			}
 		},
 		onModifyDamage(damage, source, target, move) {
@@ -552,7 +552,7 @@ export const Abilities: { [k: string]: ModdedAbilityData } = {
 		},
 		onBasePowerPriority: 23,
 		onBasePower(basePower, pokemon, target, move) {
-			if (move.pixilateBoosted) return this.chainModify([5325, 4096]);
+			if (move.typeChangerBoosted === this.effect) return this.chainModify([5325, 4096]);
 		},
 		name: "Sylveon",
 		rating: 4,
@@ -593,7 +593,7 @@ export const Abilities: { [k: string]: ModdedAbilityData } = {
 		onImmunity(type, pokemon) {
 			if (type === 'sandstorm') return false;
 		},
-		isBreakable: true,
+		
 		name: "Sea Rabit",
 		rating: 4,
 		num: 182,
@@ -644,7 +644,7 @@ export const Abilities: { [k: string]: ModdedAbilityData } = {
 				this.effectState.sendHeroMessage = false;
 			}
 		},
-		isPermanent: true,
+		flags: {failroleplay: 1, noreceiver: 1, noentrain: 1, notrace: 1, failskillswap: 1, cantsuppress: 1},
 		name: "Bug to Hero",
 		rating: 5,
 		num: 278,
@@ -662,7 +662,7 @@ export const Abilities: { [k: string]: ModdedAbilityData } = {
 				move.category = 'Physical';
 			}
 		},
-		isBreakable: false,
+		flags: {breakable: 1},
 		name: "Raiden Mei",
 		rating: 4,
 		num: 182,
@@ -782,7 +782,7 @@ export const Abilities: { [k: string]: ModdedAbilityData } = {
 				case -1: return this.chainModify(0.95);
 			}
 		},
-		isBreakable: true,
+		flags: {breakable: 1},
 		name: "Hard Shell",
 		rating: 3,
 		num: 111,
@@ -814,7 +814,7 @@ export const Abilities: { [k: string]: ModdedAbilityData } = {
 				this.add("-fail", target, "unboost", "[from] ability: Irreducible", "[of] " + target);
 			}
 		},
-		isBreakable: true,
+		flags: {breakable: 1},
 		name: "Irreducible",
 		rating: 2,
 		num: 29,
@@ -913,7 +913,7 @@ export const Abilities: { [k: string]: ModdedAbilityData } = {
 			}
 		},
 
-		isBreakable: true,
+		flags: {breakable: 1},
 		name: "Renewal",
 		rating: 3,
 		num: 5,
@@ -985,9 +985,9 @@ export const Abilities: { [k: string]: ModdedAbilityData } = {
 				// Zen Mode included here for compatability with Gen 5-6
 				'noability', 'flowergift', 'forecast', 'hungerswitch', 'illusion', 'imposter', 'neutralizinggas', 'powerofalchemy', 'receiver', 'trace', 'zenmode',
 			];
-			const possibleTargets = pokemon.adjacentFoes().filter(target => (
-				!target.getAbility().isPermanent && !additionalBannedAbilities.includes(target.ability)
-			));
+			const possibleTargets = pokemon.adjacentFoes().filter(
+				target => !target.getAbility().flags['notrace'] && target.ability !== 'noability'
+			);
 			if (!possibleTargets.length) return;
 
 			const target = this.sample(possibleTargets);
@@ -999,6 +999,7 @@ export const Abilities: { [k: string]: ModdedAbilityData } = {
 			pokemon.set.ability = ability.name;
 
 		},
+		flags: {failroleplay: 1, noreceiver: 1, noentrain: 1, notrace: 1},
 		name: "Szpenguin",
 		rating: 2.5,
 		num: 36,
