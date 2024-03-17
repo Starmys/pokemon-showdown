@@ -19,7 +19,7 @@ export const PokemonPool = {
 			'Get Glastrier', 'Get Virizion', 'Get Miracle Singer', 'Get Nihilego', 'Get Meloetta-Pirouette', 
 			'Get Legend-Unown', 'Get Swablu', 'Get Arctozolt', 'Get Beedrill', 'Get Shroomish', 'Get Cubone',
 			'Get Dratini', 'Get Yungoos', 'Get Ralts', 'Get Silvally', 'Get Slowpoke-Galar', 'Get Hoopa',
-			'Get Escavalier', 'Get Kangaskhan','Get Kricketune'
+			'Get Escavalier', 'Get Kangaskhan','Get Kricketune','Get Deerling','Get Electabuzz','Get Wingull'
 		],
 		"pokemonroom2": [
 			'Get Thundurus', 'Get Angod', 'Get Tapu Bulu', 'Get Tapu Fini', 'Get Mawile', 'Get Flygon-mega', 
@@ -4117,6 +4117,41 @@ export const PokemonPool = {
 		'ivs': '31,31,31,31,31,31',
 		'level': 10,
 	},
-	
+	"Decidueye-Hisui": {
+		"name": 'Decidueye-Hisui',
+		"species": "",
+		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf',  'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry'],
+		"ability": ['Overgrow','Scrappy'],
+		"moves": ['Brave Bird', 'Close Combat', 'Bulk Up', 'Knock Off', 'Leaf Blade', 'Low Kick', 'Shadow Claw', 'Swords Dance', 'Sucker Punch', 'Synthesis', 'Triple Arrows', 'U-turn'],
+		'nature': '',
+		'gender': '',
+		'evs': '0,0,0,0,0,0',
+		'ivs': '31,31,31,31,31,31',
+		'level': 10,
+	},
+	"Samurott-Hisui": {
+		"name": 'Samurott-Hisui',
+		"species": "",
+		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf',  'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry'],
+		"ability": ['Torrent','Sharpness'],
+		"moves": ['Aqua Jet', 'Aqua Cutter', 'Brick Break', 'Ceaseless Edge', 'Flip Turn', 'Drill Run', 'Knock Off', 'Swords Dance', 'Sucker Punch', 'Liquidation', 'Razor Shell', 'X-Scissor','Sacred Sword'],
+		'nature': '',
+		'gender': '',
+		'evs': '0,0,0,0,0,0',
+		'ivs': '31,31,31,31,31,31',
+		'level': 10,
+	},
+	"Typhlosion-Hisui": {
+		"name": 'Typhlosion-Hisui',
+		"species": "",
+		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf',  'Choice Specs', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry'],
+		"ability": ['Blaze','Frisk'],
+		"moves": ['Calm Mind', 'Eruption', 'Extrasensory', 'Fire Blast', 'Flamethrower', 'Lava Plume', 'Infernal Parade', 'Shadow Ball', 'Will-O-Wisp'],
+		'nature': '',
+		'gender': '',
+		'evs': '0,0,0,0,0,0',
+		'ivs': '31,31,31,31,31,31',
+		'level': 10,
+	},
 }
 

@@ -246,8 +246,16 @@ export const Items: { [k: string]: ModdedItemData } = {
 		fling: {
 			basePower: 10,
 		},
-		onModifyMove(move) {
-			move.stab = 1.8;
+		onModifySTAB(stab, source, target, move) {
+			
+			if (move.forceSTAB || source.hasType(move.type)) {
+				if (stab === 2) {
+					return 2.25;
+				}
+				return 1.8;
+			}
+
+			
 		},
 		num: 267,
 		gen: 4,

@@ -162,6 +162,7 @@ function getPromote(battle:Battle,oldpoke:PokemonSet){
 		case 'wailord':
 		case 'wailmer': newpoke = Teams.unpack(getRougeSet(PokemonPool.Kyogre, battle.prng, oldpoke.level, oldpoke.evs))![0]; break
 		case 'torkoal': newpoke = Teams.unpack(getRougeSet(PokemonPool.Groudon, battle.prng, oldpoke.level, oldpoke.evs))![0]; break
+		case 'archaludon':
 		case 'duraludon': newpoke = Teams.unpack(getRougeSet(PokemonPool.Dialga, battle.prng, oldpoke.level, oldpoke.evs))![0]; break
 		case 'dreepy':
 		case 'drakloak':
