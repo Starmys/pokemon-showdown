@@ -219,7 +219,7 @@ export const Items: { [k: string]: ModdedItemData } = {
 		onBasePowerPriority: 16,
 		onBasePower(basePower, user, target, move) {
 			if (move.category === 'Physical') {
-				return this.chainModify([4915, 4096]);
+				return this.chainModify([5324, 4096]);
 			}
 		},
 		num: 266,
@@ -234,7 +234,7 @@ export const Items: { [k: string]: ModdedItemData } = {
 		onBasePowerPriority: 16,
 		onBasePower(basePower, user, target, move) {
 			if (move.category === 'Special') {
-				return this.chainModify([4915, 4096]);
+				return this.chainModify([5324, 4096]);
 			}
 		},
 		num: 267,
@@ -252,7 +252,7 @@ export const Items: { [k: string]: ModdedItemData } = {
 				if (stab === 2) {
 					return 2.25;
 				}
-				return 1.8;
+				return 2;
 			}
 
 			
@@ -350,7 +350,7 @@ export const Items: { [k: string]: ModdedItemData } = {
 		onSourceModifyAccuracyPriority: -2,
 		onSourceModifyAccuracy(accuracy) {
 			if (typeof accuracy === 'number') {
-				return this.chainModify([4915, 4096]);
+				return this.chainModify([5734, 4096]);
 			}
 		},
 		num: 265,
@@ -701,7 +701,7 @@ export const Items: { [k: string]: ModdedItemData } = {
 		},
 		onEat(pokemon) {
 			for(let i in pokemon.set.evs){
-				pokemon.set.evs[i as keyof typeof pokemon.set.evs]=Math.min( pokemon.set.evs[i as keyof typeof pokemon.set.evs]+16,252);
+				pokemon.set.evs[i as keyof typeof pokemon.set.evs]=Math.min( pokemon.set.evs[i as keyof typeof pokemon.set.evs]+20,252);
 			}
 			
 		},
