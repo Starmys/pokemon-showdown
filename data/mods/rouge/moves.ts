@@ -2,7 +2,7 @@
 import { PokemonPool } from "../../../config/rouge/pokemon-pool";
 
 import { PRNG, Teams, Dex } from "../../../sim";
-import RandomTeams from "./random-teams";
+import RandomTeams from "../../random-battles/rouge/teams";
 import { RougeUtils } from "./rulesets";
 
 const natures = Dex.natures.all().map(x => x.name);

@@ -174,7 +174,7 @@ export const Conditions: {[k: string]: ConditionData} = {
 		},
 		onWeatherModifyDamage(relayVar: number, source: Pokemon, target: Pokemon, move) {
 		},
-		onBoost(boost, target, source, effect) {
+		onTryBoost(boost, target, source, effect) {
 			if (source && target === source) return;
 			if (!(target.hasType('Dragon'))) return;
 			let showMsg = false;

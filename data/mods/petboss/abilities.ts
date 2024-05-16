@@ -1,8 +1,6 @@
 export const Abilities: { [k: string]: ModdedAbilityData } = {
 	/*------------椰子------------*/
 	harvest2: {
-		isPermanent: true,
-		/*isUnbreakable: true,*/
 		name: "Harvest2",
 		onResidualOrder: 26,
 		onResidualSubOrder: 1,
@@ -59,8 +57,6 @@ export const Abilities: { [k: string]: ModdedAbilityData } = {
 	},
 	/*---------飞鱼-------------*/
 	hydraulicpressure: {
-		isPermanent: true,
-		/*isUnbreakable: true,*/
 		name: "Hydraulic Pressure",
 		onResidualOrder: 26,
 		onResidualSubOrder: 1,
@@ -113,7 +109,6 @@ export const Abilities: { [k: string]: ModdedAbilityData } = {
 	},
 	/*------火蛾--------*/
 	hotdance: {
-		isPermanent: true,
 		onResidualOrder: 26,
 		onResidualSubOrder: 1,
 		onStart(pokemon) {
@@ -171,8 +166,6 @@ export const Abilities: { [k: string]: ModdedAbilityData } = {
 	},
 	/*-------心蝙蝠---------*/
 	crouchingdefense: {
-		isPermanent: true,
-		isBreakable: false,
 		onResidualOrder: 26,
 		onResidualSubOrder: 1,
 		onStart(pokemon) {
@@ -186,7 +179,7 @@ export const Abilities: { [k: string]: ModdedAbilityData } = {
 			if (type === 'psn') return false;
 			if (type === 'brn') return false;
 		},
-		onBoost(boost, target, source, effect) {
+		onTryBoost(boost, target, source, effect) {
 			if (effect && effect.id === 'zpower') return;
 			let i: BoostID;
 			for (i in boost) {
@@ -225,8 +218,6 @@ export const Abilities: { [k: string]: ModdedAbilityData } = {
 	},
 	/*-----伊布-----*/
 	destinyeve: {
-		isPermanent: true,
-		isBreakable: false,
 		onStart(pokemon) {
 			pokemon.addVolatile('dynamax2');
 		},
@@ -239,8 +230,15 @@ export const Abilities: { [k: string]: ModdedAbilityData } = {
 			if (type === 'brn') return false;
 		},
 		onModifyMove(move) {
-			move.stab = 2;
 			delete move.flags['contact'];
+		},
+		onModifySTAB(stab, source, target, move) {
+			if (move.forceSTAB || source.hasType(move.type)) {
+				if (stab === 2) {
+					return 2.25;
+				}
+				return 2;
+			}
 		},
 		onAnyAfterMove() {
 			if (this.p1.active[0].hp < this.p1.active[0].maxhp / 3 && this.p1.active[0].positiveBoosts() < 10)
@@ -304,8 +302,6 @@ export const Abilities: { [k: string]: ModdedAbilityData } = {
 	},
 	/*---------重泥挽马----------*/
 	superstamina: {
-		isPermanent: true,
-		isBreakable: false,
 		onStart(pokemon) {
 			pokemon.addVolatile('dynamax2');
 		},
@@ -350,8 +346,6 @@ export const Abilities: { [k: string]: ModdedAbilityData } = {
 	},
 	/*----------大嘴雀-------*/
 	possessedbyphoenix: {
-		isPermanent: true,
-		isBreakable: false,
 		onStart(pokemon) {
 			pokemon.addVolatile('dynamax2');
 		},
