@@ -1,6 +1,5 @@
 import { PokemonPool } from "../../../config/rouge/pokemon-pool";
-import { sample } from "./moves";
-import RandomTeams from "./random-teams";
+import { RandomTeams } from "../../random-battles/rouge/teams";
 import { relicsEffects, RougeUtils } from "./rulesets";
 
 export const Abilities: { [k: string]: ModdedAbilityData } = {
