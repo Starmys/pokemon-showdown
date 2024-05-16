@@ -2,7 +2,7 @@ import {Dex, toID} from '../../../sim/dex';
 import {Utils} from '../../../lib';
 import {PRNG, PRNGSeed} from '../../../sim/prng';
 import {RuleTable} from '../../../sim/dex-formats';
-import {Tags} from '../.././tags';
+import {Tags} from '../../tags';
 
 export interface TeamData {
 	typeCount: {[k: string]: number};
@@ -1730,11 +1730,11 @@ export class RandomTeams {
 					.map(m => m.id);
 			} else {
 				const formes = ['gastrodoneast', 'pumpkaboosuper', 'zygarde10'];
-				let learnset = this.dex.species.getLearnset(species.id);
+				let learnset = this.dex.species.getLearnsetData(species.id).learnset;
 				let learnsetSpecies = species;
 				if (formes.includes(species.id) || !learnset) {
 					learnsetSpecies = this.dex.species.get(species.baseSpecies);
-					learnset = this.dex.species.getLearnset(learnsetSpecies.id);
+					learnset = this.dex.species.getLearnsetData(learnsetSpecies.id).learnset;
 				}
 				if (learnset) {
 					pool = Object.keys(learnset).filter(
@@ -1742,7 +1742,7 @@ export class RandomTeams {
 					);
 				}
 				if (learnset && learnsetSpecies === species && species.changesFrom) {
-					learnset = this.dex.species.getLearnset(toID(species.changesFrom));
+					learnset = this.dex.species.getLearnsetData(toID(species.changesFrom)).learnset;
 					for (const moveid in learnset) {
 						if (!pool.includes(moveid) && learnset[moveid].some(source => source.startsWith(String(this.gen)))) {
 							pool.push(moveid);
@@ -1872,7 +1872,7 @@ export class RandomTeams {
 			for (const species of speciesPool) {
 				if (species.isNonstandard && species.isNonstandard !== 'Unobtainable') continue;
 				if (requireMoves) {
-					const hasMovesInCurrentGen = Object.values(this.dex.species.getLearnset(species.id) || {})
+					const hasMovesInCurrentGen = Object.values(this.dex.species.getLearnsetData(species.id).learnset || {})
 						.some(sources => sources.some(source => source.startsWith('9')));
 					if (!hasMovesInCurrentGen) continue;
 				}
