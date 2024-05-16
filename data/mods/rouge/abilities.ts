@@ -431,7 +431,7 @@ export const Abilities: { [k: string]: ModdedAbilityData } = {
 			return priority + 0.5;
 		},
 		onEmergencyExit(target) {
-			if (!this.canSwitch(target.side) || target.forceSwitchFlag || target.switchFlag || (target.side===this.p1&& target.side.pokemonLeft <=3)) return;
+			if (!this.canSwitch(target.side) || target.forceSwitchFlag || target.switchFlag || (target.side===this.p1&& target.side.pokemonLeft <=7)) return;
 			for (const side of this.sides) {
 				for (const active of side.active) {
 					active.switchFlag = false;
@@ -447,7 +447,7 @@ export const Abilities: { [k: string]: ModdedAbilityData } = {
 	emergencyexit: {
 		inherit: true,
 		onEmergencyExit(target) {
-			if (!this.canSwitch(target.side) || target.forceSwitchFlag || target.switchFlag || (target.side===this.p1&& target.side.pokemonLeft <=3)) return;
+			if (!this.canSwitch(target.side) || target.forceSwitchFlag || target.switchFlag || (target.side===this.p1&& target.side.pokemonLeft <=7)) return;
 			for (const side of this.sides) {
 				for (const active of side.active) {
 					active.switchFlag = false;
@@ -733,7 +733,7 @@ export const Abilities: { [k: string]: ModdedAbilityData } = {
 		rating: 3,
 		num: 89,
 		onTryHit(target, source, move) {
-			if (target !== source && move.type === 'Fighting') {
+			if (target !== source && move.type === 'Fighting' && source.ability !== 'Scrappy') {
 
 				this.add('-immune', target, '[from] ability: Hide');
 
@@ -857,6 +857,7 @@ export const Abilities: { [k: string]: ModdedAbilityData } = {
 	magicbeam: {
 		onAfterMoveSecondarySelf(source, target, move) {
 			if (move.category !== 'Status' && move.flags['heal'] && move.hit===1) {
+				
 				let x: StatIDExceptHP;
 				let stats: StatIDExceptHP = 'atk';
 				let max = 0;
@@ -936,7 +937,7 @@ export const Abilities: { [k: string]: ModdedAbilityData } = {
 			}
 		},
 		onChargeMove(pokemon, target, move) {
-			if (this.random(5) === 0) {
+			if (this.randomChance(2,5)) {
 				this.debug('power herb - remove charge turn for ' + move.id);
 				this.attrLastMove('[still]');
 				this.addMove('-anim', pokemon, move.name, target);
@@ -1042,7 +1043,7 @@ export const Abilities: { [k: string]: ModdedAbilityData } = {
 		},
 		
 		onFaint(target, source, effect) {
-			if(target.name in RougeUtils.initMonsAndEvos || target.side.team.length <=1){
+			if(RougeUtils.initMonsAndEvos.includes(target.name ) || target.side.team.length <=1){
 				this.lose(target.side);
 			}
 			else{

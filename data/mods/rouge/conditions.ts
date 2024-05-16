@@ -38,6 +38,44 @@ export const Conditions: {[k: string]: ModdedConditionData} = {
 			pokemon.storedStats.spe = Math.floor(pokemon.storedStats.spe * 1.2);
 		},
 	},
+	reweakness: {
+		name: 'Reweakness',
+		noCopy: true,
+		duration: 0,
+		onStart(pokemon) {
+			if(pokemon.species.bst<=350){
+				const ratio = 1.5;
+				this.add('-activate', pokemon, 'move: Inweakness');
+				this.add('-start', pokemon, 'Inweakness');
+				pokemon.maxhp = Math.floor(pokemon.maxhp * ratio);
+				pokemon.hp = Math.floor(pokemon.hp * ratio);
+				this.add('-heal', pokemon, pokemon.getHealth, '[silent]');
+				pokemon.storedStats.atk = Math.floor(pokemon.storedStats.atk * 1.5);
+				pokemon.storedStats.spa = Math.floor(pokemon.storedStats.spa * 1.5);
+				pokemon.storedStats.def = Math.floor(pokemon.storedStats.def * 1.5);
+				pokemon.storedStats.spd = Math.floor(pokemon.storedStats.spd * 1.5);
+				pokemon.storedStats.spe = Math.floor(pokemon.storedStats.spe * 1.5);
+			}else if(pokemon.species.bst>600){
+				pokemon.storedStats.atk = Math.floor(pokemon.storedStats.atk * 0.75);
+				pokemon.storedStats.spa = Math.floor(pokemon.storedStats.spa * 0.75);
+				pokemon.storedStats.def = Math.floor(pokemon.storedStats.def * 0.75);
+				pokemon.storedStats.spd = Math.floor(pokemon.storedStats.spd * 0.75);
+				pokemon.storedStats.spe = Math.floor(pokemon.storedStats.spe * 0.75);
+			}
+		},
+		onBeforeSwitchOut(pokemon) {
+			pokemon.removeVolatile('Reweakness');
+		},
+		onEnd(pokemon) {
+			this.add('-end', pokemon, 'Reweakness');
+			if(pokemon.species.bst<=350){
+				pokemon.hp = Math.ceil(pokemon.hp * pokemon.baseMaxhp / pokemon.maxhp)
+				pokemon.maxhp = pokemon.baseMaxhp;
+				this.add('-heal', pokemon, pokemon.getHealth, '[silent]');
+			}
+		},
+
+	},
 	dynamax:{
 		inherit:true,
 		onStart(pokemon) {
@@ -270,7 +308,6 @@ export const Conditions: {[k: string]: ModdedConditionData} = {
 		},
 		onModifySecondaries(secondaries, target, source, move) {
 			if (move.hit >= 2) {
-
 				return secondaries.filter(effect => effect.volatileStatus !== 'flinch');
 			}
 		},
@@ -882,7 +919,7 @@ export const Conditions: {[k: string]: ModdedConditionData} = {
 		duration: 0,
 		
 		
-		onModifyMovePriority: 101,
+		onModifyMovePriority: 99,
 		onModifyMove(move, pokemon, target) {
 			if (['endeavor', 'fling', 'iceball', 'rollout'].includes(move.id)) return;
 			if (move.flags['charge']) return;
@@ -1385,14 +1422,16 @@ export const Conditions: {[k: string]: ModdedConditionData} = {
 		onModifyMovePriority: 102,
 		onModifyMove(move, pokemon, target) {
 			if (move.category !== 'Status' && pokemon.side === this.p2) {
-				if (move.category === 'Special') {
-					move.category = 'Physical';
-				} else if (move.category === 'Physical') {
-					move.category = 'Special';
+				if(pokemon.species.bst<=350 || pokemon.species.bst>600){
+					if (move.category === 'Special') {
+						move.category = 'Physical';
+					} else if (move.category === 'Physical') {
+						move.category = 'Special';
+					}
 				}
-				
 			}
 		},
+
 		onFieldStart(battle, source, effect) {
 			if (effect?.effectType === 'Ability') {
 				this.add('-fieldstart', 'Contrary Blade', '[from] ability: ' + effect, '[of] ' + source);
@@ -1450,7 +1489,7 @@ export const Conditions: {[k: string]: ModdedConditionData} = {
 		onModifyAccuracy(accuracy, target, source, move) {
 			if (typeof accuracy !== 'number') return;
 			if (target && target.side === this.p2)
-				return this.chainModify([3686, 4096]);
+				return this.chainModify([3604, 4096]);
 			else if (target.side === this.p1)
 				return this.chainModify([4080, 4096]);
 		},
@@ -1581,8 +1620,8 @@ export const Conditions: {[k: string]: ModdedConditionData} = {
 
 		onFaint(target, source, effect) {
 			if(target && target.side===this.p2){
-				let x:keyof typeof target.set.evs=this.sample(['hp','atk','def','spa','spd','spe']);
-				target.set.evs[x]=Math.min(target.set.evs[x]+60,252);
+				if(target.set.level<110)
+					target.set.level+=1;
 			}
 		},
 		onFieldStart(battle, source, effect) {

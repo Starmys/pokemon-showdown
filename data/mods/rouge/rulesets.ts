@@ -1,6 +1,6 @@
 import { FS } from "../../../lib";
 import { Teams, Pokemon } from "../../../sim";
-import { championreward, sample } from "./moves";
+import { championreward, evolution, sample } from "./moves";
 import { PokemonPool } from "../../../config/rouge/pokemon-pool";
 import RandomTeams from "./random-teams";
 
@@ -32,10 +32,10 @@ export class RougeUtils {
 		caveBody: ['Get Duraludon', 'Get Wingull', 'Get Electabuzz', 'Get Necrozma', 'Get Skrelp', 'Get Vullaby', 'Get Mew', 'Get Yanma', 'Get Lillipup', 'Get Caterpie', 'Get Iron Moth', 'Get Slither Wing', 'Get Bellsprout', 'Get Mareep', 'Get Tympole', 'Get Tentacool', 'Get Scraggy', 'Get Nacli', 'Get Mankey', 'Get Capsakid', 'Get Frigibax', 'Get Tinkatink', 'Get Tandemaus', 'Get Pawniard', 'Get Iron Valiant', 'Get Terrakion','Get Iron Thorns','Get Roaring Moon',],
 		voidBody: ['Gain Champion Belt', 'Become Haven', 'Become Overcharge', 'Promote A Pokemon', 'Get Smoke Trigger', 'Become Adaptability', 'Gain Holographic Projection', 'Get Thruster', 'Become Born Of Explosion', 'Gain Pack Light', 'Gain Replication', 'Gain Enchantments', 'Get Custap Element', 'Gain Flame Shield', 'Gain Heroic Sword', 'Gain Physical Suppression', 'Become Szpenguin', 'Gain Contrary Blade', 'Become Spiky Body', 'Learn Fake Shot', 'Gain Melody Of Siren', 'Get Micro Master', 'Learn Mew Ball', 'Learn Parry', 'Learn Sketch', 'Learn Population Bomb', 'Learn Speed Impact', 'Gain Conjuring Show'],
 		index: {
-			"pokemonroom": [0,1.2,4,5,7,8,9,12,13,14,15,16,17,18,19,20,21,22,23],
+			"pokemonroom": [0,1,2,4,5,7,8,9,12,13,14,15,16,17,18,19,20,21,22,23],
 			"pokemonroom2": [3,6,10,11,24,25,26,27],
-			'commonroom': [],
-			'commonroom2': [3],
+			'commonroom': [3],
+			'commonroom2': [],
 			'itemroom': [4,21],
 			'itemroom2': [7,12],
 			'moveroom': [22,23,25,26],
@@ -182,6 +182,25 @@ export class RougeUtils {
 				team[0] = team[num];
 				team[num] = t;
 				rougeProps[0] = team.join("]");
+				userProperty['rouge'] = rougeProps.join("&");
+				this.saveUser(userid, userProperty);
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
+	}
+	static setBanEvoable(userid: ID, num: number): boolean {
+		if (!num) return false;
+		let userProperty = this.getUser(userid);
+		if (userProperty?.rouge) {
+			let rougeProps = userProperty['rouge'].split("&");
+			let team = Teams.unpack(rougeProps[0]!);
+			if (team && team[num]) {
+				team[num].happiness=undefined
+				rougeProps[0] = Teams.pack(team);
 				userProperty['rouge'] = rougeProps.join("&");
 				this.saveUser(userid, userProperty);
 				return true;
@@ -655,6 +674,11 @@ export const relicsEffects = {
 	},
 	'contraryblade': (battle: Battle) => {
 		battle.field.addPseudoWeather("contraryblade");
+		for(const pokemon of battle.p2.pokemon){
+			if(pokemon.species.bst<=350 || pokemon.species.bst>600){
+				pokemon.m.innate = 'weakness';
+			}
+		}
 		battle.add('message', 'Contrary Blade start');
 	},
 	'melodyofsiren': (battle: Battle) => {
@@ -800,7 +824,7 @@ export const Rulesets: { [k: string]: ModdedFormatData } = {
 				}
 			}
 			if (room === 'championroom') {
-				if (RougeUtils.getNextWave(user) !== 19)
+				if (RougeUtils.getNextWave(user) === 14)
 					this.p1.pokemon.push(new Pokemon(Teams.unpack('Reward|Shop||shopman|' + reward.join(',') + '|Careful|252,4,,,252,|||||')![0], this.p2));
 				else
 					this.p1.pokemon.push(new Pokemon(Teams.unpack('Reward|Shop||shopman|' + reward2.join(',') + '|Careful|252,4,,,252,|||||')![0], this.p2));
@@ -809,14 +833,15 @@ export const Rulesets: { [k: string]: ModdedFormatData } = {
 				this.p1.pokemon.push(new Pokemon(Teams.unpack('Shopowner|Magikarp|eliteroom|shopman|splash|Hardy||M|0,0,0,0,0,0|S|5|')![0], this.p1));
 				this.p1.pokemon.push(new Pokemon(Teams.unpack('Shopowner|Magikarp||shopman|splash|Hardy||M|0,0,0,0,0,0||5|')![0], this.p1));
 			} else {
-				const rand = this.prng.next(9);
-				let firstreward = 'skip,';
-				if (rand < 4)
-					firstreward = 'Evo A Pokemon,';
-				else if (rand < 8)
-					firstreward = 'Refresh Reward,';
-				else
-					firstreward = 'Evo All,';
+				//const rand = this.prng.next(9);
+				// let firstreward = 'skip,';
+				let firstreward = 'Refresh Reward,';
+				// if (rand < 4)
+				// 	firstreward = 'Evo A Pokemon,';
+				// else if (rand < 8)
+				// 	firstreward = 'Refresh Reward,';
+				// else
+				// 	firstreward = 'Evo All,';
 
 				this.p1.pokemon.push(new Pokemon(Teams.unpack('Reward|Shop||shopman|' + firstreward + sample(reward, 3, this.prng, reward2).join(',') + '|Careful|252,4,,,252,|||||')![0], this.p2));
 				this.p1.pokemon.push(new Pokemon(Teams.unpack('Shopowner|Magikarp||shopman|splash|Hardy||M|0,0,0,0,0,0||5|')![0], this.p1));
@@ -830,9 +855,12 @@ export const Rulesets: { [k: string]: ModdedFormatData } = {
 					this.p1.clearChoice();
 					const activePoke = this.p1.active[0];
 					const foeActivePoke = this.p2.active[0];
-					const checkImmune = (moveid: string): boolean => {
-						const move = Dex.moves.get(moveid);
-						if (foeActivePoke.types.find(type => Dex.types.get(type).damageTaken[move.type] === 3)) return false;
+					const activemoves=activePoke.getMoves().filter(movedata => !!movedata.pp&&movedata.id!=="sleeptalk").map(movedata => movedata.id).map(moveid=>Dex.moves.get(moveid))
+					//const activemoves=activePoke.moves.filter(movedata => !!activePoke.getMoveData(movedata)?.pp&&this.toID(movedata)!=="sleeptalk").map(movedata => movedata.move).map(moveid=>Dex.moves.get(moveid))
+					const checkImmune = (move: Move): boolean => {
+						//const move = Dex.moves.get(moveid);
+						if (move.id==='thousandarrows') return true
+						if (!Dex.getImmunity(move.type,foeActivePoke)) return false;
 						switch (Dex.toID(activePoke.ability)) {
 							case 'moldbreaker':
 							case 'turboblaze':
@@ -854,6 +882,7 @@ export const Rulesets: { [k: string]: ModdedFormatData } = {
 						if (move.flags['powder'] && foeActivePoke.hasType('Grass')) return false;
 						if (move.flags['bullet'] && foeActivePoke.hasAbility('Bulletproof')) return false;
 						if (move.flags['sound'] && foeActivePoke.hasAbility('Soundproof')) return false;
+						if (move.flags['wind'] && foeActivePoke.hasAbility('Wind Rider')) return false;
 						if (move.target !== 'self') {
 							switch (move.type) {
 								case 'Grass':
@@ -864,19 +893,26 @@ export const Rulesets: { [k: string]: ModdedFormatData } = {
 									return !foeActivePoke.hasAbility(['stormdrain', 'waterabsorb', 'dryskin']);
 								case 'Electric':
 									return !foeActivePoke.hasAbility(['voltabsorb', 'motordrive', 'lightningrod']);
+								case 'Ground':
+									return !foeActivePoke.hasAbility(['Levitate','Earth Eater']);
+								case 'Fighting':
+									return !foeActivePoke.hasAbility(['hide']);
 							}
 						}
 						return true;
 					}
-					const isHealMove = (moveid: string) => {
-						const move = Dex.moves.get(moveid);
-						return move.flags['heal'] && !move.damage;
+					const isHealMove = (move:  Move) => {
+
+						return move.flags['heal'] && !move.basePower;
+						
 					}
 					// isStatusMove will not filter 1pp moves, cause it's  exclusive move of champion pokemon
-					const isStatusMove = (moveid: string) => {
-						const move = Dex.moves.get(moveid);
-						return move.category === 'Status' || move.pp===1;
+					const isStatusMove = (move: Move) => {
+						//const move = Dex.moves.get(moveid);
+						//return move.category === 'Status' || move.pp===1;
+						return move.category === 'Status';
 					}
+					
 					let event:'mega' | 'zmove' | 'ultra' | 'dynamax' | 'terastallize' | ''  = activePoke.canMegaEvo ? 'mega' : '';
 					if(!event && this.toID(activePoke.ability)!=='shopman'){
 						// this.add('html',`${this.p1.pokemonLeft}        ${this.p1.team.length}`)
@@ -897,7 +933,7 @@ export const Rulesets: { [k: string]: ModdedFormatData } = {
 					const boostSwicth = boostlv + 13 < this.random(12) + 1&&!activePoke.volatiles['dynamax'];
 					const abilitySwitch = activePoke.hasAbility(['truant', 'normalize'])&&!activePoke.volatiles['dynamax'];
 					const itemSwitch = activePoke.hasItem(['choicescarf', 'choiceband', 'choicespecs']) &&
-						activePoke.lastMove && !checkImmune(activePoke.lastMove.id)&&!activePoke.volatiles['dynamax'];
+						activePoke.lastMove && !checkImmune(activePoke.lastMove)&&!activePoke.volatiles['dynamax'];
 					// Switch
 					if (update.forceSwitch || abilitySwitch || itemSwitch || boostSwicth) {
 						const alive = this.p1.pokemon.filter(
@@ -939,7 +975,14 @@ export const Rulesets: { [k: string]: ModdedFormatData } = {
 									return !x.fainted && x.hasMove('spectralthief');
 								});
 								if (thief) this.p1.chooseSwitch(thief.name);
+								
 							}
+						}
+					}
+					// sleeptalk
+					if (!this.p1.isChoiceDone()&&activePoke.moves.includes("Sleep Talk")){
+						if(activePoke.status==='slp'&&activePoke.statusState.time>1){
+							this.p1.chooseMove("Sleep Talk", 0, event);
 						}
 					}
 					// Heal
@@ -948,24 +991,80 @@ export const Rulesets: { [k: string]: ModdedFormatData } = {
 						const healPress = activePoke.speed > foeActivePoke.speed ? 1 : 2;
 						const healRate = Math.pow(1 - hpRate, 3) + 3 * Math.pow(1 - hpRate, 2) * hpRate * healPress;
 						if (this.prng.randomChance(healRate * 1000, 1000)) {
-							const healingMove = activePoke.moves.find(isHealMove);
-							if (healingMove) this.p1.chooseMove(healingMove, 0, event);
+							const healingMove = activemoves.find(isHealMove);
+							if (healingMove){
+								this.p1.chooseMove(healingMove.name, 0, event);
+							} 
 						}
 					}
 					// Other Moves
 					if (!this.p1.isChoiceDone()) {
-						const movesHasPP = activePoke.getMoves().filter(movedata => !!movedata.pp).map(movedata => movedata.move);
-						const movesNotHeal = movesHasPP.filter(move => !isHealMove(move));
-						const movesNotImmune = movesNotHeal.filter(move => checkImmune(move));
-						const movesNotStatus = movesNotImmune.filter(move => !isStatusMove(move));
-						if ((activePoke.boosts.atk >= 6 || activePoke.boosts.spa >= 6 || boostlv >= this.random(12) + 2 || this.field.getPseudoWeather('physicalsuppression')||activePoke.volatiles['dynamax']) && movesNotStatus.length > 0) {
-							this.p1.chooseMove(this.sample(movesNotStatus), 0, event);
-						}else if (movesNotImmune.length > 0) {
-							this.p1.chooseMove(this.sample(movesNotImmune), 0, event);
-						} else if (movesNotHeal.length) {
-							this.p1.chooseMove(this.sample(movesNotHeal), 0, event);
-						} else if (movesHasPP.length > 0) {
-							this.p1.chooseMove(this.sample(movesHasPP), 0, event);
+						let expectMove;
+						let movesNotHeal = activemoves.filter(move => !isHealMove(move));
+						if (this.randomChance(4,5)){
+							movesNotHeal=movesNotHeal.filter(move => checkImmune(move));
+						}
+						// const movesNotImmune = movesNotHeal.filter(move => checkImmune(move));
+						// const movesNotStatus = movesNotImmune.filter(move => !isStatusMove(move));
+						const chooseMove = (move: Move|undefined=undefined, forceDamagingMove:boolean=false)=> {
+							if (!move||!isStatusMove(move)||forceDamagingMove){
+								let moves = movesNotHeal.filter(move => !isStatusMove(move))
+								if(moves.length<=0){
+									return;
+								}
+								if(this.randomChance(1,3)){
+									const movePowers=moves.map(move=>{
+										let Effectiveness;
+										if (!Dex.getImmunity(move.type,foeActivePoke)){
+											Effectiveness=0;
+										}else{
+											Effectiveness=Math.pow(2,Dex.getEffectiveness(move.type,foeActivePoke));
+										}
+										let power=move.basePower
+										if(move.basePowerCallback){
+											power=80;
+											
+										}
+										if(move.priority>0&&activePoke.speed < foeActivePoke.speed){
+											power+=50;
+										}
+										
+										if(move.flags['heal']){
+											power+=15;
+										}
+										let stab=1
+										if(activePoke.getTypes().includes(move.type)||activePoke.getTypes(false,true).includes(move.type)){
+											stab=1.5;
+										}
+										let accuracy=move.accuracy
+										if(accuracy===true){
+											accuracy=100
+										}
+										const dam=Effectiveness*power*stab*accuracy
+										return Number.isNaN(dam)?0:dam;			
+									})
+									return moves[movePowers.indexOf(Math.max(...movePowers))];
+								}
+								if(!move){
+									return this.sample(moves);
+								}
+								return move;
+							}else{
+								return move;
+							}
+						}
+						
+						if ((activePoke.boosts.atk >= 6 || activePoke.boosts.spa >= 6 || boostlv >= this.random(12) + 2 || this.field.getPseudoWeather('physicalsuppression')||activePoke.volatiles['dynamax'])) {
+							expectMove=chooseMove(undefined,true);
+						}else if (movesNotHeal.length) {
+							expectMove=this.sample(movesNotHeal);
+							expectMove=chooseMove(expectMove);
+						} else if (activemoves.length > 0) {
+							expectMove=this.sample(activemoves);
+							expectMove=chooseMove(expectMove);
+						}
+						if(expectMove){
+							this.p1.chooseMove(expectMove.name, 0, event);
 						}
 					}
 					if (!this.p1.isChoiceDone()) this.p1.autoChoose();
@@ -995,6 +1094,10 @@ export const Rulesets: { [k: string]: ModdedFormatData } = {
 				if (pokemon.side === this.p2)
 					pokemon.addVolatile('halo');
 			}
+			if (pokemon.m.innate === 'weakness'){
+				if (pokemon.side === this.p2)
+					pokemon.addVolatile('Reweakness');
+			}
 		},
 		onAnyFaintPriority: 100,
 		onFaint(pokemon) {
@@ -1014,6 +1117,11 @@ export const Rulesets: { [k: string]: ModdedFormatData } = {
 							if (x.evs.spa < 252) x.evs.spa += 4;
 							if (x.evs.spd < 252) x.evs.spd += 4;
 							if (x.evs.spe < 252) x.evs.spe += 4;
+							if(x.happiness!=undefined){
+								x.happiness-=10;
+								if(x.happiness<=0)
+									evolution(x,this)
+							} 
 							return x;
 						}))
 					);
@@ -1037,6 +1145,11 @@ export const Rulesets: { [k: string]: ModdedFormatData } = {
 								this.add('html', '<button class="button" name="send" value="/rouge next">Try again</button>');
 							}
 							break;
+					}
+				}else if(pokemon.side === this.p1){
+					const active=this.p2.active[0]
+					if(active &&active.set.happiness){
+						active.set.happiness-=5
 					}
 				}
 			}
