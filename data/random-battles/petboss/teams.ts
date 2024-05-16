@@ -1,6 +1,6 @@
 import {FS} from '../../../lib';
 import {Teams} from '../../../sim/teams'
-import {RandomTeams} from '../../random-teams';
+import {RandomTeams} from '../gen9/teams';
 
 const USERPATH = 'config/pet-mode/user-properties';
 
