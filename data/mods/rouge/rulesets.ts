@@ -2,7 +2,7 @@ import { FS } from "../../../lib";
 import { Teams, Pokemon } from "../../../sim";
 import { championreward, evolution, sample } from "./moves";
 import { PokemonPool } from "../../../config/rouge/pokemon-pool";
-import RandomTeams from "./random-teams";
+import RandomTeams from "../../random-battles/rouge/teams";
 
 
 type rougePassRecord = { 'cave': number[], 'void': number[] };

@@ -393,6 +393,7 @@ function instantTournaments() {
 	return buf;
 }
 
+/*
 export const pages: Chat.PageTable = {
 	tournaments: {
 		all(query, user) {
@@ -608,4 +609,5 @@ export const pages: Chat.PageTable = {
 
 export function start() {
 	Chat.multiLinePattern.register('/smogtours (add|edit)');
-}
+});
+*/
