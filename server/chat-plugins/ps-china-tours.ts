@@ -340,7 +340,7 @@ export function renderPageChooser(curPage: string, buffer: string, user?: User) 
 function error(page: string, message: string, user: User) {
 	return renderPageChooser(page, `<div class="message-error">${message}</div>`, user);
 }
-
+/*
 export const pages: Chat.PageTable = {
 	tournaments: {
 		all(query, user) {
@@ -554,3 +554,4 @@ export const pages: Chat.PageTable = {
 process.nextTick(() => {
 	Chat.multiLinePattern.register('/smogtours (add|edit)');
 });
+*/

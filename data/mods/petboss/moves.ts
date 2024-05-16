@@ -161,7 +161,7 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 		name: "Totem Bug Buzz",
 		pp: 10,
 		priority: 0,
-		flags: { protect: 1, mirror: 1, sound: 1, authentic: 1 },
+		flags: { protect: 1, mirror: 1, sound: 1, bypasssub: 1 },
 		onTryMove() {
 			this.attrLastMove('[still]');
 		},
@@ -865,7 +865,7 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 			},
 			onFaint(target, source, effect) {
 				if (!source || source.fainted || !effect) return;
-				if (effect.effectType === 'Move' && !effect.isFutureMove && source.lastMove) {
+				if (effect.effectType === 'Move' && !effect.flags['futuremove'] && source.lastMove) {
 					let move: Move = source.lastMove;
 					if (move.isMax && move.baseMove) move = this.dex.moves.get(move.baseMove);
 					if (source.volatiles['dynamax2']) {
@@ -895,7 +895,7 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 			},
 			onFaint(target, source, effect) {
 				if (!source || !effect || target.isAlly(source)) return;
-				if (effect.effectType === 'Move' && !effect.isFutureMove) {
+				if (effect.effectType === 'Move' && !effect.flags['futuremove']) {
 					if (source.volatiles['dynamax'] || source.volatiles['dynamax2']) {
 						this.add('-hint', "Dynamaxed Pokémon are immune to Destiny Bond.");
 						return;
@@ -1046,7 +1046,7 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 		inherit: true,
 		condition: {
 			duration: 5,
-			onBoost(boost, target, source, effect) {
+			onTryBoost(boost, target, source, effect) {
 				if (effect.effectType === 'Move' && effect.infiltrates) return;
 				if (source && target !== source) {
 					let showMsg = false;
@@ -1121,7 +1121,7 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 		name: "After You",
 		pp: 15,
 		priority: 0,
-		flags: { authentic: 1, mystery: 1 },
+		flags: { bypasssub: 1, allyanim: 1 },
 		onHit(target) {
 			if (target.side.active.length < 2 && this.gameType !== 'multi') return false; // fails in singles
 			const action = this.queue.willMove(target);

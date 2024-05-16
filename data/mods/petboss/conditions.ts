@@ -68,7 +68,7 @@ export const Conditions: { [k: string]: ConditionData } = {
 			pokemon.maxhp = pokemon.baseMaxhp;
 			this.add('-heal', pokemon, pokemon.getHealth, '[silent]');
 		},
-		onBoost(boost, target, source, effect) {
+		onTryBoost(boost, target, source, effect) {
 			if (source && target === source) return;
 			let showMsg = false;
 			let i: BoostID;
