@@ -17,6 +17,7 @@ export class Rouge {
 	].map(x => x.map(x => PetUtils.button(`/rouge start ${x}`, '', PetUtils.iconStyle(RougeUtils.initMons[x - 1]))).join('')).join('<br>');
 	static specialInitButtons = [PetUtils.button(`/rouge start ${RougeUtils.initMons.length + 1}`, '', PetUtils.iconStyle(Rouge.specialInitMons[0])), PetUtils.button(`/rouge start ${RougeUtils.initMons.length + 2}`, '', PetUtils.iconStyle(Rouge.specialInitMons[1])), PetUtils.button(`/rouge start ${RougeUtils.initMons.length+3}`, '', PetUtils.iconStyle(Rouge.specialInitMons[2]))].join('');
 	static leadbButtons = [2, 3, 4, 5, 6].map(x => PetUtils.button(`/rouge chooselead ${x}`, `${x}`)).join('');
+	static banEvobButtons = [1, 2, 3, 4, 5, 6].map(x => PetUtils.button(`/rouge choosebanevoable ${x}`, `${x}`)).join('');
 	static difficult=['正常','困难'];
 	static prng: PRNG = new PRNG();
 	static createBattle(
@@ -82,6 +83,7 @@ export const commands: Chat.ChatCommands = {
 				PetUtils.button('/rouge clearcache', '清除存档'),
 				PetUtils.button('/rouge showrougeteam', '查看队伍'), 
 				PetUtils.button('/rouge chooselead', '更改首发'),
+				PetUtils.button('/rouge choosebanevoable', '禁止进化'),
 				PetUtils.button('/rouge showpassrecord', '查看成就'),
 				PetUtils.button('/rouge choosediff', '更改难度'),
 			]);
@@ -113,11 +115,12 @@ export const commands: Chat.ChatCommands = {
 
 			let userTeam: string, botTeam: string;
 			if (rougeProps && rougeProps.length > 2 && !isRebegin) {
-				let wave = (4 + Number(rougeProps[1]) * 6) / 10;
-				if (wave !== 13 && wave !== 19) {
+				let wave = Number(rougeProps[1]);
+				if (wave !== 21 && wave !== 38) {
+					wave = (4 + wave * 6) / 10;
 					botTeam = getRougeSet(sample(Enemies[Math.floor(wave)], Math.min(Math.max(1, Math.floor((1 + wave) * 0.6)), 6), Rouge.prng), Rouge.prng);
 				} else {
-					botTeam = Rouge.prng.sample(ChampionTeams[Math.ceil(wave / 13 )- 1]);
+					botTeam = Rouge.prng.sample(ChampionTeams[Math.ceil(wave / 21 )- 1]);
 				}
 				userTeam = rougeProps[0]
 				RougeUtils.addWave(user.id);
@@ -213,6 +216,24 @@ export const commands: Chat.ChatCommands = {
 			} else {
 				this.parse('/rouge clear');
 				return user.sendTo(room!.roomid, `|uhtml|rouge|<b>请选择要改成首发的位置：</b><br>${Rouge.leadbButtons}`);
+			}
+		},
+		choosebanevoable(target, room, user) {
+			if (!user.registered) return PetUtils.popup(user, "请先注册账号!");
+			if (!room) return PetUtils.popup(user, "请在房间里使用Rouge系统");
+			if (Rouge.inBattle(user.id)) {
+				return user.popup(`|html|<div style="text-align: center">请先完成对战再禁止进化</div>`);
+			}
+			let num = Number(target) - 1
+			if (num && Number.isInteger(num) && num <= 5 && num >= 0) {
+				let x = RougeUtils.setBanEvoable(user.id, num);
+				if (x)
+					return user.sendTo(room!.roomid, `|uhtml|rouge|<b>选择成功</b><br>`);
+				else
+					return user.sendTo(room!.roomid, `|uhtml|rouge|<b>您在该位置没有精灵</b><br>`);
+			} else {
+				this.parse('/rouge clear');
+				return user.sendTo(room!.roomid, `|uhtml|rouge|<b>请选择要禁止进化的精灵的位置：</b><br>${Rouge.banEvobButtons}`);
 			}
 		},
 		choosediff(target, room, user) {

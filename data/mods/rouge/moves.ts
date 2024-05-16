@@ -114,7 +114,7 @@ function chooseroom(pokemon: Pokemon, prng: PRNG) {
 	let nextwave = RougeUtils.getNextWave(Dex.toID(pokemon.side.name))
 	if (nextwave===0)
 		pokemon.moveSlots = pokemon.moveSlots.concat(rooms(1))
-	else if (nextwave === 13 ||nextwave === 19)
+	else if (nextwave === 13 ||nextwave === 23)
 		pokemon.moveSlots.push({
 			move: 'Champion room',
 			id: Dex.toID('Champion room'),
@@ -127,6 +127,47 @@ function chooseroom(pokemon: Pokemon, prng: PRNG) {
 		})
 	else
 		pokemon.moveSlots = pokemon.moveSlots.concat(sample(rooms(), 2, prng))
+}
+export function evolution(x:PokemonSet,battle:Battle){
+	let lastname = x.species || x.name;
+	let species=Dex.species.get(x.species)
+	let evo = Dex.species.get(x.species).evos;
+	
+	if (evo.length !== 0) {
+
+		if(species.name=='Kirlia'&&x.item=='Galladite'){
+			x.species='Gallade';
+			x.name=x.species;
+		}else if(species.name=='Kirlia'&&x.item=='Gardevoirite'){
+			x.species='Gardevoir';
+			x.name=x.species;
+		}else if(species.name=='Scyther'&&x.item=='Scizorite'){
+			x.species='Scizor';
+			x.name=x.species;
+		}else if(species.name=='Slowpoke-Galar'&&x.item=='Slowbronite'){
+			x.species='Slowbro-Galar';
+			x.name=x.species;
+		}else if(species.name=='Slowpoke'&&x.item=='Slowbronite'){
+			x.species='Slowbro';
+			x.name=x.species;
+		}else if(species.name=='Pikachu'&&x.item=='Aloraichium Z'){
+			x.species='Raichu-Alola';
+			x.name=x.species;
+		}else if (Dex.toID(x.name) === Dex.toID(x.species) || x.species.includes('-')) {
+			x.species = battle.prng.sample(evo);
+			x.name = x.species;
+		} else {
+			x.species = battle.prng.sample(evo);
+		}
+		x = restoreAbility(x,lastname);
+		let newSpecies=Dex.species.get(x.species)
+		if(newSpecies.evos.length>0){
+			x.happiness=battle.prng.sample([30,40,50,60,70])
+		}else{
+			x.happiness=undefined
+		}
+	}
+	battle.add('html', `<div class="broadcast-green"><strong>your ${lastname} has evolved to ${x.species}</strong></div>`);
 }
 function restoreAbility(set: PokemonSet, s: string): PokemonSet {
 	let lastAbility = Dex.species.get(s).abilities
@@ -316,7 +357,11 @@ export function getRougeSet(pokeset: any | any[], prng: PRNG = new PRNG(), level
 		if (set.happiness !== undefined && set.happiness !== 255) {
 			buf += '|' + set.happiness;
 		} else {
-			buf += '|';
+			if(species.evos.length>0){
+				buf += '|' + prng.sample([30,40,50,60,70]);
+			}else{
+				buf += '|';
+			}
 		}
 
 		if (set.pokeball || set.hpType || set.gigantamax) {
@@ -377,6 +422,7 @@ export function championreward(pokemon: Pokemon, type: 'itemroom' | 'moveroom' |
 export const Moves: { [k: string]: ModdedMoveData } = {
 	sketch: {
 		inherit: true,
+		priority: 1,
 		onHit(target, source) {
 			const disallowedMoves = ['chatter', 'sketch', 'struggle'];
 			const move = target.lastMove;
@@ -1518,7 +1564,7 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 		basePower: 0,
 		category: "Status",
 		name: "Parry",
-		pp: 10,
+		pp: 5,
 		priority: 4,
 		flags: {},
 		stallingMove: true,
@@ -1537,7 +1583,7 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 			},
 			onTryHitPriority: 3,
 			onTryHit(target, source, move) {
-				if (!move.flags['protect']) {
+				if (!move.flags['protect'] || move.category === 'Status') {
 					if (['gmaxoneblow', 'gmaxrapidflow'].includes(move.id)) return;
 					if (move.isZ || move.isMax) target.getMoveHitData(move).zBrokeProtect = true;
 					return;
@@ -1554,15 +1600,19 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 						delete source.volatiles['lockedmove'];
 					}
 				}
-				if (this.checkMoveMakesContact(move, source, target)) {
-					this.damage(source.baseMaxhp / 8, source, target);
-				}
+				// if (this.checkMoveMakesContact(move, source, target)) {
+				// 	this.damage(source.baseMaxhp / 8, source, target);
+				// }
+				this.actions.useMoveInner(move,target);
 				return this.NOT_FAIL;
 			},
+			onModifyDamage(relayVar, source, target, move) {
+				return this.chainModify(0.5);
+			},
 			onHit(target, source, move) {
-				if (move.isZOrMaxPowered) {
-					this.damage(source.baseMaxhp / 8, source, target, 'recoil');
-				}
+				// if (move.isZOrMaxPowered) {
+				// 	this.damage(source.baseMaxhp / 8, source, target, 'recoil');
+				// }
 			},
 		},
 		onTryMove() {
@@ -1699,7 +1749,8 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 		category: "Status",
 		isNonstandard: "Past",
 		name: "Divine",
-		pp: 10,
+		pp: 5,
+		noPPBoosts:true,
 		priority: 0,
 		flags: {recharge: 1,charge: 1, nonsky: 1},
 		self: {
@@ -2779,6 +2830,63 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 	learndragonhammer: {
 		num: 1000,
 		name: 'Learn Dragon Hammer',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon, source, move) {
+			selectpokemon(pokemon, ' Learn Move');
+			setMoveName(pokemon,move.name);
+
+		},
+
+	},
+	learnglaiverush: {
+		num: 1000,
+		name: 'Learn Glaive Rush',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon, source, move) {
+			selectpokemon(pokemon, ' Learn Move');
+			setMoveName(pokemon,move.name);
+
+		},
+
+	},
+	learnwickedblow: {
+		num: 1000,
+		name: 'Learn Wicked Blow',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon, source, move) {
+			selectpokemon(pokemon, ' Learn Move');
+			setMoveName(pokemon,move.name);
+
+		},
+
+	},
+	learnfishiousrend: {
+		num: 1000,
+		name: 'Learn Fishious Rend',
 		type: 'Normal',
 		accuracy: true,
 		basePower: 0,
@@ -5313,7 +5421,7 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 		flags: {},
 		onHit(pokemon) {
 			if (pokemon.side.team.length < 6) {
-				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(getRougeSet(PokemonPool["Shuckle-Mega"], this.prng, pokemon.side.team[0].level))!);
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(getRougeSet(PokemonPool["Shuckle-Mega"], this.prng, pokemon.side.foe.team[0].level))!);
 				this.add('html', `<div class="broadcast-green"><strong>Shuckle-Mega has joined in your team</strong></div>`);
 				chooseroom(pokemon, this.prng);
 			} else {
