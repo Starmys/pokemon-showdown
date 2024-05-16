@@ -98,7 +98,7 @@ const Hazards = [
 // charge moves
 const Charge=[
 	'solarbeam','solarblade','bounce','dig','dive','fly','freezeshock','geomancy','iceburn','phantomforce','razorwind','shadowforce','skullbash',
-	'skyattack','meteorbeam'
+	'skyattack','meteorbeam','electroshot'
 ]
 
 // Moves that should be paired together when possible
@@ -181,7 +181,7 @@ export class RandomTeams {
 			),
 			Ground: (movePool, moves, abilities, types, counter) => !counter.get('Ground'),
 			Ice: (movePool, moves, abilities, types, counter) => (!counter.get('Ice')),
-			Normal: (movePool, moves, abilities, types, counter) => (movePool.includes('boomburst') || movePool.includes('hypervoice')||!counter.get('Normal')),
+			Normal: (movePool, moves, abilities, types, counter) => (!counter.get('Normal')),
 			Poison: (movePool, moves, abilities, types, counter) => {
 				if (types.includes('Ground')) return false;
 				return !counter.get('Poison');
