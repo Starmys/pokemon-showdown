@@ -45,7 +45,7 @@ export const commands: Chat.ChatCommands = {
 			const formatid = toID(target);
 			if (!Dex.formats.get(formatid).exists) return this.errorReply('Format name error.');
 			//@ts-ignore
-			let ladder: (string | number)[][] = await Ladders(formatid).getLadder();
+			let ladder: [ID, number, string, number, number, number, string][] = await Ladders(formatid).getLadder();
 			let gameCount: {[userid: string]: {'score': number, 'games': number}} = {};
 			for (let entry of ladder) {
 				if (entry[1] > MINSCORETODECAY) {
