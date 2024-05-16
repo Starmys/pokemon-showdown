@@ -345,49 +345,7 @@ export function renderPageChooser(curPage: string, buffer: string, user?: User) 
 function error(page: string, message: string, user: User) {
 	return renderPageChooser(page, `<div class="message-error">${message}</div>`, user);
 }
-
-function instantTournaments() {
-	const roomTours = [];
-	for (const tourRoom of Rooms.rooms.values()) {
-		const tournament = tourRoom.game as Tournament;
-		if (!tournament || tournament?.constructor.name !== 'Tournament') continue;
-		if (tourRoom.settings.isPrivate || tourRoom.settings.isPersonal || tourRoom.settings.staffRoom) continue;
-		roomTours.push(tournament);
-	}
-	if (!roomTours.length) {
-		return `<p>No instant tournaments are currently running.</p>`;
-	}
-	const started = Utils.sortBy(roomTours.filter(tour => tour.isTournamentStarted), tour => tour.room.roomid);
-	const signups = Utils.sortBy(roomTours.filter(tour => !tour.isTournamentStarted), tour => tour.room.roomid);
-
-	function renderLink(tour: Tournament) {
-		const name = Dex.formats.get(tour.name).exists ? Dex.formats.get(tour.name).name : tour.name;
-		const icon = tour.generator.name === 'Round Robin' ? '<i class="fa fa-th"></i>' :
-			tour.generator.name === 'Single Elimination' ? '<i class="fa fa-share-alt"></i>' :
-			'<i class="fa fa-share-alt"></i><i class="fa fa-share-alt"></i>';
-		const plural = tour.players.length !== 1 ? 's' : '';
-		return `<li><a href="/${tour.room.roomid}" class="blocklink">&laquo;<strong>${tour.room.roomid}</strong>&raquo;<small style="float:right">(${tour.players.length} player${plural})</small><br />${icon} <small>${Utils.escapeHTML(name)} ${tour.generator.name}</small></a></li>`;
-	}
-
-	let buf = ``;
-	if (signups.length) {
-		buf += `<strong>Accepting Signups:</strong><ul class="roomlist">`;
-		for (const tour of signups) {
-			buf += renderLink(tour);
-		}
-		buf += `</ul>`;
-	}
-	if (started.length) {
-		if (signups.length) buf += `<br />`;
-		buf += `<strong>Started:</strong><ul class="roomlist">`;
-		for (const tour of started) {
-			buf += renderLink(tour);
-		}
-		buf += `</ul>`;
-	}
-	return buf;
-}
-
+/*
 export const pages: Chat.PageTable = {
 	tournaments: {
 		all(query, user) {
@@ -603,4 +561,5 @@ export const pages: Chat.PageTable = {
 
 export function start() {
 	Chat.multiLinePattern.register('/smogtours (add|edit)');
-}
+});
+*/
