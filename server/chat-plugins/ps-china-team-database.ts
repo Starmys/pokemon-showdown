@@ -5,7 +5,7 @@ import { PetUtils } from "./ps-china-pet-mode";
 
 const SEARCH_CD = 10000;
 const MAX_UNSAVED_REPLAYS = 100;
-const SAMPLE_TEAM = ['Swampert', 'Pelipper', 'Manaphy', 'Ferrothorn', 'Tornadus-Therian', 'Greninja'];
+const SAMPLE_TEAM = ['Raging Bolt', 'Landorus-Therian', 'Gholdengo', 'Dragonite', 'Zamazenta', 'Samurott-Hisui'];
 
 const TEAM_DATABASE_DIR = 'config/ps-china/team-db';
 if (!FS(TEAM_DATABASE_DIR).existsSync()) FS(TEAM_DATABASE_DIR).mkdirpSync();
@@ -227,7 +227,7 @@ export const commands: Chat.ChatCommands = {
 			buf += `${SAMPLE_TEAM.join(' / ')}</textarea>`;
 			buf += `<p>分级: <select name="format">${Object.keys(teamDBs).map(formatId => {
 				const formatName = Dex.formats.get(formatId).name;
-				const extraAttr = formatId === 'gen7ou' ? 'selected' : '';  // TODO: gen9ou if not rcop
+				const extraAttr = formatId === 'gen9ou' ? 'selected' : '';  // TODO: gen9ou if not rcop
 				return `<option ${extraAttr} value="${formatId}">${formatName}</option>`;
 			}).join('')}</select></p>`;
 			buf += `<p>模糊匹配: <input name="s4" type="checkbox" value="+"/>4&emsp;`;
@@ -286,9 +286,9 @@ export const commands: Chat.ChatCommands = {
 				this.parse('/teamdb guide');
 				return this.errorReply(`"${formatStr}" 分级不存在`);
 			}
-			// if (format.id === 'gen9ou' && room!.roomid !== 'wcop') {
-			// 	return this.errorReply('Access denied.');
-			// }
+			if (/\bgen([6-9]ou|9uu|9ubers)\b/.test(format.id) && room!.roomid !== 'wcop') {
+				return this.errorReply('Access denied.');
+			}
 			// if (format.id.includes('nationaldex') && room!.roomid !== 'ndwc') {
 			// 	return this.errorReply('Access denied.');
 			// }
