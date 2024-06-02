@@ -121,4 +121,12 @@ export const Abilities: {[k: string]: ModdedAbilityData} = {
 			}
 		},
 	},
+	weakarmor: {
+		inherit: true,
+		onDamagingHit(damage, target, source, move) {
+			if (move.category === 'Physical') {
+				this.boost({def: -1, spe: 2}, target, target);
+			}
+		},
+	},
 }
