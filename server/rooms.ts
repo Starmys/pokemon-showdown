@@ -1662,10 +1662,10 @@ export class GlobalRoomState {
 		}
 
 		const chinaTeamRooms: {'roomid': string, 'format': (formatId: string) => boolean}[] = [
-			{
-				'roomid': 'wcop',
-				'format': (formatId: string) => /\bgen([6-9]ou|9uu|9ubers)\b/.test(formatId),
-			},
+			// {
+			// 	'roomid': 'wcop',
+			// 	'format': (formatId: string) => /\bgen([6-9]ou|9uu|9ubers)\b/.test(formatId),
+			// },
 			// {
 			// 	'roomid': 'ndwc',
 			// 	'format': (formatId: string) => formatId.includes('nationaldex'),
