@@ -286,9 +286,9 @@ export const commands: Chat.ChatCommands = {
 				this.parse('/teamdb guide');
 				return this.errorReply(`"${formatStr}" 分级不存在`);
 			}
-			if (/\bgen([6-9]ou|9uu|9ubers)\b/.test(format.id) && room!.roomid !== 'wcop') {
-				return this.errorReply('Access denied.');
-			}
+			// if (/\bgen([6-9]ou|9uu|9ubers)\b/.test(format.id) && room!.roomid !== 'wcop') {
+			// 	return this.errorReply('Access denied.');
+			// }
 			// if (format.id.includes('nationaldex') && room!.roomid !== 'ndwc') {
 			// 	return this.errorReply('Access denied.');
 			// }
