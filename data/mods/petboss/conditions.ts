@@ -1,4 +1,4 @@
-export const Conditions: { [k: string]: ConditionData } = {
+export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDataTable = {
 	dynamax2: {
 		name: 'Dynamax2',
 		noCopy: true,
