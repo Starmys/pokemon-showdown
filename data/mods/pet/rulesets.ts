@@ -105,7 +105,7 @@ function checkWin(pokemonOnFaint: Pokemon, sides: Side[]): Side | undefined {
 	if (aliveSides.length === 1) return aliveSides[0];
 }
 
-export const Rulesets: {[k: string]: FormatData} = {
+export const Rulesets: import('../../../sim/dex-formats').ModdedFormatDataTable = {
 
 	pschinapetmode: {
 		name: 'PS China Pet Mode',
@@ -138,7 +138,7 @@ export const Rulesets: {[k: string]: FormatData} = {
 					for (let i = 0; i < 20 && !this.p1.isChoiceDone(); i++)
 						this.p1.chooseMove(this.sample(this.p1.active[0].moves));
 					if (!this.p1.isChoiceDone()) this.p1.autoChoose();
-					if (this.allChoicesDone()) this.commitDecisions();
+					if (this.allChoicesDone()) this.commitChoices();
 					this.sendUpdates();
 				}, 10);
 			}
@@ -291,7 +291,7 @@ export const Rulesets: {[k: string]: FormatData} = {
 						}
 					}
 					if (!this.p1.isChoiceDone()) this.p1.autoChoose();
-					if (this.allChoicesDone()) this.commitDecisions();
+					if (this.allChoicesDone()) this.commitChoices();
 					this.sendUpdates();
 				}, 10);
 			};

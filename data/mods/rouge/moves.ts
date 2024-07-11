@@ -419,7 +419,8 @@ export function championreward(pokemon: Pokemon, type: 'itemroom' | 'moveroom' |
 		}));
 	
 };
-export const Moves: { [k: string]: ModdedMoveData } = {
+
+export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 	sketch: {
 		inherit: true,
 		priority: 1,
@@ -717,7 +718,7 @@ export const Moves: { [k: string]: ModdedMoveData } = {
 		secondary: null,
 		target: "self",
 		type: "Normal",
-		zMove: { effect: 'Stockpile' },
+		zMove: { effect: 'stockpile' },
 	},
 	starmieboost: {
 		num: 702,

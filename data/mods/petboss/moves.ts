@@ -1,4 +1,4 @@
-export const Moves: { [k: string]: ModdedMoveData } = {
+export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 	/*-----椰蛋树------*/
 	totemexeggutorattack: {
 		/*num: 118,*/
