@@ -1,4 +1,4 @@
-export const Abilities: { [k: string]: ModdedAbilityData } = {
+export const Abilities: import('../../../sim/dex-abilities').ModdedAbilityDataTable = {
 	/*------------椰子------------*/
 	harvest2: {
 		name: "Harvest2",

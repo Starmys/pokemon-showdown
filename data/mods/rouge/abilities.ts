@@ -2,7 +2,7 @@ import { PokemonPool } from "../../../config/rouge/pokemon-pool";
 import { RandomTeams } from "../../random-battles/rouge/teams";
 import { relicsEffects, RougeUtils } from "./rulesets";
 
-export const Abilities: { [k: string]: ModdedAbilityData } = {
+export const Abilities: import('../../../sim/dex-abilities').ModdedAbilityDataTable = {
 	shadowtag: {
 		inherit: true,
 		onFoeTrapPokemon(pokemon) {
