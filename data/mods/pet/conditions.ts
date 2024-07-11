@@ -1,4 +1,4 @@
-export const Conditions: {[k: string]: ConditionData} = {
+export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDataTable = {
 	acidrain: {
 		name: 'Acid Rain',
 		effectType: 'Weather',

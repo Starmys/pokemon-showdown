@@ -1,4 +1,4 @@
-export const Items: { [k: string]: ModdedItemData } = {
+export const Items: import('../../../sim/dex-items').ModdedItemDataTable = {
 	superband: {
 		name: "Super Band",
 		spritenum: 68,
@@ -546,7 +546,7 @@ export const Items: { [k: string]: ModdedItemData } = {
 		num: 1119,
 		gen: 8,
 	},
-	Satorinowheelchair: {
+	satorinowheelchair: {
 		name: "Satori No Wheelchair",
 		spritenum: 249,
 		fling: {
@@ -639,7 +639,7 @@ export const Items: { [k: string]: ModdedItemData } = {
 		num: 545,
 		gen: 5,
 	},
-	custapElement: {
+	custapelement: {
 		name: "Custap Element",
 		spritenum: 86,
 		onFractionalPriorityPriority: -2,
