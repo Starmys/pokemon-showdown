@@ -766,7 +766,7 @@ function checkWin(pokemonOnFaint: Pokemon, sides: Side[]): Side | undefined {
 	if (aliveSides.length === 1) return aliveSides[0];
 }
 
-export const Rulesets: { [k: string]: ModdedFormatData } = {
+export const Rulesets: import('../../../sim/dex-formats').ModdedFormatDataTable = {
 	pschinarougemode: {
 		effectType: 'Rule',
 		name: 'PS China Rouge Mode',
@@ -951,7 +951,7 @@ export const Rulesets: { [k: string]: ModdedFormatData } = {
 								this.p1.chooseSwitch(String(Shopowner + 1));
 						}
 						if (this.allChoicesDone()) {
-							this.commitDecisions();
+							this.commitChoices();
 							this.sendUpdates();
 						}
 					}
@@ -960,7 +960,7 @@ export const Rulesets: { [k: string]: ModdedFormatData } = {
 						this.p1.clearChoice();
 						this.p1.chooseSwitch('Reward');
 						if (this.allChoicesDone()) {
-							this.commitDecisions();
+							this.commitChoices();
 							this.sendUpdates();
 						}
 					}
