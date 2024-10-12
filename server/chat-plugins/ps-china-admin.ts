@@ -9,6 +9,7 @@ export const ALTS_RECORD = 16;
 const WHITELISTPATH = 'config/ps-china/whitelist.json';
 const REPLAYHEADPATH = 'config/ps-china/replay/replay-head.txt';
 const REPLAYTAILPATH = 'config/ps-china/replay/replay-tail.txt';
+const DRAFTFORMPATH = 'config/ps-china/draft-form.html';
 
 const IPLOGDIR = 'logs/iplog';
 const IPMAPPATH = 'logs/ipmap.json';
@@ -505,6 +506,68 @@ export const commands: Chat.ChatCommands = {
 	removegroupavatarhelp: [
 		'/removegroupavatar [avatar] - 删除团队头像'
 	],
+	
+	pschinadraftset(target, room, user) {
+		if (!room || room.roomid !== 'auction') return this.errorReply(`请在 Auction 房间设置赛事信息。`);
+		this.checkCan('roommod', null, room);
+		if (toID(target) === 'cancel') {
+			return user.sendTo(room.roomid, `|uhtmlchange|draft-form|`);
+		}
+		const args = target.split('|');
+		let teamNum = 0;
+		if (args.length <= 1) {
+			return user.sendTo(room.roomid, `|uhtml|draft-form|${FS(DRAFTFORMPATH).readIfExistsSync()}`);
+		} else if (args.length === 8 + 4 * 4) {
+			teamNum = 4;
+		} else if (args.length === 8 + 6 * 4) {
+			teamNum = 6;
+		} else {
+			this.errorReply('格式错误!');
+			return this.parse('/pschinadraftset cancel');
+		}
+		const teamData = [...new Array(teamNum).keys()].map(i => {
+			const retainInfo = args[6 + i * 4 + 3].trim();
+			let retains: { [k: string]: number } = {};
+			if (!!retainInfo && retainInfo.includes(':')) {
+				retains = Object.fromEntries(retainInfo.split(',').map(x => {
+					let [k, v] = x.split(':');
+					return [toID(k), parseInt(v)];
+				}));
+			}
+			return {
+				'name': args[6 + i * 4 + 0],
+				'leaders': args[6 + i * 4 + 1].split(',').map(toID),
+				'CNName': args[6 + i * 4 + 2],
+				'retains': retains,
+			};
+		});
+		// console.log(teamData);
+		// console.log('===== 1 =====');
+		// console.log(teamData.map(team => [team.name, team.leaders]));
+		// console.log('===== 2 =====');
+		// console.log(Object.fromEntries(teamData.map(team => [team.name, team.leaders])));
+		// console.log('===== 3 =====');
+		let draftData = {
+			'mode': args[0],
+			'initialMoney': parseInt(args[1]),
+			'minPlayers': parseInt(args[2]),
+			'maxPlayers': parseInt(args[3]),
+			'startPrice': parseInt(args[4]),
+			'stepPrice': parseInt(args[5]),
+			'canSelfNom': false,  // TODO: refactor self-nomination
+			'selfNomPrice': 16000,  // TODO: refactor self-nomination
+			'defaultTeams': Object.fromEntries(teamData.map(team => [team.name, team.leaders])),
+			'CNNames': Object.fromEntries(teamData.map(team => [team.name, team.CNName])),
+			'retains': Object.fromEntries(teamData.map(team => [team.name, team.retains])),
+			'defaultTier': args[6 + teamNum * 4 + 0],
+			'defaultGen': args[6 + teamNum * 4 + 1],
+		};
+		// console.log(draftData);
+		let tmpFile = `avatars/static/tmp-draft-${user.id}-${PetUtils.getDate()}.json`;
+		FS(`config/${tmpFile}`).safeWriteSync(JSON.stringify(draftData, null, '\t'));
+		user.sendTo(room.roomid, `|html|设置完成! 链接: <a href="${SERVER_URL}/${tmpFile}">${SERVER_URL}/${tmpFile}</a>`);
+		this.parse('/pschinadraftset cancel');
+	},
 };
 
 export const pages: Chat.PageTable = {
