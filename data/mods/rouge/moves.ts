@@ -7,6 +7,25 @@ import { RougeUtils } from "./rulesets";
 
 const natures = Dex.natures.all().map(x => x.name);
 const zcrystal = Dex.items.all().filter(x => x.zMove === true);
+const memoryToPlate = {
+	'Bug Memory': ['Insect Plate','Buginium Z'],
+	'Dark Memory': ['Dread Plate','Darkinium Z'],
+	'Dragon Memory': ['Draco Plate','Dragonium Z'],
+	'Electric Memory': ['Zap Plate','Electrium Z'],
+	'Fairy Memory': ['Pixie Plate','Fairium Z'],
+	'Fighting Memory': ['Fist Plate','Fightinium Z'],
+	'Fire Memory': ['Flame Plate','Firium Z'],
+	'Flying Memory': ['Sky Plate','Flyinium Z'],
+	'Ghost Memory': ['Spooky Plate','Ghostium Z'],
+	'Grass Memory': ['Meadow Plate','Grassium Z'],
+	'Ground Memory': ['Earth Plate','Groundium Z'],
+	'Ice Memory': ['Icicle Plate', 'Icium Z'],
+	'Poison Memory': ['Toxic Plate','Poisonium Z'],
+	'Psychic Memory': ['Mind Plate','Psychium Z'],
+	'Rock Memory': ['Stone Plate','Rockium Z'],
+	'Steel Memory': ['Iron Plate','Steelium Z'],
+	'Water Memory': ['Splash Plate','Waterium Z']
+};
 function rooms(num: number=0) {
 	if (num == 1) return [
 		{
@@ -194,6 +213,17 @@ function setMoveName(pokemon:Pokemon,name:string){
 function getPromote(battle:Battle,oldpoke:PokemonSet){
 	let newpoke=undefined
 	switch (Dex.toID(oldpoke.species)) {
+		case 'terapagos': newpoke = Teams.unpack(getRougeSet(PokemonPool["Terapagos-Stellar"], battle.prng, oldpoke.level, oldpoke.evs))![0]; break
+		case 'cyclizar': newpoke = battle.random(2) === 1 ? Teams.unpack(getRougeSet(PokemonPool["Necrozma-Dawn-Wings"], battle.prng, oldpoke.level, oldpoke.evs))![0] : Teams.unpack(getRougeSet(PokemonPool["Necrozma-Dusk-Mane"], battle.prng, oldpoke.level, oldpoke.evs))![0]; break
+		case 'silvally': 
+			let item
+			if(Object.keys(memoryToPlate).includes(oldpoke.item))
+				item = battle.sample(memoryToPlate[oldpoke.item as keyof typeof memoryToPlate]);
+			newpoke = Teams.unpack(getRougeSet(PokemonPool.Arceus, battle.prng, oldpoke.level, oldpoke.evs, item))![0];
+			break
+		case 'froakie' :
+		case 'frogadier' :
+		case 'greninja': newpoke = Teams.unpack(getRougeSet(PokemonPool["Greninja-Ash"], battle.prng, oldpoke.level, oldpoke.evs))![0]; break
 		case 'caterpie': newpoke = Teams.unpack(getRougeSet(PokemonPool.Rayquaza, battle.prng, oldpoke.level, oldpoke.evs))![0]; break
 		case 'fearow':
 		case 'spearow': newpoke = Teams.unpack(getRougeSet(PokemonPool["Ho-Oh"], battle.prng, oldpoke.level, oldpoke.evs))![0]; break
@@ -261,7 +291,7 @@ export function sample<T>(items: T[], number: number, prng: PRNG = new PRNG(), o
 	}
 	return newitems;
 }
-export function getRougeSet(pokeset: any | any[], prng: PRNG = new PRNG(), level?: number, evs?: StatsTable) {
+export function getRougeSet(pokeset: any | any[], prng: PRNG = new PRNG(), level?: number, evs?: StatsTable, item?: string) {
 	let buf = '';
 	
 	if (!Array.isArray(pokeset))
@@ -280,7 +310,7 @@ export function getRougeSet(pokeset: any | any[], prng: PRNG = new PRNG(), level
 		
 		
 		// item
-		const item=Array.isArray(set.item) ? prng.sample(set.item) : set.item
+		if (!item) item=Array.isArray(set.item) ? prng.sample(set.item) : set.item;
 		buf += '|' + item;
 
 		// ability
@@ -296,7 +326,7 @@ export function getRougeSet(pokeset: any | any[], prng: PRNG = new PRNG(), level
 		if(!ability) ability=prng.sample(abilities);
 		buf += '|' + (Array.isArray(set.ability) ? prng.sample(set.ability) : set.ability);
 		// moves
-		const moves=Array.from(randomTeams.randomMoveset(species.types,new Set(abilities),{},species,false,false,set.moves.map((x: any)=>Dex.toID(x)),species.types[0],item))
+		const moves=Array.from(randomTeams.randomMoveset(species.types,new Set(abilities),{},species,false,false,set.moves.map((x: any)=>Dex.toID(x)),species.types[0], item as string))
 		buf += '|' + moves.join(',');
 
 		// nature
@@ -458,10 +488,10 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		priority: 0,
 		flags: { snatch: 1, dance: 1 },
 		onHit(source, target, move) {
-			this.actions.useMoveInner('Substitute', target, target);
-			this.actions.useMoveInner('Shell Smash', target, target);
-			this.actions.useMoveInner('Roost', target, target);
-			this.actions.useMoveInner('Baton Pass', target, target);
+			this.actions.useMoveInner('Substitute', target);
+			this.actions.useMoveInner('Shell Smash', target);
+			this.actions.useMoveInner('Roost', target);
+			this.actions.useMoveInner('Baton Pass', target);
 		},
 		
 		secondary: null,
@@ -7376,6 +7406,54 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		},
 
 	},
+	getcyclizar: {
+		num: 1000,
+		name: 'Get Cyclizar',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(getRougeSet(PokemonPool.Cyclizar, this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Cyclizar has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
+	getterapagos: {
+		num: 1000,
+		name: 'Get Terapagos',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(getRougeSet(PokemonPool.Terapagos, this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Terapagos has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
 	//-------------abilitymoves------------
 
 	becomebomber: {
@@ -8081,6 +8159,24 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		desc: '',
 		shortDesc: '',
 	},
+	becomeincompletenirvana: {
+		num: 1002,
+		name: 'Become Incomplete Nirvana',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			selectpokemon(pokemon, ' Transform Ability');
+		},
+		desc: '',
+		shortDesc: '',
+	},
 	//----------------elitemoves---------
 	gainartirain: {
 		num: 1002,
@@ -8622,9 +8718,9 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		desc: '',
 		shortDesc: '',
 	},
-	gaininfestation: {
+	gaininfestation2: {
 		num: 1002,
-		name: 'Gain Infestation',
+		name: 'Gain Infestation2',
 		type: 'Normal',
 		accuracy: true,
 		basePower: 0,
@@ -8635,8 +8731,8 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'infestation');
-			this.add('html', `<div class="broadcast-green"><strong>you get the Infestation</strong></div>`);
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'infestation2');
+			this.add('html', `<div class="broadcast-green"><strong>you get the Infestation2</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
 		desc: '',
@@ -8762,9 +8858,9 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		desc: '',
 		shortDesc: '',
 	},
-	gainoverdrive: {
+	gainoverdriver: {
 		num: 1002,
-		name: 'Gain Overdrive',
+		name: 'Gain Overdriver',
 		type: 'Normal',
 		accuracy: true,
 		basePower: 0,
@@ -8775,8 +8871,8 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'overdrive');
-			this.add('html', `<div class="broadcast-green"><strong>you get the Overdrive</strong></div>`);
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'overdriver');
+			this.add('html', `<div class="broadcast-green"><strong>you get the Overdriver</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
 		desc: '',
@@ -12177,6 +12273,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 			RougeUtils.addRoom(this.toID(this.p2.name), move.id)
 			this.p1.active[0].faint();
 		},
+		desc: '11111111111',
 	},
 	moveroom: {
 		num: 1000,
@@ -12194,6 +12291,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 			RougeUtils.addRoom(this.toID(this.p2.name), move.id)
 			this.p1.active[0].faint();
 		},
+		desc: '11111111111',
 	},
 	abilityroom: {
 		num: 1000,
@@ -12211,6 +12309,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 			RougeUtils.addRoom(this.toID(this.p2.name), move.id)
 			this.p1.active[0].faint();
 		},
+		desc: '11111111111',
 	},
 	pokemonroom: {
 		num: 1000,
@@ -12228,6 +12327,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 			RougeUtils.addRoom(this.toID(this.p2.name), move.id)
 			this.p1.active[0].faint();
 		},
+		desc: '11111111111',
 	},
 	commonroom: {
 		num: 1000,
@@ -12245,6 +12345,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 			RougeUtils.addRoom(this.toID(this.p2.name), move.id)
 			this.p1.active[0].faint();
 		},
+		desc: '11111111111',
 	},
 	eliteroom: {
 		num: 1000,
@@ -12262,6 +12363,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 			RougeUtils.addRoom(this.toID(this.p2.name), move.id)
 			this.p1.active[0].faint();
 		},
+		desc: '11111111111',
 	},
 	championroom: {
 		num: 1000,
@@ -12279,6 +12381,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 			RougeUtils.addRoom(this.toID(this.p2.name), move.id)
 			this.p1.active[0].faint();
 		},
+		desc: '11111111111',
 	},
 
 };
