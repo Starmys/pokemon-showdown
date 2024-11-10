@@ -16,7 +16,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 				this.actions.useMove(
 					this.prng.sample(['totemleafstorm', 'totemdracometeor', 'totemflamethrower']),
 					this.p1.active[0],
-					this.prng.sample(validTargets)
+					{target : this.prng.sample(validTargets)}
 				);
 			}
 		},
@@ -123,7 +123,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 				this.actions.useMove(
 					this.prng.sample(['totemheatwave', 'totembugbuzz', 'totemscorchingsands']),
 					this.p1.active[0],
-					this.prng.sample(validTargets)
+					{target : this.prng.sample(validTargets)}
 				);
 			}
 		},
@@ -216,7 +216,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 				this.actions.useMove(
 					this.prng.sample(['totemhydropump', 'totemhurricane', 'totemicebeam']),
 					this.p1.active[0],
-					this.prng.sample(validTargets)
+					{target : this.prng.sample(validTargets)}
 				);
 			}
 		},
@@ -318,7 +318,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 				this.actions.useMove(
 					this.prng.sample(moves),
 					this.p1.active[0],
-					this.prng.sample(validTargets)
+					{target : this.prng.sample(validTargets)}
 				);
 			}
 		},
@@ -440,7 +440,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 				this.actions.useMove(
 					this.prng.sample(moves),
 					this.p1.active[0],
-					this.prng.sample(validTargets)
+					{target : this.prng.sample(validTargets)}
 				);
 			}
 		},
@@ -586,7 +586,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 				this.actions.useMove(
 					this.prng.sample(moves),
 					this.p1.active[0],
-					this.prng.sample(validTargets)
+					{target : this.prng.sample(validTargets)}
 				);
 			}
 		},
@@ -671,7 +671,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 				this.actions.useMove(
 					this.prng.sample(moves),
 					this.p1.active[0],
-					this.prng.sample(validTargets)
+					{target : this.prng.sample(validTargets)}
 				);
 			}
 		},
@@ -1037,7 +1037,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 				return false;
 			}
 			if (this.dex.moves.get(randomMove).target === 'normal' || this.dex.moves.get(randomMove).target === 'adjacentFoe' || this.dex.moves.get(randomMove).target === 'any')
-				this.actions.useMove(randomMove, pokemon, this.p1.active[0]);
+				this.actions.useMove(randomMove, pokemon, {target: this.p1.active[0]});
 			else
 				this.actions.useMove(randomMove, pokemon);
 		},
