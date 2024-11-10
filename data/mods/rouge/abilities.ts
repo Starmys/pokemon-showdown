@@ -522,10 +522,10 @@ export const Abilities: import('../../../sim/dex-abilities').ModdedAbilityDataTa
 	victini: {
 		onAfterMove(source, target, move) {
 			if (move.id === 'fusionbolt') {
-				this.actions.useMoveInner('fusionflare', source, target);
+				this.actions.useMoveInner('fusionflare', source, {target: target});
 			}
 			if (move.id === 'fusionflare') {
-				this.actions.useMoveInner('fusionbolt', source, target);
+				this.actions.useMoveInner('fusionbolt', source, {target: target});
 			}
 		},
 		name: "Victini",
@@ -1086,6 +1086,24 @@ export const Abilities: import('../../../sim/dex-abilities').ModdedAbilityDataTa
 			
 		},
 		name: "Sacrifice",
+		rating: 3,
+		num: 5,
+	},
+	incompletenirvana: {
+
+		onDamagePriority: -30,
+		onDamage(damage, target, source, effect) {
+			if (damage >= target.hp && effect && effect.effectType === 'Move' && target.species.prevo && source.item !== 'seismiclever') {
+				this.damage(target.hp - 1, target, source, effect);
+				this.add('-activate', source, 'ability: Incomplete Nirvana');
+				source.formeChange(target.species.prevo, this.effect, true);
+				this.heal(target.maxhp, target, target);
+				return false;
+			}
+		},
+
+		flags: {},
+		name: "Incomplete Nirvana",
 		rating: 3,
 		num: 5,
 	},

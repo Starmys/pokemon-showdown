@@ -694,8 +694,8 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 			this.boost({ atk: -1, spa: -1, def: -1, spd:-1,spe:-1 }, pokemon, pokemon.foes()[0])
 		},
 	},
-	infestation: {
-		name: "Infestation",
+	infestation2: {
+		name: "Infestation2",
 		effectType: 'Weather',
 		duration: 0,
 		onModifyMovePriority: 1000,
@@ -709,22 +709,22 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 		
 		onFieldStart(battle, source, effect) {
 			if (effect?.effectType === 'Ability') {
-				this.add('-fieldstart', "Infestation", '[from] ability: ' + effect, '[of] ' + source);
+				this.add('-fieldstart', "Infestation2", '[from] ability: ' + effect, '[of] ' + source);
 			} else {
-				this.add('-fieldstart', "Infestation");
+				this.add('-fieldstart', "Infestation2");
 			}
-			this.add('-message', "Infestation is radiated.");
+			this.add('-message', "Infestation2 is radiated.");
 		},
 
 
 		onFieldResidualOrder: 1,
 		onFieldResidual() {
-			this.add('-weather', "Infestation", '[upkeep]');
+			this.add('-weather', "Infestation2", '[upkeep]');
 			this.eachEvent('Weather');
 		},
 		onFieldEnd() {
-			this.add('-fieldend', "Infestation");
-			this.add('-message', "The Infestation subsided.");
+			this.add('-fieldend', "Infestation2");
+			this.add('-message', "The Infestation2 subsided.");
 		},
 	},
 	gangterritory: {
