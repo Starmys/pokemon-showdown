@@ -99,8 +99,31 @@ const Hazards = [
 const Charge=[
 	'solarbeam','solarblade','bounce','dig','dive','fly','freezeshock','geomancy','iceburn','phantomforce','razorwind','shadowforce','skullbash',
 	'skyattack','meteorbeam','electroshot'
-]
+];
+const plate =[
+	'Draco Plate', 'Dread Plate', 'Earth Plate', 'Fist Plate', 'Flame Plate', 'Icicle Plate', 'Insect Plate', 'Iron Plate', 'Meadow Plate', 'Mind Plate', 'Pixie Plate', 'Sky Plate', 'Splash Plate', 'Spooky Plate', 'Stone Plate', 'Toxic Plate', 'Zap Plate'
+];
 
+const preZMoveforArceus = {
+	Bug: 'Bug Buzz',
+	Dark: 'Foul Play',
+	Dragon: 'Spacial Rend',
+	Electric: 'Thunder',
+	Fairy: 'Dazzling Gleam',
+	Fighting: 'Focus Blast',
+	Fire: 'Fire Blast',
+	Flying: 'Hurricane',
+	Ghost: 'Shadow Force',
+	Grass: 'Grass Knot',
+	Ground: 'Earth Power',
+	Ice: 'Blizzard',
+	Normal: 'Last Resort',
+	Poison: 'Gunk Shot',
+	Psychic: 'Future Sight',
+	Rock: 'Stone Edge',
+	Steel: 'Iron Head',
+	Water: 'Liquidation',
+};
 // Moves that should be paired together when possible
 const MovePairs = [
 	['lightscreen', 'reflect'],
@@ -685,9 +708,27 @@ export class RandomTeams {
 			counter = this.addMove('celebrate', moves, types, abilities, teamDetails, species, isLead, isDoubles,
 				movePool, teraType);
 		}
-		if(itemin.zMoveFrom&&movePool.includes(this.dex.toID(itemin.zMoveFrom)) && moves.size < this.maxMoveCount){
+		if(itemin.zMoveFrom && movePool.includes(this.dex.toID(itemin.zMoveFrom)) && moves.size < this.maxMoveCount){
 			counter = this.addMove(this.dex.toID(itemin.zMoveFrom), moves, types, abilities, teamDetails, species, isLead, isDoubles,
 				movePool, teraType);
+		} else if(itemin.zMoveType && moves.size < this.maxMoveCount){
+			if (species.baseForme == 'Arceus') {
+				let move =preZMoveforArceus[itemin.zMoveType as keyof typeof preZMoveforArceus];
+				if (move){
+					counter = this.addMove(move, moves, types, abilities, teamDetails, species, isLead, isDoubles,
+						movePool, teraType);
+				}
+			}
+			let zTypeMoves = movePool.map(x => this.dex.moves.get(x)).filter(x => x.type == itemin.zMoveType)
+			if(zTypeMoves.length > 0) {
+				counter = this.addMove(this.sample(zTypeMoves).name, moves, types, abilities, teamDetails, species, isLead, isDoubles,
+					movePool, teraType);
+			}
+		}
+		this.getMoveType
+		if (species.baseForme == 'Arceus' && plate.includes(item) && this.randomChance(1,2)) {
+			counter = this.addMove('Judgment', moves, types, abilities, teamDetails, species, isLead, isDoubles,
+					movePool, teraType);
 		}
 		if(itemin.name=='Power Herb' && moves.size < this.maxMoveCount){
 			const chargeMoves = movePool.filter(moveid => Charge.includes(moveid));
