@@ -5733,8 +5733,8 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 		tournamentShow: false,
 		rated: false,
 		gameType: 'multi',
-		timer: { starting: 300, addPerTurn: 45, maxPerTurn: 300, maxFirstTurn: 300, grace: 300 },
 		ruleset: [
+			'Timer Starting = 300', 'Timer Add Per Turn = 45', 'Timer Max Per Turn = 300', 'Timer Max First Turn = 300', 'Timer Grace = 300',
 			'Obtainable', 'Team Preview', 'Gravity Sleep Clause', 'Species Clause', 'Nickname Clause', 'OHKO Clause',
 			'Evasion Moves Clause', 'Endless Battle Clause', 'HP Percentage Mod', 'Cancel Mod', 'Dynamax Clause',
 		],
@@ -5786,8 +5786,8 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 		tournamentShow: false,
 		rated: false,
 		gameType: 'multi',
-		timer: { starting: 300, addPerTurn: 45, maxPerTurn: 300, maxFirstTurn: 300, grace: 300 },
 		ruleset: [
+			'Timer Starting = 300', 'Timer Add Per Turn = 45', 'Timer Max Per Turn = 300', 'Timer Max First Turn = 300', 'Timer Grace = 300',
 			'Obtainable', 'Team Preview', 'Gravity Sleep Clause', 'Species Clause', 'Nickname Clause', 'OHKO Clause',
 			'Evasion Moves Clause', 'Endless Battle Clause', 'HP Percentage Mod', 'Cancel Mod', 'Dynamax Clause',
 		],
@@ -5839,8 +5839,8 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 		tournamentShow: false,
 		rated: false,
 		gameType: 'multi',
-		timer: { starting: 300, addPerTurn: 45, maxPerTurn: 300, maxFirstTurn: 300, grace: 300 },
 		ruleset: [
+			'Timer Starting = 300', 'Timer Add Per Turn = 45', 'Timer Max Per Turn = 300', 'Timer Max First Turn = 300', 'Timer Grace = 300',
 			'Obtainable', 'Team Preview', 'Gravity Sleep Clause','Species Clause', 'Nickname Clause', 'OHKO Clause',
 			'Moody Clause', 'Evasion Moves Clause', 'Endless Battle Clause', 'HP Percentage Mod', 'Cancel Mod',
 		],
@@ -5892,8 +5892,8 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 		tournamentShow: false,
 		rated: false,
 		gameType: 'multi',
-		timer: { starting: 300, addPerTurn: 45, maxPerTurn: 300, maxFirstTurn: 300, grace: 300 },
 		ruleset: [
+			'Timer Starting = 300', 'Timer Add Per Turn = 45', 'Timer Max Per Turn = 300', 'Timer Max First Turn = 300', 'Timer Grace = 300',
 			'Obtainable', 'Team Preview', 'Gravity Sleep Clause', 'Species Clause', 'Nickname Clause', 'OHKO Clause',
 			'Evasion Moves Clause', 'Endless Battle Clause', 'HP Percentage Mod', 'Cancel Mod', 'Dynamax Clause',
 		],
