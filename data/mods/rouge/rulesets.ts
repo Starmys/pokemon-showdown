@@ -482,9 +482,9 @@ export const relicsEffects = {
 		}
 
 	},
-	'infestation': (battle: Battle) => {
-		battle.field.addPseudoWeather("infestation");
-		battle.add('message', 'your infestation makes infestation start');
+	'infestation2': (battle: Battle) => {
+		battle.field.addPseudoWeather("infestation2");
+		battle.add('message', 'your infestation2 makes infestation2 start');
 	},
 	'gangguarantee': (battle: Battle) => {
 		battle.field.addPseudoWeather("Gang Territory");
@@ -510,9 +510,9 @@ export const relicsEffects = {
 		battle.p2.clearChoice();
 		battle.actions.useMove('Parting Shot', battle.p2.active[0]);
 	},
-	'overdrive': (battle: Battle) => {
+	'overdriver': (battle: Battle) => {
 		battle.field.addPseudoWeather("Surcharge");
-		battle.add('message', 'your overdrive makes Surcharge start');
+		battle.add('message', 'your overdriver makes Surcharge start');
 	},
 	'timejewel': (battle: Battle) => {
 		battle.field.addPseudoWeather("Time Acceleration");
