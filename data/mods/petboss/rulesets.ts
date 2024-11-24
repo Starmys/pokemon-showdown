@@ -31,17 +31,10 @@ export const Rulesets: import('../../../sim/dex-formats').ModdedFormatDataTable 
 
 	pschinapetmodeboss: {
 		name: 'PS China Pet Mode Boss',
-		timer: {
-			starting: 600,
-			addPerTurn: 30,
-			maxPerTurn: 60,
-			maxFirstTurn: 60,
-			grace: 0,
-			timeoutAutoChoose: true,
-			dcTimer: false,
-			dcTimerBank: false,
-		},
-		ruleset: ['Dynamax Clause', 'Terastal Clause'],
+		ruleset: [
+			'Timer Starting = 600', 'Timer Add Per Turn = 30', 'Timer Max Per Turn = 60', 'Timer Max First Turn = 60', 'Timer Grace = 0',
+			'Timeout Auto Choose', 'Dynamax Clause', 'Terastal Clause',
+		],
 		onBegin() {
 			if (Dex.toID(this.p1.name) !== 'pschinabot') {
 				this.add('html', `<div class="broadcast-red"><strong>霸主宝可梦消失了!</strong></div>`);
