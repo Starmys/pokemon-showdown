@@ -4977,14 +4977,14 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 		},
 	},
 	{
-		name: "[Gen 9] 2p v 2p OU ",
+		name: "[Gen 9] 2p v 2p OU",
 		desc: `4-Player 2v2 OU for Shinx`,
 		mod: 'gen9',
 		tournamentShow: false,
 		rated: false,
 		gameType: 'multi',
 		ruleset: [
-			'Timer Starting = 300', 'Timer Add Per Turn = 45', 'Timer Max Per Turn = 300', 'Timer Max First Turn = 300', 'Timer Grace = 300',
+			'Timer Starting = 300', 'Timer Add Per Turn = 30', 'Timer Max Per Turn = 300', 'Timer Max First Turn = 300', 'Timer Grace = 300',
 			'Obtainable', 'Team Preview', 'Gravity Sleep Clause', 'Species Clause', 'Nickname Clause', 'OHKO Clause',
 			'Evasion Moves Clause', 'Endless Battle Clause', 'HP Percentage Mod', 'Cancel Mod', 'Dynamax Clause',
 		],
@@ -5037,7 +5037,7 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 		rated: false,
 		gameType: 'multi',
 		ruleset: [
-			'Timer Starting = 300', 'Timer Add Per Turn = 45', 'Timer Max Per Turn = 300', 'Timer Max First Turn = 300', 'Timer Grace = 300',
+			'Timer Starting = 300', 'Timer Add Per Turn = 30', 'Timer Max Per Turn = 300', 'Timer Max First Turn = 300', 'Timer Grace = 300',
 			'Obtainable', 'Team Preview', 'Gravity Sleep Clause', 'Species Clause', 'Nickname Clause', 'OHKO Clause',
 			'Evasion Moves Clause', 'Endless Battle Clause', 'HP Percentage Mod', 'Cancel Mod', 'Dynamax Clause',
 		],
@@ -5090,7 +5090,7 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 		rated: false,
 		gameType: 'multi',
 		ruleset: [
-			'Timer Starting = 300', 'Timer Add Per Turn = 45', 'Timer Max Per Turn = 300', 'Timer Max First Turn = 300', 'Timer Grace = 300',
+			'Timer Starting = 300', 'Timer Add Per Turn = 30', 'Timer Max Per Turn = 300', 'Timer Max First Turn = 300', 'Timer Grace = 300',
 			'Obtainable', 'Team Preview', 'Gravity Sleep Clause','Species Clause', 'Nickname Clause', 'OHKO Clause',
 			'Moody Clause', 'Evasion Moves Clause', 'Endless Battle Clause', 'HP Percentage Mod', 'Cancel Mod',
 		],
@@ -5136,14 +5136,14 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 
 	},
 	{
-		name: "[Gen 9] 2p v 2p NDOU ",
+		name: "[Gen 9] 2p v 2p NDOU",
 		desc: `4-Player 2v2 OU for Shinx`,
 		mod: 'gen9',
 		tournamentShow: false,
 		rated: false,
 		gameType: 'multi',
 		ruleset: [
-			'Timer Starting = 300', 'Timer Add Per Turn = 45', 'Timer Max Per Turn = 300', 'Timer Max First Turn = 300', 'Timer Grace = 300',
+			'Timer Starting = 300', 'Timer Add Per Turn = 30', 'Timer Max Per Turn = 300', 'Timer Max First Turn = 300', 'Timer Grace = 300',
 			'Obtainable', 'Team Preview', 'Gravity Sleep Clause', 'Species Clause', 'Nickname Clause', 'OHKO Clause',
 			'Evasion Moves Clause', 'Endless Battle Clause', 'HP Percentage Mod', 'Cancel Mod', 'Dynamax Clause',
 		],
