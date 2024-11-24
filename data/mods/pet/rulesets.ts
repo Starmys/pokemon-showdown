@@ -120,7 +120,7 @@ export const Rulesets: import('../../../sim/dex-formats').ModdedFormatDataTable 
 	pschinapetmodewild: {
 		name: 'PS China Pet Mode Wild',
 		ruleset: [
-			'Timer Starting = 300', 'Timer Add Per Turn = 0', 'Timer Max Per Turn = 30', 'Timer Max First Turn = 30', 'Timer Grace = 0',
+			'Timer Starting = 300', 'Timer Add Per Turn = 0', 'Timer Max Per Turn = 30', 'Timer Max First Turn = 30',
 			'Timeout Auto Choose',
 		],
 		onBegin() {
@@ -167,7 +167,7 @@ export const Rulesets: import('../../../sim/dex-formats').ModdedFormatDataTable 
 	pschinapetmodegym: {
 		name: 'PS China Pet Mode Gym',
 		ruleset: [
-			'Timer Starting = 600', 'Timer Add Per Turn = 30', 'Timer Max Per Turn = 60', 'Timer Max First Turn = 60', 'Timer Grace = 0',
+			'Timer Starting = 600', 'Timer Add Per Turn = 30', 'Timer Max Per Turn = 60', 'Timer Max First Turn = 60', '! Timer Grace',
 			'Timeout Auto Choose', 'Sleep Clause Mod',
 		],
 		onBegin() {
