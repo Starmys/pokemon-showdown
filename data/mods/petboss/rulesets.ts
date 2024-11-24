@@ -32,7 +32,7 @@ export const Rulesets: import('../../../sim/dex-formats').ModdedFormatDataTable 
 	pschinapetmodeboss: {
 		name: 'PS China Pet Mode Boss',
 		ruleset: [
-			'Timer Starting = 600', 'Timer Add Per Turn = 30', 'Timer Max Per Turn = 60', 'Timer Max First Turn = 60', 'Timer Grace = 0',
+			'Timer Starting = 600', 'Timer Add Per Turn = 30', 'Timer Max Per Turn = 60', 'Timer Max First Turn = 60',
 			'Timeout Auto Choose', 'Dynamax Clause', 'Terastal Clause',
 		],
 		onBegin() {
