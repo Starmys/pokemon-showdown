@@ -119,16 +119,10 @@ export const Rulesets: import('../../../sim/dex-formats').ModdedFormatDataTable 
 
 	pschinapetmodewild: {
 		name: 'PS China Pet Mode Wild',
-		timer: {
-			starting: 300,
-			addPerTurn: 0,
-			maxPerTurn: 30,
-			maxFirstTurn: 30,
-			grace: 0,
-			timeoutAutoChoose: true,
-			dcTimer: false,
-			dcTimerBank: false,
-		},
+		ruleset: [
+			'Timer Starting = 300', 'Timer Add Per Turn = 0', 'Timer Max Per Turn = 30', 'Timer Max First Turn = 30', 'Timer Grace = 0',
+			'Timeout Auto Choose',
+		],
 		onBegin() {
 			this.p1.emitRequest = (update: AnyObject) => {
 				this.send('sideupdate', `${this.p1.id}\n|request|${JSON.stringify(update)}`);
@@ -172,17 +166,10 @@ export const Rulesets: import('../../../sim/dex-formats').ModdedFormatDataTable 
 
 	pschinapetmodegym: {
 		name: 'PS China Pet Mode Gym',
-		ruleset: ['Sleep Clause Mod'],
-		timer: {
-			starting: 600,
-			addPerTurn: 30,
-			maxPerTurn: 60,
-			maxFirstTurn: 60,
-			grace: 0,
-			timeoutAutoChoose: true,
-			dcTimer: false,
-			dcTimerBank: false,
-		},
+		ruleset: [
+			'Timer Starting = 600', 'Timer Add Per Turn = 30', 'Timer Max Per Turn = 60', 'Timer Max First Turn = 60', 'Timer Grace = 0',
+			'Timeout Auto Choose', 'Sleep Clause Mod',
+		],
 		onBegin() {
 			const userName = this.p2.name;
 			const gymName = registerUser(Dex.toID(userName));
