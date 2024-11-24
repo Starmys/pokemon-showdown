@@ -770,17 +770,10 @@ export const Rulesets: import('../../../sim/dex-formats').ModdedFormatDataTable 
 	pschinarougemode: {
 		effectType: 'Rule',
 		name: 'PS China Rouge Mode',
-		ruleset: ['Dynamax Clause', 'Terastal Clause'],
-		timer: {
-			starting: 600,
-			addPerTurn: 30,
-			maxPerTurn: 60,
-			maxFirstTurn: 60,
-			grace: 0,
-			timeoutAutoChoose: true,
-			dcTimer: false,
-			dcTimerBank: false,
-		},
+		ruleset: [
+			'Timer Starting = 600', 'Timer Add Per Turn = 30', 'Timer Max Per Turn = 60', 'Timer Max First Turn = 60', 'Timer Grace = 0',
+			'Timeout Auto Choose', 'Dynamax Clause', 'Terastal Clause',
+		],
 		onBegin() {
 			// this.p1.pokemon = this.p1.pokemon.concat([new Pokemon(Teams.unpack('Shop|||shopman|Retransmission Moves Pool,getsuperband,getsuperspecs,getsuperscarf,Learn Extreme Speed,skip|Careful|252,4,,,252,|||||')![0], this.p2)]);
 			let user = RougeUtils.getUser(this.toID(this.p2.name))
