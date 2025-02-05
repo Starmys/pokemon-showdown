@@ -397,7 +397,7 @@ export const Items: import('../../../sim/dex-items').ModdedItemDataTable = {
 		onResidualOrder: 5,
 		onResidualSubOrder: 4,
 		onResidual(pokemon) {
-			if (this.prng.next(32) === 1) {
+			if (this.prng.random(32) === 1) {
 				for (let foe of pokemon.foes()) {
 					this.add('-activate', pokemon, 'item: Azure Flute');
 					foe.faint()

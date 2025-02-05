@@ -498,7 +498,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 
 		onWeatherModifyDamage(relayVar: number, source: Pokemon, target: Pokemon, move) {
 			if (source.side === this.p2) {
-				if (move.type === 'Electric' && this.prng.next(3)===1) {
+				if (move.type === 'Electric' && this.prng.random(3)===1) {
 					if (!target.status) target.setStatus('par', source, move, true);
 				}
 				return this.chainModify(1.2);
@@ -1154,7 +1154,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 
 		onAfterMoveSecondary(target, source, move) {
 			if (move.category !== "Status" && target && target.side === this.p1) {
-				if (this.prng.next(5) === 0) {
+				if (this.prng.random(5) === 0) {
 					target.setStatus(this.sample(['brn', 'par', 'slp', 'frz', 'psn']), target);
 				}
 			}
