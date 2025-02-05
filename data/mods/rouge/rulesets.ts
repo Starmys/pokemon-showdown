@@ -826,7 +826,7 @@ export const Rulesets: import('../../../sim/dex-formats').ModdedFormatDataTable 
 				this.p1.pokemon.push(new Pokemon(Teams.unpack('Shopowner|Magikarp|eliteroom|shopman|splash|Hardy||M|0,0,0,0,0,0|S|5|')![0], this.p1));
 				this.p1.pokemon.push(new Pokemon(Teams.unpack('Shopowner|Magikarp||shopman|splash|Hardy||M|0,0,0,0,0,0||5|')![0], this.p1));
 			} else {
-				//const rand = this.prng.next(9);
+				//const rand = this.prng.random(9);
 				// let firstreward = 'skip,';
 				let firstreward = 'Refresh Reward,';
 				// if (rand < 4)
@@ -1075,7 +1075,7 @@ export const Rulesets: import('../../../sim/dex-formats').ModdedFormatDataTable 
 					relicsEffects[x as keyof typeof relicsEffects](this);
 					if(x==='finalact') break;
 				}
-			} else if (pokemon.side === this.p1 && this.prng.next(40) === 1 && !this.field.effectiveWeather()) {
+			} else if (pokemon.side === this.p1 && this.prng.random(40) === 1 && !this.field.effectiveWeather()) {
 				this.field.setWeather(this.sample(['raindance', 'snow', 'sunnyday', 'sandstorm']));
 			}
 		},

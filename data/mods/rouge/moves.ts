@@ -277,11 +277,11 @@ export function sample<T>(items: T[], number: number, prng: PRNG = new PRNG(), o
 	if (number > len2) number = len2;
 	const indexs = new Set<number>();
 	while (indexs.size < number) {
-		if (otheritems && prng.next(2) === 0) {
-			const index = prng.next(len2);
+		if (otheritems && prng.random(2) === 0) {
+			const index = prng.random(len2);
 			indexs.add(index)
 		} else {
-			const index = prng.next(len);
+			const index = prng.random(len);
 			indexs.add(index)
 		}
 	}
