@@ -119,7 +119,7 @@ export const Abilities: import('../../../sim/dex-abilities').ModdedAbilityDataTa
 	ununown: {
 
 		onAllyEffectiveness(typeMod, target, type, move) {
-			if (this.prng.next(2)) {
+			if (this.prng.random(2)) {
 				if (
 					target?.isActive && move.effectType === 'Move' && move.category !== 'Status'
 				) {
