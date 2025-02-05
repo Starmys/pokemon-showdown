@@ -131,7 +131,7 @@ export const commands: Chat.ChatCommands = {
 					case 1: userTeam = getRougeSet(PokemonPool.Charmander, Rouge.prng); break;
 					case 2: userTeam = getRougeSet(PokemonPool.Squirtle, Rouge.prng); break;
 					case 3: userTeam = getRougeSet(PokemonPool.Bulbasaur, Rouge.prng); break;
-					case 4: userTeam = Rouge.prng.next(2) === 1 ? getRougeSet(PokemonPool.Pikachu, Rouge.prng) : getRougeSet(PokemonPool["Pikachu-Original"], Rouge.prng); break;
+					case 4: userTeam = Rouge.prng.random(2) === 1 ? getRougeSet(PokemonPool.Pikachu, Rouge.prng) : getRougeSet(PokemonPool["Pikachu-Original"], Rouge.prng); break;
 					case 5: userTeam = getRougeSet(PokemonPool.Cyndaquil, Rouge.prng); break;
 					case 6: userTeam = getRougeSet(PokemonPool.Totodile, Rouge.prng); break;
 					case 7: userTeam = getRougeSet(PokemonPool.Chikorita, Rouge.prng); break;
