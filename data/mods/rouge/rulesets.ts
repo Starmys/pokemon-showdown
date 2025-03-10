@@ -3,6 +3,7 @@ import { Teams, Pokemon } from "../../../sim";
 import { championreward, evolution, sample } from "./moves";
 import { PokemonPool } from "../../../config/rouge/pokemon-pool";
 import RandomTeams from "../../random-battles/rouge/teams";
+import type { ChoiceRequest } from '../../../sim/side';
 
 
 type rougePassRecord = { 'cave': number[], 'void': number[] };
@@ -316,7 +317,7 @@ export class RougeUtils {
 
 
 		pokemon.item = item.id;
-		pokemon.itemState = { id: item.id, target: pokemon };
+		pokemon.itemState = { id: item.id, target: pokemon, effectOrder: 0 };
 		if (item.id) {
 			pokemon.battle.singleEvent('Start', item, pokemon.itemState, pokemon, source, effect);
 		}
@@ -840,7 +841,7 @@ export const Rulesets: import('../../../sim/dex-formats').ModdedFormatDataTable 
 				this.p1.pokemon.push(new Pokemon(Teams.unpack('Shopowner|Magikarp||shopman|splash|Hardy||M|0,0,0,0,0,0||5|')![0], this.p1));
 			}
 			this.p1.pokemonLeft += 6;
-			this.p1.emitRequest = (update: AnyObject) => {
+			this.p1.emitRequest = (update: ChoiceRequest) => {
 				this.send('sideupdate', `${this.p1.id}\n|request|${JSON.stringify(update)}`);
 				this.p1.activeRequest = update;
 				// @ts-ignore
