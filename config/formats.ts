@@ -4826,7 +4826,7 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 
 
 		mod: 'gen9',
-		ruleset: ['Standard NatDex', 'OHKO Clause', 'Evasion Clause', 'Species Clause', 'Sleep Clause Mod'],
+		ruleset: ['Standard NatDex'],
 		banlist: [
 			'Zygarde', 'Zygarde-Complete','Ultranecrozium Z','Xerneas','Red Orb','Terapagos','Blue Orb','Eternatus','ND AG', 'Arena Trap', 'Moody', 'Power Construct', 'Shadow Tag', 'King\'s Rock',
 			'Quick Claw', 'Razor Fang', 'Assist', 'Baton Pass', 'Last Respects', 'Shed Tail',
@@ -4941,7 +4941,7 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 		tournamentShow: false,
 		rated: false,
 		gameType: 'freeforall',
-		ruleset: ['Standard NatDex', 'OHKO Clause', 'Evasion Clause', 'Species Clause', 'Sleep Clause Mod'],
+		ruleset: ['Standard NatDex'],
 		banlist: ['ND Uber', 'ND AG', 'Arena Trap', 'Moody', 'Power Construct', 'Shadow Tag', 'King\'s Rock', 'Quick Claw', 'Razor Fang', 'Assist', 'Baton Pass'],
 	
 	},
@@ -4954,7 +4954,7 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 		tournamentShow: false,
 		rated: false,
 		gameType: 'freeforall',
-		ruleset: ['Standard NatDex', 'OHKO Clause', 'Evasion Clause', 'Species Clause', 'Sleep Clause Mod'],
+		ruleset: ['Standard NatDex'],
 		banlist: ['ND Uber', 'ND AG', 'Arena Trap', 'Moody', 'Power Construct', 'Shadow Tag', 'King\'s Rock', 'Quick Claw', 'Razor Fang', 'Assist', 'Baton Pass'],
 	
 		onBegin() {
