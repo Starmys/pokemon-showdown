@@ -222,8 +222,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		name: "Chatter",
 		pp: 20,
 		priority: 0,
-		flags: {protect: 1, mirror: 1, sound: 1, distance: 1, bypasssub: 1},
-		noSketch: true,
+		flags: {protect: 1, mirror: 1, sound: 1, distance: 1, bypasssub: 1, nosketch: 1},
 		secondary: {
 			chance: 100,
 			volatileStatus: 'confusion',
@@ -457,6 +456,9 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 	healingwish: {
 		inherit: true,
 		condition: {
+			onSwitchIn(target) {
+				this.singleEvent('Swap', this.effect, this.effectState, target);
+			},
 			onSwap(target) {
 				if (!target.fainted && (target.hp < target.maxhp || target.status)) {
 					target.heal(target.maxhp);
@@ -1437,22 +1439,19 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 			duration: 3,
 			noCopy: true, // doesn't get copied by Z-Baton Pass
 			onStart(target) {
-				const noEncore = [
-					'assist', 'copycat', 'dynamaxcannon', 'encore', 'mefirst', 'metronome', 'mimic', 'mirrormove', 'naturepower', 'sketch', 'sleeptalk', 'struggle', 'transform',
-				];
 				let move: Move | ActiveMove | null = target.lastMove;
 				if (!move || target.volatiles['dynamax']) return false;
 
 				if (move.isMax && move.baseMove) move = this.dex.moves.get(move.baseMove);
 				const moveIndex = target.moves.indexOf(move.id);
-				if (move.isZ || noEncore.includes(move.id) || !target.moveSlots[moveIndex] || target.moveSlots[moveIndex].pp <= 0) {
+				if (move.isZ || move.flags['failencore'] || !target.moveSlots[moveIndex] || target.moveSlots[moveIndex].pp <= 0) {
 					// it failed
 					return false;
 				}
 				this.effectState.move = move.id;
 				this.add('-start', target, 'Encore');
 				if (!this.queue.willMove(target)) {
-					this.effectState.duration++;
+					this.effectState.duration!++;
 				}
 			},
 			onOverrideAction(pokemon, target, move) {
@@ -1460,7 +1459,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 			},
 			onResidualOrder: 16,
 			onResidual(target) {
-				if (target.moves.includes(this.effectState.move) &&
+				if (!target.moves.includes(this.effectState.move) ||
 					target.moveSlots[target.moves.indexOf(this.effectState.move)].pp <= 0) {
 					// early termination if you run out of PP
 					target.removeVolatile('encore');
@@ -2083,7 +2082,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 			} else if (this.field.isTerrain('psychicterrain')) {
 				move = 'psychic';
 			}
-			this.actions.useMove(move, pokemon, target);
+			this.actions.useMove(move, pokemon, {target});
 			return null;
 		},
 		secondary: null,
@@ -2291,8 +2290,9 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 			this.singleEvent('End', targetAbility, target.abilityState, target);
 			source.ability = targetAbility.id;
 			target.ability = sourceAbility.id;
-			source.abilityState = {id: this.toID(source.ability), target: source};
-			target.abilityState = {id: this.toID(target.ability), target: target};
+			source.abilityState = this.initEffectState({id: this.toID(source.ability), target: source});
+			target.abilityState = this.initEffectState({id: this.toID(target.ability), target: target});
+			source.volatileStaleness = undefined;
 			if (!target.isAlly(source)) target.volatileStaleness = 'external';
 			this.singleEvent('Start', targetAbility, source.abilityState, source);
 			this.singleEvent('Start', sourceAbility, target.abilityState, target);
