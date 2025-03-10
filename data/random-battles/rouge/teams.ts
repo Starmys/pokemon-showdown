@@ -43,7 +43,7 @@ export class MoveCounter extends Utils.Multiset<string> {
 		this.ironFist = 0;
 	}
 
-	get(key: string): number {
+	override get(key: string): number {
 		return super.get(key) || 0;
 	}
 }
@@ -181,7 +181,7 @@ export class RandomTeams {
 
 		this.factoryTier = '';
 		this.format = format;
-		this.prng = prng && !Array.isArray(prng) ? prng : new PRNG(prng);
+		this.prng = PRNG.get(prng);
 
 		this.moveEnforcementCheckers = {
 			Bug: (movePool, moves, abilities, types, counter) => !counter.get('Bug'),
@@ -226,7 +226,7 @@ export class RandomTeams {
 	}
 
 	setSeed(prng?: PRNG | PRNGSeed) {
-		this.prng = prng && !Array.isArray(prng) ? prng : new PRNG(prng);
+		this.prng = PRNG.get(prng);
 	}
 
 	getTeam(options?: PlayerOptions | null): PokemonSet[] {
@@ -1510,7 +1510,7 @@ export class RandomTeams {
 	randomTeam() {
 		this.enforceNoDirectCustomBanlistChanges();
 
-		const seed = this.prng.seed;
+		const seed = this.prng.getSeed();
 		const ruleTable = this.dex.formats.getRuleTable(this.format);
 		const pokemon: RandomTeamsTypes.RandomSet[] = [];
 
