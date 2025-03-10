@@ -5,6 +5,7 @@
 
 import { FS } from "../../../lib";
 import { PetModeGymConfig } from "../../../config/pet-mode/gym-config";
+import type { ChoiceRequest } from '../../../sim/side';
 
 const USERPATH = 'config/pet-mode/user-properties';
 const DEPOSITPATH = 'config/pet-mode/deposit';
@@ -124,7 +125,7 @@ export const Rulesets: import('../../../sim/dex-formats').ModdedFormatDataTable 
 			'Timeout Auto Choose',
 		],
 		onBegin() {
-			this.p1.emitRequest = (update: AnyObject) => {
+			this.p1.emitRequest = (update: ChoiceRequest) => {
 				this.send('sideupdate', `${this.p1.id}\n|request|${JSON.stringify(update)}`);
 				this.p1.activeRequest = update;
 				// @ts-ignore
@@ -167,7 +168,7 @@ export const Rulesets: import('../../../sim/dex-formats').ModdedFormatDataTable 
 	pschinapetmodegym: {
 		name: 'PS China Pet Mode Gym',
 		ruleset: [
-			'Timer Starting = 600', 'Timer Add Per Turn = 30', 'Timer Max Per Turn = 60', 'Timer Max First Turn = 60', '! Timer Grace',
+			'Timer Starting = 600', 'Timer Add Per Turn = 30', 'Timer Max Per Turn = 60', 'Timer Max First Turn = 60',
 			'Timeout Auto Choose', 'Sleep Clause Mod',
 		],
 		onBegin() {
@@ -175,7 +176,7 @@ export const Rulesets: import('../../../sim/dex-formats').ModdedFormatDataTable 
 			const gymName = registerUser(Dex.toID(userName));
 			if (!gymName) return;
 			const gymSettings = gymConfig[gymName];
-			this.p1.emitRequest = (update: AnyObject) => {
+			this.p1.emitRequest = (update: ChoiceRequest) => {
 				this.send('sideupdate', `${this.p1.id}\n|request|${JSON.stringify(update)}`);
 				this.p1.activeRequest = update;
 				setTimeout(() => {

@@ -184,8 +184,8 @@ export class PetUtils {
 
 	static iconStyle(name: string, gender: string = 'N') {
 		const pokemon = Dex.species.get(name);
-		const iconid = gender === 'F' && Pet.iconIndex[`${pokemon.id}f`] ? `${pokemon.id}f` : pokemon.id;
-		const num = Pet.iconIndex[iconid] || pokemon.num;
+		const iconid = gender === 'F' && PokemonIconIndexes[`${pokemon.id}f`] ? `${pokemon.id}f` : pokemon.id;
+		const num = PokemonIconIndexes[iconid] || pokemon.num;
 		if (num <= 0) {
 			return `height: 32px; width: 40px;`
 		}
@@ -1466,7 +1466,7 @@ function petBox(petUser: PetUser, target: string, admin: boolean = false): strin
 			const statOperation = petUser.operation.slice(9);
 			const statPosition = statOperation.split(',')
 			if (statPosition.length === 2) {
-				const statType = statPosition[0] === 'ivs' ? '个体值' : 'evs' ? '努力值' : undefined;
+				const statType = (statPosition[0] === 'ivs') ? '个体值' : (statPosition[0] === 'evs') ? '努力值' : undefined;
 				const statIndex = ['HP', '攻击', '防御', '特攻', '特防', '速度'][
 					['hp', 'atk', 'def', 'spa', 'spd', 'spe'].indexOf(statPosition[1])
 				]

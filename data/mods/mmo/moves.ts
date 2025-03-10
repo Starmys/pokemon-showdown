@@ -2211,10 +2211,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 	ragepowder: {
 		inherit: true,
 		priority: 2,
-		flags: {powder: 1},
-		onTryImmunity(target) {
-			return !target.types.includes('Grass');
-		},
+		flags: { noassist: 1, failcopycat: 1, powder: 1 },
 	},
 	reflect: {
 		inherit: true,
@@ -2549,6 +2546,10 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 			target.clearBoosts();
 			this.add('-clearboost', target);
 		},
+	},
+	outrage: {
+		inherit: true,
+		basePower: 90,
 	},
 	// TODO: manually set weather
 };
