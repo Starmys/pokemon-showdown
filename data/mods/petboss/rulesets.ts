@@ -6,6 +6,7 @@
 import { FS } from "../../../lib";
 import { Teams, Pokemon } from "../../../sim";
 import { PetModeBossConfig } from "../../../config/pet-mode/boss-config";
+import type { ChoiceRequest } from '../../../sim/side';
 
 const USERPATH = 'config/pet-mode/user-properties';
 const DEPOSITPATH = 'config/pet-mode/deposit';
@@ -41,7 +42,7 @@ export const Rulesets: import('../../../sim/dex-formats').ModdedFormatDataTable 
 				this.tie();
 				return;
 			}
-			this.p1.emitRequest = (update: AnyObject) => {
+			this.p1.emitRequest = (update: ChoiceRequest) => {
 				this.send('sideupdate', `${this.p1.id}\n|request|${JSON.stringify(update)}`);
 				this.p1.activeRequest = update;
 				// @ts-ignore
