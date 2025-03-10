@@ -265,7 +265,7 @@ export const commands: Chat.ChatCommands = {
 			buf += PetUtils.table(
 				RougeUtils.initMons,
 				['Cave', 'Void'],
-				[...new Array(RougeUtils.initMons.length).keys()].map(i => [userRecord['cave'][i]||0, userRecord['void'][i]]||0),
+				[...new Array(RougeUtils.initMons.length).keys()].map(i => [userRecord['cave'][i] || 0, userRecord['void'][i] || 0]),
 				'200px',
 				'center',
 				'center',
