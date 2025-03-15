@@ -313,10 +313,12 @@ export class RougeUtils {
 		if (!pokemon.hp) return false;
 		if (pokemon.itemState.knockedOff) return false;
 		if (typeof item === 'string') item = pokemon.battle.dex.items.get(item);
-
-
 		pokemon.item = item.id;
-		pokemon.itemState = { id: item.id, target: pokemon };
+		const oldItem = pokemon.getItem();
+		const oldItemState = pokemon.itemState;
+		pokemon.item = item.id;
+		if (oldItem.exists) pokemon.battle.singleEvent('End', oldItem, oldItemState, pokemon);
+		pokemon.itemState = pokemon.battle.initEffectState({id: item.id, target: pokemon});
 		if (item.id) {
 			pokemon.battle.singleEvent('Start', item, pokemon.itemState, pokemon, source, effect);
 		}
