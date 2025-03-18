@@ -214,7 +214,7 @@ function getPromote(battle:Battle,oldpoke:PokemonSet){
 	let newpoke=undefined
 	switch (Dex.toID(oldpoke.species)) {
 		case 'terapagos': newpoke = Teams.unpack(getRougeSet(PokemonPool["Terapagos-Stellar"], battle.prng, oldpoke.level, oldpoke.evs))![0]; break
-		case 'cyclizar': newpoke = battle.random(2) === 1 ? Teams.unpack(getRougeSet(PokemonPool["Necrozma-Dawn-Wings"], battle.prng, oldpoke.level, oldpoke.evs))![0] : Teams.unpack(getRougeSet(PokemonPool["Necrozma-Dusk-Mane"], battle.prng, oldpoke.level, oldpoke.evs))![0]; break
+		case 'cyclizar': newpoke = battle.random(2) === 1 ? Teams.unpack(getRougeSet(PokemonPool["Miraidon"], battle.prng, oldpoke.level, oldpoke.evs))![0] : Teams.unpack(getRougeSet(PokemonPool["Koraidon"], battle.prng, oldpoke.level, oldpoke.evs))![0]; break
 		case 'silvally': 
 			let item
 			if(Object.keys(memoryToPlate).includes(oldpoke.item))

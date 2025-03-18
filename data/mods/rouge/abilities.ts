@@ -1096,7 +1096,7 @@ export const Abilities: import('../../../sim/dex-abilities').ModdedAbilityDataTa
 			if (damage >= target.hp && effect && effect.effectType === 'Move' && target.species.prevo && source.item !== 'seismiclever') {
 				this.damage(target.hp - 1, target, source, effect);
 				this.add('-activate', source, 'ability: Incomplete Nirvana');
-				source.formeChange(target.species.prevo, this.effect, true);
+				target.formeChange(target.species.prevo, this.effect, true);
 				this.heal(target.maxhp, target, target);
 				return false;
 			}
