@@ -1,6 +1,6 @@
-import { PokemonPool } from "../../../config/rouge/pokemon-pool";
 import { RandomTeams } from "../../random-battles/rouge/teams";
 import { relicsEffects, RougeUtils } from "./rulesets";
+import { RewardPool } from "../../../config/rouge/reward-pool";
 
 export const Abilities: import('../../../sim/dex-abilities').ModdedAbilityDataTable = {
 	shadowtag: {
@@ -623,27 +623,28 @@ export const Abilities: import('../../../sim/dex-abilities').ModdedAbilityDataTa
 	},
 	bugtohero: {
 		onSwitchOut(pokemon) {
-			if ( pokemon.transformed) return;
-			    const species: Species =this.dex.species.get("kricketunehero");
+			if (pokemon.baseSpecies.baseSpecies !== 'kricketune') return;
+			if (pokemon.species.forme !== 'Hero') {
+				
+				const species: Species =this.dex.species.get("kricketunehero");
 				// const species: Species =this.dex.deepClone(pokemon.species);
 				// species.baseStats.atk=160;
 				// species.baseStats.def=97;
 				// species.baseStats.spa=119;
 				// species.baseStats.spd=97;
 				// species.baseStats.spe=100;
-				
 				pokemon.formeChange(species, this.effect, true);
-				pokemon.transformed=true;
-				this.effectState.sendHeroMessage = true;
-			
-		},
-		onStart(pokemon) {
-			if (this.effectState.sendHeroMessage) {
-				this.add('-activate', pokemon, 'ability: Bug to Hero');
-				this.effectState.sendHeroMessage = false;
+				pokemon.regressionForme = false;
 			}
 		},
-		flags: {failroleplay: 1, noreceiver: 1, noentrain: 1, notrace: 1, failskillswap: 1, cantsuppress: 1},
+		onSwitchIn(pokemon) {
+			if (pokemon.baseSpecies.baseSpecies !== 'kricketune') return;
+			if (!this.effectState.heroMessageDisplayed && pokemon.species.forme === 'Hero') {
+				this.add('-activate', pokemon, 'ability: Bug to Hero');
+				this.effectState.heroMessageDisplayed = true;
+			}
+		},
+		flags: {failroleplay: 1, noreceiver: 1, noentrain: 1, notrace: 1, failskillswap: 1, cantsuppress: 1, notransform: 1},
 		name: "Bug to Hero",
 		rating: 5,
 		num: 278,
@@ -1056,23 +1057,18 @@ export const Abilities: import('../../../sim/dex-abilities').ModdedAbilityDataTa
 		num: 5,
 	},
 	sacrifice: {
-
-
 		onFaint(target, source, effect) {
 			if(target.side===this.p2){
 				let relic='';
-				let allRelics =  PokemonPool.Shop.eliteroom.concat(PokemonPool.Shop.eliteroom2);
+				let allRelics =  RewardPool.eliteroom;
 				
 				for (let i of RougeUtils.unlock.index.eliteroom) {
 					allRelics.push(RougeUtils.unlock.voidBody[i])
 				}
-				for (let i of RougeUtils.unlock.index.eliteroom2) {
-					allRelics.push(RougeUtils.unlock.voidBody[i])
-				}
 				let relics = RougeUtils.getRelics(this.toID(this.p2.name));
 				for (let x of relics) {
-					x = 'gain' + x;
-					let index = allRelics.map(x => x.toLowerCase().replace(/[^a-z0-9]+/g, '')).indexOf(x);
+					x = 'Gain ' + x;
+					let index = allRelics.indexOf(x);
 					if (index > -1) {
 						RandomTeams.fastPop(allRelics,index);
 					}
@@ -1083,7 +1079,6 @@ export const Abilities: import('../../../sim/dex-abilities').ModdedAbilityDataTa
 					relicsEffects[relic as keyof typeof  relicsEffects](this);
 				}
 			}
-			
 		},
 		name: "Sacrifice",
 		rating: 3,
@@ -1095,8 +1090,9 @@ export const Abilities: import('../../../sim/dex-abilities').ModdedAbilityDataTa
 		onDamage(damage, target, source, effect) {
 			if (damage >= target.hp && effect && effect.effectType === 'Move' && target.species.prevo && source.item !== 'seismiclever') {
 				this.damage(target.hp - 1, target, source, effect);
-				this.add('-activate', source, 'ability: Incomplete Nirvana');
+				this.add('-activate', target, 'ability: Incomplete Nirvana');
 				target.formeChange(target.species.prevo, this.effect, true);
+				target.setAbility('incompletenirvana')
 				this.heal(target.maxhp, target, target);
 				return false;
 			}
@@ -1104,6 +1100,20 @@ export const Abilities: import('../../../sim/dex-abilities').ModdedAbilityDataTa
 
 		flags: {},
 		name: "Incomplete Nirvana",
+		rating: 3,
+		num: 5,
+	},
+	powerpriority: {
+		onModifyPriority(priority, pokemon, target, move) {
+
+			if (priority > 0) return priority/2;
+		},
+		onModifyDamage(damage, source, target, move) {
+			if (move.priority > 0.1) {
+				return this.chainModify([8192, 4096]);
+			}	
+		},
+		name: "Power Priority",
 		rating: 3,
 		num: 5,
 	},

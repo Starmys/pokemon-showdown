@@ -1,6 +1,6 @@
 
 import { PokemonPool } from "../../../config/rouge/pokemon-pool";
-
+import { RewardPool, WeightPool, updateWeightPool } from "../../../config/rouge/reward-pool";
 import { PRNG, Teams, Dex } from "../../../sim";
 import RandomTeams from "../../random-battles/rouge/teams";
 import { RougeUtils } from "./rulesets";
@@ -267,31 +267,70 @@ function getPromote(battle:Battle,oldpoke:PokemonSet){
 	}
 	return newpoke
 }
-export function sample<T>(items: T[], number: number, prng: PRNG = new PRNG(), otheritems:T[]=[]):T[] {
-	const len = items.length;
-	items = items.concat(otheritems);
-	const len2 = items.length;
-	if (len2 === 0) {
+// export function sample<T>(items: T[], number: number, prng: PRNG = new PRNG(), otheritems:T[]=[]):T[] {
+// 	const len = items.length;
+// 	items = items.concat(otheritems);
+// 	const len2 = items.length;
+// 	if (len2 === 0) {
+// 		return [];
+// 	}
+// 	if (number > len2) number = len2;
+// 	const indexs = new Set<number>();
+// 	while (indexs.size < number) {
+// 		if (otheritems && prng.random(2) === 0) {
+// 			const index = prng.random(len2);
+// 			indexs.add(index)
+// 		} else {
+// 			const index = prng.random(len);
+// 			indexs.add(index)
+// 		}
+// 	}
+// 	const newitems = [];
+// 	for (let i of indexs) {
+// 		newitems.push(items[i])
+// 	}
+// 	return newitems;
+// }
+
+export function sample<T>(items : T[], n:number,prng: PRNG = new PRNG(), weightMap:any = {}) :T[] {
+	if (items.length === 0) {
 		return [];
 	}
-	if (number > len2) number = len2;
-	const indexs = new Set<number>();
-	while (indexs.size < number) {
-		if (otheritems && prng.random(2) === 0) {
-			const index = prng.random(len2);
-			indexs.add(index)
-		} else {
-			const index = prng.random(len);
-			indexs.add(index)
-		}
-	}
-	const newitems = [];
-	for (let i of indexs) {
-		newitems.push(items[i])
-	}
-	return newitems;
+	if (n > items.length) n = items.length;
+    // 创建数组的副本，避免在遍历过程中修改原数组
+    const tempArr = [...items];
+    const result = [];
+	let weightArr = items.map(item => weightMap[item] !== undefined ? weightMap[item] : 10);
+    let totalWeight = weightArr.reduce((sum, weight) => sum + weight, 0);
+
+    for (let i = 0; i < n && tempArr.length > 0 && totalWeight > 0; i++) {
+        // 生成随机数（范围：[0, totalWeight)）
+        const rand = prng.random(totalWeight);
+        let cumulativeWeight = 0;
+        let selectedIndex = -1;
+
+        // 遍历数组选择元素
+        for (let j = 0; j < weightArr.length; j++) {
+            cumulativeWeight += weightArr[j];
+            if (cumulativeWeight >= rand) {
+                selectedIndex = j;
+                break;
+            }
+        }
+        
+        if (selectedIndex === -1) selectedIndex = weightArr.length - 1;
+        
+        result.push(tempArr[selectedIndex]);
+        totalWeight -= weightArr[selectedIndex];
+        tempArr.splice(selectedIndex, 1);
+        weightArr.splice(selectedIndex, 1);
+        
+    }
+
+    return result;
 }
-export function getRougeSet(pokeset: any | any[], prng: PRNG = new PRNG(), level?: number, evs?: StatsTable, item?: string) {
+
+export function getRougeSet(pokeset: any | any[], prng: PRNG = new PRNG(), level?: number, evs?: StatsTable, item1?: string) {
 	let buf = '';
 	
 	if (!Array.isArray(pokeset))
@@ -308,7 +347,7 @@ export function getRougeSet(pokeset: any | any[], prng: PRNG = new PRNG(), level
 		const species=Dex.species.get(id);
 		buf += '|' + (Dex.toID(set.name || set.species) === id ? '' : id);
 		
-		
+		let item = item1;
 		// item
 		if (!item) item=Array.isArray(set.item) ? prng.sample(set.item) : set.item;
 		buf += '|' + item;
@@ -434,7 +473,7 @@ export function championreward(pokemon: Pokemon, type: 'itemroom' | 'moveroom' |
 		disabled: false,
 		used: false,
 		virtual: true,
-	}].concat(sample(PokemonPool.Shop[type].concat(PokemonPool.Shop[(type + '2') as 'itemroom2' | 'moveroom2' | 'abilityroom2' | 'eliteroom2']), 3, battle.prng).map(
+	}].concat(sample(RewardPool[type], 3, battle.prng).map(
 		x => {
 			return {
 				move: x,
@@ -1708,6 +1747,9 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		selfdestruct: "ifHit",
 		slotCondition: 'levelwish',
 		condition: {
+			onSwitchIn(target) {
+				this.singleEvent('Swap', this.effect, this.effectState, target);
+			},
 			onSwap(target) {
 				if (!target.fainted && (target.hp < target.maxhp || target.status)) {
 					target.heal(target.maxhp);
@@ -1802,27 +1844,21 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		onHit(target, source, move) {
 			if(target.side===this.p2){
 				let relic='';
-				let relics1 =  PokemonPool.Shop.eliteroom.concat();
-				let relics2 =  PokemonPool.Shop.eliteroom2.concat();
+				let relics1 =  RewardPool.eliteroom.concat();
+				// let relics2 =  RewardPool.eliteroom2.concat();
+				let relicsWeight = {...WeightPool.eliteroomweight};
+				updateWeightPool.eliteroom(this, relicsWeight);
 				for (let i of RougeUtils.unlock.index.eliteroom) {
 					relics1.push(RougeUtils.unlock.voidBody[i])
 				}
-				for (let i of RougeUtils.unlock.index.eliteroom2) {
-					relics2.push(RougeUtils.unlock.voidBody[i])
-				}
 				let relics = RougeUtils.getRelics(this.toID(this.p2.name));
 				for (let x of relics) {
-					x = 'gain' + x;
-					let index = relics1.map(x => x.toLowerCase().replace(/[^a-z0-9]+/g, '')).indexOf(x);
-					if (index > -1) {
-						relics1.splice(index, 1); continue;
-					}
-					let index2 = relics2.map(x => x.toLowerCase().replace(/[^a-z0-9]+/g, '')).indexOf(x);
-					if (index2 > -1) {
-						relics2.splice(index2, 1); continue;
+					x = 'Gain ' + x;
+					if (x in relicsWeight){
+						relicsWeight[x as keyof typeof relicsWeight] = 0
 					}
 				}
-				relic=sample(relics1, 1, this.prng, relics2)[0]
+				relic=sample(relics1, 1, this.prng, relicsWeight)[0]
 				
 				if(relic)
 				{
@@ -2626,6 +2662,63 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		desc: 'random pokemon of your team get Damage Simplification',
 		shortDesc: 'random pokemon of your team get Damage Simplification',
 	},
+	getpowerherb: {
+		num: 1002,
+		name: 'Get Power Herb',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			selectpokemon(pokemon, ' Get Item');
+
+		},
+		desc: 'random pokemon of your team get Power Herb',
+		shortDesc: 'random pokemon of your team get Power Herb',
+	},
+	getsupershellbell: {
+		num: 1002,
+		name: 'Get Super Shell Bell',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			selectpokemon(pokemon, ' Get Item');
+
+		},
+		desc: 'random pokemon of your team get Super Shell Bell',
+		shortDesc: 'random pokemon of your team get Super Shell Bell',
+	},
+	getpriorityglove: {
+		num: 1002,
+		name: 'Get Priority Glove',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			selectpokemon(pokemon, ' Get Item');
+
+		},
+		desc: 'random pokemon of your team get Super Shell Bell',
+		shortDesc: 'random pokemon of your team get Super Shell Bell',
+	},
 	//----------movemoves
 
 	learnextremespeed: {
@@ -2648,6 +2741,347 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		},
 
 	},
+	learnexplosion: {
+		num: 1000,
+		name: 'Learn Explosion',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon, source, move) {
+			selectpokemon(pokemon, ' Learn Move');
+
+			setMoveName(pokemon,move.name);
+
+		},
+
+	},
+	learnselfdestruct: {
+		num: 1000,
+		name: 'Learn Self-Destruct',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon, source, move) {
+			selectpokemon(pokemon, ' Learn Move');
+
+			setMoveName(pokemon,move.name);
+
+		},
+
+	},
+	learntriattack: {
+		num: 1000,
+		name: 'Learn Tri Attack',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon, source, move) {
+			selectpokemon(pokemon, ' Learn Move');
+
+			setMoveName(pokemon,move.name);
+
+		},
+
+	},
+	learnweatherball: {
+		num: 1000,
+		name: 'Learn Weather Ball',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon, source, move) {
+			selectpokemon(pokemon, ' Learn Move');
+
+			setMoveName(pokemon,move.name);
+
+		},
+
+	},
+	learnthunder: {
+		num: 1000,
+		name: 'Learn Thunder',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon, source, move) {
+			selectpokemon(pokemon, ' Learn Move');
+
+			setMoveName(pokemon,move.name);
+
+		},
+
+	},
+	learnhurricane: {
+		num: 1000,
+		name: 'Learn Hurricane',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon, source, move) {
+			selectpokemon(pokemon, ' Learn Move');
+
+			setMoveName(pokemon,move.name);
+
+		},
+
+	},
+	learnsolarblade: {
+		num: 1000,
+		name: 'Learn Solar Blade',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon, source, move) {
+			selectpokemon(pokemon, ' Learn Move');
+
+			setMoveName(pokemon,move.name);
+
+		},
+
+	},
+	learnsolarbeam: {
+		num: 1000,
+		name: 'Learn Solar Beam',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon, source, move) {
+			selectpokemon(pokemon, ' Learn Move');
+
+			setMoveName(pokemon,move.name);
+
+		},
+
+	},
+	learnblizzard: {
+		num: 1000,
+		name: 'Learn Blizzard',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon, source, move) {
+			selectpokemon(pokemon, ' Learn Move');
+
+			setMoveName(pokemon,move.name);
+
+		},
+
+	},
+	learnbitterblade: {
+		num: 1000,
+		name: 'Learn Bitter Blade',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon, source, move) {
+			selectpokemon(pokemon, ' Learn Move');
+
+			setMoveName(pokemon,move.name);
+
+		},
+
+	},
+	learnhappyhour: {
+		num: 1000,
+		name: 'Learn Happy Hour',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon, source, move) {
+			selectpokemon(pokemon, ' Learn Move');
+
+			setMoveName(pokemon,move.name);
+
+		},
+
+	},
+	learnaccelerock: {
+		num: 1000,
+		name: 'Learn Accelerock',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon, source, move) {
+			selectpokemon(pokemon, ' Learn Move');
+
+			setMoveName(pokemon,move.name);
+
+		},
+
+	},
+	learnwatershuriken: {
+		num: 1000,
+		name: 'Learn Water Shuriken',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon, source, move) {
+			selectpokemon(pokemon, ' Learn Move');
+
+			setMoveName(pokemon,move.name);
+
+		},
+
+	},
+	learnbulletpunch: {
+		num: 1000,
+		name: 'Learn Bullet Punch',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon, source, move) {
+			selectpokemon(pokemon, ' Learn Move');
+
+			setMoveName(pokemon,move.name);
+
+		},
+
+	},
+	learnvacuumwave: {
+		num: 1000,
+		name: 'Learn Vacuum Wave',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon, source, move) {
+			selectpokemon(pokemon, ' Learn Move');
+
+			setMoveName(pokemon,move.name);
+
+		},
+
+	},
+	learnquickattack: {
+		num: 1000,
+		name: 'Learn Quick Attack',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon, source, move) {
+			selectpokemon(pokemon, ' Learn Move');
+
+			setMoveName(pokemon,move.name);
+
+		},
+
+	},
+	learnsuckerpunch: {
+		num: 1000,
+		name: 'Learn Sucker Punch',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon, source, move) {
+			selectpokemon(pokemon, ' Learn Move');
+
+			setMoveName(pokemon,move.name);
+
+		},
+
+	},
+	
 	learnsheercolder: {
 		num: 1000,
 		name: 'Learn Sheer Colder',
@@ -7454,6 +7888,246 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		},
 
 	},
+	getgeodudealola: {
+		num: 1000,
+		name: 'Get Geodude-Alola',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(getRougeSet(PokemonPool['Geodude-Alola'], this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Geodude-Alola has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
+	gethappiny: {
+		num: 1000,
+		name: 'Get Happiny',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(getRougeSet(PokemonPool.Happiny, this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Happiny has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
+	getbergmite: {
+		num: 1000,
+		name: 'Get Bergmite',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(getRougeSet(PokemonPool.Bergmite, this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Bergmite has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
+	getenamorus: {
+		num: 1000,
+		name: 'Get Enamorus',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(getRougeSet(PokemonPool.Enamorus, this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Enamorus has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
+	getenamorustherian: {
+		num: 1000,
+		name: 'Get Enamorus-Therian',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(getRougeSet(PokemonPool['Enamorus-Therian'], this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Enamorus-Therian has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
+	getlandorus: {
+		num: 1000,
+		name: 'Get Landorus',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(getRougeSet(PokemonPool.Landorus, this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Landorus has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
+	getlandorustherian: {
+		num: 1000,
+		name: 'Get Landorus-Therian',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(getRougeSet(PokemonPool['Landorus-Therian'], this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Landorus-Therian has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
+	getfloette: {
+		num: 1000,
+		name: 'Get Floette',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(getRougeSet(PokemonPool.Floette, this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Floette has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
+	getsableye: {
+		num: 1000,
+		name: 'Get Sableye',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(getRougeSet(PokemonPool.Sableye, this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Sableye has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
+	getdondozo: {
+		num: 1000,
+		name: 'Get Dondozo',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(getRougeSet(PokemonPool.Dondozo, this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Dondozo has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
 	//-------------abilitymoves------------
 
 	becomebomber: {
@@ -8177,6 +8851,24 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		desc: '',
 		shortDesc: '',
 	},
+	becomepowerpriority: {
+		num: 1002,
+		name: 'Become Power Priority',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			selectpokemon(pokemon, ' Transform Ability');
+		},
+		desc: '',
+		shortDesc: '',
+	},
 	//----------------elitemoves---------
 	gainartirain: {
 		num: 1002,
@@ -8191,8 +8883,8 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'artirain');
-			this.add('html', `<div class="broadcast-green"><strong>you get the artirain</strong></div>`);
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Artirain');
+			this.add('html', `<div class="broadcast-green"><strong>you get the Artirain</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
 		desc: '',
@@ -8211,8 +8903,8 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'artisnow');
-			this.add('html', `<div class="broadcast-green"><strong>you get the artisnow</strong></div>`);
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Artisnow');
+			this.add('html', `<div class="broadcast-green"><strong>you get the Artisnow</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
 		desc: '',
@@ -8231,8 +8923,8 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'artistorm');
-			this.add('html', `<div class="broadcast-green"><strong>you get the artistorm</strong></div>`);
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Artistorm');
+			this.add('html', `<div class="broadcast-green"><strong>you get the Artistorm</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
 		desc: '',
@@ -8251,8 +8943,8 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'artisunny');
-			this.add('html', `<div class="broadcast-green"><strong>you get the artisunny</strong></div>`);
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Artisunny');
+			this.add('html', `<div class="broadcast-green"><strong>you get the Artisunny</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
 		desc: '',
@@ -8271,7 +8963,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'confidentstart');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Confident Start');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Confident Start</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -8291,7 +8983,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'artilightscreen');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Artilightscreen');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Artilightscreen</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -8311,7 +9003,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'artireflect');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Artireflect');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Artireflect</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -8331,7 +9023,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'focusdevice');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Focus Device');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Focus Device</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -8351,7 +9043,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'angelhalo');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Angel Halo');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Angel Halo</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -8371,7 +9063,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'industrialplant');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Industrial Plant');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Industrial Plant</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -8391,7 +9083,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'eggofcompassion');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Egg Of Compassion');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Egg Of Compassion</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -8411,7 +9103,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'dancingfloor');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Dancing Floor');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Dancing Floor</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -8431,7 +9123,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'dragonthrones');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Dragon Thrones');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Dragon Thrones</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -8451,7 +9143,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'acupressuremat');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Acupressure Mat');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Acupressure Mat</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -8471,7 +9163,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'gravitygenerator');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Gravity Generator');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Gravity Generator</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -8491,7 +9183,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'trickprops');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Trick Props');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Trick Props</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -8511,7 +9203,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'soymilk');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Soy Milk');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Soy Milk</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -8531,7 +9223,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'ticketofcolosseum');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Ticket Of Colosseum');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Ticket Of Colosseum</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -8551,7 +9243,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'gardenguardian');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Garden Guardian');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Garden Guardian</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -8571,7 +9263,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'industrialemissions');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Industrial Emissions');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Industrial Emissions</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -8591,7 +9283,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'poletracker');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Pole Tracker');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Pole Tracker</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -8611,7 +9303,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'potionofrapidgrowth');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Potion Of Rapid Growth');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Potion of Rapid Growth</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -8631,7 +9323,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'combustible');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Combustible');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Combustible</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -8651,7 +9343,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'sunshower');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Sun Shower');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Sun Shower</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -8671,7 +9363,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'guardianshield');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Guardian Shield');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Guardian Shield</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -8691,7 +9383,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'swordoftrying');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Sword of Trying');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Sword of Trying</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -8711,7 +9403,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'sleightofhand');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Sleight of Hand');
 			this.add('html', `<div class="broadcast-green"><strong>you get the sleight of Hand</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -8731,7 +9423,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'infestation2');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Infestation2');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Infestation2</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -8751,7 +9443,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'gangguarantee');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Gang Guarantee');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Gang Guarantee</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -8771,7 +9463,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'triforce');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Tri Force');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Tri Force</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -8791,7 +9483,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'falsemoon');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'False Moon');
 			this.add('html', `<div class="broadcast-green"><strong>you get the False Moon</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -8811,7 +9503,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'gunofnerf');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Gun of Nerf');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Gun of Nerf</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -8831,7 +9523,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'eightdiagramsdrawing');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Eight Diagrams drawing');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Eight Diagrams drawing</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -8851,7 +9543,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'obscenities');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Obscenities');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Obscenities</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -8871,7 +9563,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'overdriver');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Overdriver');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Overdriver</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -8891,7 +9583,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'timejewel');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Time Jewel');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Time Jewel</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -8911,7 +9603,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'fairyegg');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Fairy Egg');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Fairy Egg</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -8931,7 +9623,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'misfortunemirror');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Misfortune Mirror');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Misfortune Mirror</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -8951,7 +9643,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'healingarea');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Healing Area');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Healing Area</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -8971,7 +9663,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'trueshotaura');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Trueshot Aura');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Trueshot Aura</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -8991,7 +9683,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'psychoanalysis');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Psychoanalysis');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Psychoanalysis</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -9011,7 +9703,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'futurescope');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Future Scope');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Future Scope</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -9031,7 +9723,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'futurecamera');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Future Camera');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Future Camera</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -9051,7 +9743,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'statuspush');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Status Push');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Status Push</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -9071,7 +9763,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'lifestream');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Lifestream');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Lifestream</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -9091,7 +9783,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'stope');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Stope');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Stope</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -9111,7 +9803,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'championbelt');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Champion Belt');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Champion Belt</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -9131,7 +9823,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'holographicprojection');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Holographic Projection');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Holographic Projection</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -9151,7 +9843,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'packlight');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Pack Light');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Pack Light</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -9171,7 +9863,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'replication');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Replication');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Replication</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -9191,7 +9883,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'enchantments');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Enchantments');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Enchantments</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -9211,7 +9903,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'flameshield');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Flame Shield');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Flame Shield</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -9231,7 +9923,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'heroicsword');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Heroic Sword');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Heroic Sword</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -9251,7 +9943,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'physicalsuppression');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Physical Suppression');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Physical Suppression</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -9271,7 +9963,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'contraryblade');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Contrary Blade');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Contrary Blade</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -9291,7 +9983,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'melodyofsiren');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Melody Of Siren');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Melody Of Siren</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -9311,7 +10003,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'conjuringshow');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Conjuring Show');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Conjuring Show</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -9331,7 +10023,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'finalact');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Final Act');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Final Act</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -9351,7 +10043,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'piercingattack');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Piercing Attack');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Piercing Attack</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -9371,7 +10063,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'cockatriceeye');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Cockatrice Eye');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Cockatrice Eye</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -9391,7 +10083,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'fallrise');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Fall Rise');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Fall Rise</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -9411,7 +10103,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'orderwayup');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Order Way Up');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Order Way Up</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -9431,7 +10123,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'expofspring');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Exp Of Spring');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Exp Of Spring</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -9451,7 +10143,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'teratypesword');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Teratype Sword');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Teratype Sword</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
@@ -9471,14 +10163,55 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: 'self',
 		flags: {},
 		onHit(pokemon) {
-			RougeUtils.addRelics(this.toID(pokemon.side.name), 'teratypeshield');
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Teratype Shield');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Teratype Shield</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
 		desc: '',
 		shortDesc: '',
 	},
-	//------------功能性技能------------
+
+	gainmovereaction: {
+		num: 1002,
+		name: 'Gain Move Reaction',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Move Reaction');
+			this.add('html', `<div class="broadcast-green"><strong>you get the Move Reaction</strong></div>`);
+			chooseroom(pokemon, this.prng);
+		},
+		desc: '',
+		shortDesc: '',
+	},
+	gainwrathwell: {
+		num: 1002,
+		name: 'Gain Wrathwell',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Wrathwell');
+			this.add('html', `<div class="broadcast-green"><strong>you get the Wrathwell</strong></div>`);
+			chooseroom(pokemon, this.prng);
+		},
+		desc: '',
+		shortDesc: '',
+	},
+	//------------功能性技能------------othermove
 
 
 	skip: {
@@ -9516,29 +10249,30 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		onHit(pokemon) {
 			this.add('html', `<div class="broadcast-green"><strong>your Refresh the reward</strong></div>`);
 			
-			let room = RougeUtils.getRoom(this.toID(this.p2.name));
+			let [room, relics] = RougeUtils.getRoomAndRelics(this.toID(this.p2.name));
 			if (!room) room = 'pokemonroom';
-			if (room === 'championroom') room = this.p1.faintedLastTurn?.name === 'Shopowner' ? this.p1.faintedLastTurn?.item as keyof typeof PokemonPool.Shop : 'itemroom';
+			if (room === 'championroom') room = this.p1.faintedLastTurn?.name === 'Shopowner' ? this.p1.faintedLastTurn?.item as keyof typeof RewardPool : 'itemroom';
 			if (!room) room = 'itemroom';
+			
+			this.add('message', `${relics}\n`);
 			// @ts-ignore
-			let reward = PokemonPool.Shop[room] as string[]
-			let reward2 = PokemonPool.Shop[(room + '2') as keyof typeof PokemonPool.Shop] as string[];
+			let reward = RewardPool[room] as string[]
+			// let reward2 = RewardPool[(room + '2') as keyof typeof RewardPool] as string[];
+			let rewardWeight: Record<string, number> = {...WeightPool[(room + 'weight') as keyof typeof WeightPool]};
+			// @ts-ignore
+			updateWeightPool[room](this, rewardWeight, relics);
 			if (room === 'eliteroom') {
 				reward = reward.concat();
-				reward2 = reward2.concat();
+				// reward2 = reward2.concat();
 				this.prng.sample(this.p1.pokemon).m.innate = 'elite';
-				let relics = RougeUtils.getRelics(this.toID(this.p2.name))
+				
 				for (let x of relics) {
-					x = 'gain' + x;
-					let index = reward.map(x => x.toLowerCase().replace(/[^a-z0-9]+/g, '')).indexOf(x);
-					if (index > -1) {
-						RandomTeams.fastPop(reward,index); continue;
+					x = 'Gain ' + x;
+					this.add('message', `${x}\n`);
+					if (x in rewardWeight){
+						rewardWeight[x] = 0
+						this.add('message', `${rewardWeight[x]}\n`);
 					}
-					let index2 = reward2.map(x => x.toLowerCase().replace(/[^a-z0-9]+/g, '')).indexOf(x);
-					if (index2 > -1) {
-						RandomTeams.fastPop(reward2,index2); continue;
-					}
-
 				}
 			}
 			pokemon.moveSlots = [{
@@ -9550,7 +10284,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 				disabled: false,
 				used: false,
 				virtual: true,
-			}].concat(sample(reward, 3, this.prng, reward2).map(x => {
+			}].concat(sample(reward, 3, this.prng, rewardWeight).map(x => {
 				return {
 					move: x,
 					id: this.toID(x),

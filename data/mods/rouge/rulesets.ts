@@ -2,6 +2,7 @@ import { FS } from "../../../lib";
 import { Teams, Pokemon } from "../../../sim";
 import { championreward, evolution, sample } from "./moves";
 import { PokemonPool } from "../../../config/rouge/pokemon-pool";
+import { RewardPool, WeightPool, updateWeightPool } from "../../../config/rouge/reward-pool";
 import RandomTeams from "../../random-battles/rouge/teams";
 
 
@@ -32,18 +33,18 @@ export class RougeUtils {
 		caveBody: ['Get Duraludon', 'Get Wingull', 'Get Electabuzz', 'Get Necrozma', 'Get Skrelp', 'Get Vullaby', 'Get Mew', 'Get Yanma', 'Get Lillipup', 'Get Caterpie', 'Get Iron Moth', 'Get Slither Wing', 'Get Bellsprout', 'Get Mareep', 'Get Tympole', 'Get Tentacool', 'Get Scraggy', 'Get Nacli', 'Get Mankey', 'Get Capsakid', 'Get Frigibax', 'Get Tinkatink', 'Get Tandemaus', 'Get Pawniard', 'Get Iron Valiant', 'Get Terrakion','Get Iron Thorns','Get Roaring Moon',],
 		voidBody: ['Gain Champion Belt', 'Become Haven', 'Become Overcharge', 'Promote A Pokemon', 'Get Smoke Trigger', 'Become Adaptability', 'Gain Holographic Projection', 'Get Thruster', 'Become Born Of Explosion', 'Gain Pack Light', 'Gain Replication', 'Gain Enchantments', 'Get Custap Element', 'Gain Flame Shield', 'Gain Heroic Sword', 'Gain Physical Suppression', 'Become Szpenguin', 'Gain Contrary Blade', 'Become Spiky Body', 'Learn Fake Shot', 'Gain Melody Of Siren', 'Get Micro Master', 'Learn Mew Ball', 'Learn Parry', 'Learn Sketch', 'Learn Population Bomb', 'Learn Speed Impact', 'Gain Conjuring Show'],
 		index: {
-			"pokemonroom": [0,1,2,4,5,7,8,9,12,13,14,15,16,17,18,19,20,21,22,23],
-			"pokemonroom2": [3,6,10,11,24,25,26,27],
+			"pokemonroom": [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,],
+			"pokemonroom2": [],
 			'commonroom': [3],
 			'commonroom2': [],
-			'itemroom': [4,21],
-			'itemroom2': [7,12],
-			'moveroom': [22,23,25,26],
-			'moveroom2': [19,24],
-			'abilityroom': [1,2,5,18],
-			'abilityroom2': [8,16],
-			'eliteroom': [0,9,11,13,14,17,20,27],
-			'eliteroom2': [6,10,15],
+			'itemroom': [4,7,12,21],
+			'itemroom2': [],
+			'moveroom': [19,22,23,24,25,26],
+			'moveroom2': [],
+			'abilityroom': [1,2,5,8,16,18],
+			'abilityroom2': [],
+			'eliteroom': [0,6,9,10,11,13,14,15,17,20,27],
+			'eliteroom2': [],
 			'championroom': [],
 			'championroom2':[],
 		}
@@ -52,10 +53,15 @@ export class RougeUtils {
 		return FS(`${USERPATH}/${Dex.toID(userid)}.json`).existsSync();
 	}
 
-	static getUser(userid: string): rougeUserProperty | undefined {
-		if (this.checkUser(userid)) {
-			return JSON.parse(FS(`${USERPATH}/${userid}.json`).readIfExistsSync());
+	static getUser(userid: string | rougeUserProperty): rougeUserProperty | undefined {
+		if (typeof userid === 'string'){
+			if (this.checkUser(userid)) {
+				return JSON.parse(FS(`${USERPATH}/${userid}.json`).readIfExistsSync());
+			}
+		} else {
+			return userid
 		}
+		
 	}
 
 	static saveUser(userid: ID, userProperty: rougeUserProperty) {
@@ -145,6 +151,15 @@ export class RougeUtils {
 			return userid?.rouge?.split("&")[4] || '';
 	}
 	
+	static getRoomAndRelics(userid: ID | rougeUserProperty): (string|string[])[] {
+		let str = this.getUser(userid)?.rouge?.split("&")
+		if (str){
+			return [str[4] || '', str[3].split(',')||[]];
+		} else {
+			return ['' , []]
+		}
+	}
+
 	static getRelics(userid: ID | rougeUserProperty): string[] {
 		let relicsStr
 		if (typeof userid === 'string')
@@ -754,9 +769,17 @@ export const relicsEffects = {
 					}
 				}
 				pokemon.teraType=battle.sample(possibleTypes);
-				pokemon.canTerastallize=pokemon.teraType;
+				pokemon.canTerastallize=pokemon.teraType; 
 			}
 		}
+	},
+	'movereaction': (battle: Battle) => {
+		battle.field.addPseudoWeather("movereaction");
+		battle.add('message', 'Move Reaction start');
+	},
+	'wrathwell': (battle: Battle) => {
+		battle.field.addPseudoWeather("wrathwell");
+		battle.add('message', 'Wrathwell start');
 	},
 };
 
@@ -780,41 +803,34 @@ export const Rulesets: import('../../../sim/dex-formats').ModdedFormatDataTable 
 			// this.p1.pokemon = this.p1.pokemon.concat([new Pokemon(Teams.unpack('Shop|||shopman|Retransmission Moves Pool,getsuperband,getsuperspecs,getsuperscarf,Learn Extreme Speed,skip|Careful|252,4,,,252,|||||')![0], this.p2)]);
 			let user = RougeUtils.getUser(this.toID(this.p2.name))
 			if (!user) return;
-			let room = RougeUtils.getRoom(user) || 'pokemonroom';
+			let [room, relics] = RougeUtils.getRoomAndRelics(this.toID(this.p2.name));
+			if (!room) room = 'pokemonroom'
 			// @ts-ignore
-			let reward = (PokemonPool.Shop[room] as string[]).concat();
-			let reward2 = (PokemonPool.Shop[(room + '2') as keyof typeof PokemonPool.Shop] as string[]).concat();
+			let reward = (RewardPool[room] as string[]).concat();
+			let reward2 = (RewardPool[(room + '2') as keyof typeof RewardPool] as string[]).concat();
+			let rewardWeight: Record<string, number> = {...WeightPool[(room + 'weight') as keyof typeof WeightPool]};
+			if (room as string in updateWeightPool) {
+				// @ts-ignore
+				updateWeightPool[room](this, rewardWeight, relics);
+			}
+			
 			if (room === 'pokemonroom') {
 				for (let i of RougeUtils.unlock.index[room as keyof typeof RougeUtils.unlock.index]) {
 					if (user?.passrecord?.cave[i])
 						reward.push(RougeUtils.unlock.caveBody[i])
-				}
-				for (let i of RougeUtils.unlock.index[room + '2' as keyof typeof RougeUtils.unlock.index]) {
-					if (user?.passrecord?.cave[i])
-						reward2.push(RougeUtils.unlock.caveBody[i])
 				}
 			} else {
 				for (let i of RougeUtils.unlock.index[room as keyof typeof RougeUtils.unlock.index]) {
 					if (user?.passrecord?.void[i])
 						reward.push(RougeUtils.unlock.voidBody[i])
 				}
-				for (let i of RougeUtils.unlock.index[room + '2' as keyof typeof RougeUtils.unlock.index]) {
-					if (user?.passrecord?.void[i])
-						reward2.push(RougeUtils.unlock.voidBody[i])
-				}
 			}
 			if (room === 'eliteroom') {
 				this.prng.sample(this.p1.pokemon).m.innate = 'elite';
-				let relics = RougeUtils.getRelics(user);
 				for (let x of relics) {
-					x = 'gain' + x;
-					let index = reward.map(x => x.toLowerCase().replace(/[^a-z0-9]+/g, '')).indexOf(x);
-					if (index > -1) {
-						RandomTeams.fastPop(reward,index); continue;
-					}
-					let index2 = reward2.map(x => x.toLowerCase().replace(/[^a-z0-9]+/g, '')).indexOf(x);
-					if (index2 > -1) {
-						RandomTeams.fastPop(reward2,index2); continue;
+					x = 'Gain ' + x;
+					if (x in rewardWeight){
+						rewardWeight[x] = 0
 					}
 				}
 			}
@@ -838,7 +854,7 @@ export const Rulesets: import('../../../sim/dex-formats').ModdedFormatDataTable 
 				// else
 				// 	firstreward = 'Evo All,';
 
-				this.p1.pokemon.push(new Pokemon(Teams.unpack('Reward|Shop||shopman|' + firstreward + sample(reward, 3, this.prng, reward2).join(',') + '|Careful|252,4,,,252,|||||')![0], this.p2));
+				this.p1.pokemon.push(new Pokemon(Teams.unpack('Reward|Shop||shopman|' + firstreward + sample(reward, 3, this.prng, rewardWeight).join(',') + '|Careful|252,4,,,252,|||||')![0], this.p2));
 				this.p1.pokemon.push(new Pokemon(Teams.unpack('Shopowner|Magikarp||shopman|splash|Hardy||M|0,0,0,0,0,0||5|')![0], this.p1));
 			}
 			this.p1.pokemonLeft += 6;
@@ -1072,10 +1088,10 @@ export const Rulesets: import('../../../sim/dex-formats').ModdedFormatDataTable 
 		},
 		onBeforeTurn(pokemon) {
 			if (this.turn === 1 && pokemon.side === this.p1) {
-				let relics = RougeUtils.getRelics(this.toID(this.p2.name));
+				let relics = RougeUtils.getRelics(this.toID(this.p2.name)).map(x => x.toLowerCase().replace(/[^a-z0-9]+/g, ''));
 				for (let x of relics) {
 					relicsEffects[x as keyof typeof relicsEffects](this);
-					if(x==='finalact') break;
+					if (x === 'finalact') break;
 				}
 			} else if (pokemon.side === this.p1 && this.prng.random(40) === 1 && !this.field.effectiveWeather()) {
 				this.field.setWeather(this.sample(['raindance', 'snow', 'sunnyday', 'sandstorm']));

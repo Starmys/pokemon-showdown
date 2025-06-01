@@ -2873,7 +2873,7 @@ export const Enemies = [
 			"species": "",
 			"item": ['Assault Vest'],
 			"ability": ['Stamina'],
-			"moves": ['Bitter Blade', 'Poltergeist', 'Shadow Sneak', 'Swords Dance'],
+			"moves": ['Draco Meteor', 'Flash Cannon', 'Body Press', 'Thunderbolt'],
 			'nature': 'Modest',
 			'gender': '',
 			'evs': '232,232,232,232,232,232',

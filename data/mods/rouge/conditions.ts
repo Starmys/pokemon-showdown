@@ -177,6 +177,11 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 			}
 			
 		},
+		onSetWeather(target, source, weather) {
+			if (this.effectState.duration === 0)  {
+				if (['raindance', 'snow', 'sunnyday', 'sandstorm'].includes(weather.id)) return false;
+			}
+		},
 	},
 	sunnyday: {
 		inherit: true,
@@ -191,6 +196,11 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 				this.add('-weather', 'SunnyDay');
 			}
 
+		},
+		onSetWeather(target, source, weather) {
+			if (this.effectState.duration === 0)  {
+				if (['raindance', 'snow', 'sunnyday', 'sandstorm'].includes(weather.id)) return false;
+			}
 		},
 	},
 	sandstorm: {
@@ -213,6 +223,11 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 					this.damage(target.baseMaxhp / 16 * target.m.sanddamage);
 				else
 					this.damage(target.baseMaxhp / 16);
+			}
+		},
+		onSetWeather(target, source, weather) {
+			if (this.effectState.duration === 0)  {
+				if (['raindance', 'snow', 'sunnyday', 'sandstorm'].includes(weather.id)) return false;
 			}
 		},
 	},
@@ -246,6 +261,11 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 				this.add('-weather', 'Snow', '[from] ability: ' + effect.name, '[of] ' + source);
 			} else {
 				this.add('-weather', 'Snow');
+			}
+		},
+		onSetWeather(target, source, weather) {
+			if (this.effectState.duration === 0)  {
+				if (['raindance', 'snow', 'sunnyday', 'sandstorm'].includes(weather.id)) return false;
 			}
 		},
 		
@@ -776,6 +796,11 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 				this.add('-weather', 'DeltaStream', '[from] ability: ' + effect, '[of] ' + source);
 			} else {
 				this.add('-weather', 'DeltaStream');
+			}
+		},
+		onSetWeather(target, source, weather) {
+			if (this.effectState.duration === 0)  {
+				return false;
 			}
 		},
 	},
@@ -1517,16 +1542,51 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 		effectType: 'Weather',
 		duration: 0,
 
-		onModifyDef(this, relayVar, target, source, move) {
+		// onModifyDef(this, relayVar, target, source, move) {
+		// 	if (target && target.side === this.p1){
+		// 		return target.level*2;
+		// 	}
+		// },
+		// onModifySpD(this, relayVar, target, source, move) {
+		// 	if (target && target.side === this.p1){
+		// 		return target.level*2;
+		// 	}
+		// },
+		onModifyDamage(this, damage, source, target, move) {
 			if (target && target.side === this.p1){
-				return target.level*2;
+				let basePower: number | false | null = move.basePower;
+				if (move.basePowerCallback) {
+					basePower = move.basePowerCallback.call(this, source, target, move);
+				}
+				if (basePower) {
+					let hitData = target.getMoveHitData(move)
+					let critMod = 1
+					let typemod = Math.pow(2, hitData.typeMod)
+					if (hitData.crit){
+						critMod = 1.5
+					}
+					let boootMod = 1
+					if (move.category == "Physical") {
+						if (source.boosts['atk'] > 0) {
+							boootMod = (2 + source.boosts['atk']) / 2
+						} else {
+							boootMod = 2 / (2 + source.boosts['atk'])
+						}
+					} else if (move.category == "Special"){
+						if (source.boosts['spa'] > 0) {
+							boootMod = (2 + source.boosts['spa']) / 2
+						} else {
+							boootMod = 2 / (2 + source.boosts['spa'])
+						}
+					}
+
+					let newDamage = basePower * source.level / 100 * 2 * typemod * critMod * boootMod
+					this.add('message', `newDamage = ${newDamage}\n`);
+					return newDamage
+				}
 			}
 		},
-		onModifySpD(this, relayVar, target, source, move) {
-			if (target && target.side === this.p1){
-				return target.level*2;
-			}
-		},
+
 		
 		onFieldStart(battle, source, effect) {
 			if (effect?.effectType === 'Ability') {
@@ -1671,6 +1731,102 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 		onFieldEnd() {
 			this.add('-fieldend', 'Order Way Up');
 			this.add('-message', 'The Order Way Up subsided.');
+		},
+	},
+	movereaction: {
+		name: 'Move Reaction',
+		effectType: 'Weather',
+		duration: 0,
+		onAfterMoveSecondarySelf(source, target, move) {
+			if (this.randomChance(1, 3) || source.m.isReaction) {
+				return
+			}
+			if (move.category !== 'Status' && move.hit === 1 && source.side === this.p2) {
+				
+				const moves = [];
+				for (const pokemon of source.side.pokemon) {
+					if (pokemon === source) continue;
+					for (const moveSlot of pokemon.moveSlots) {
+						const moveid = moveSlot.id;
+						const move = this.dex.moves.get(moveid);
+						if (move.flags['noassist'] || move.isZ || move.isMax) {
+							continue;
+						}
+						moves.push(moveid);
+					}
+				}
+				let randomMove = '';
+				if (moves.length) randomMove = this.sample(moves);
+				if (!randomMove) {
+					return false;
+				}
+				source.m.isReaction = true;
+				this.actions.useMove(randomMove, source);
+				
+			}
+		},
+		onResidual(target, source, effect) {
+			if (target.side === this.p2) {
+				target.m.isReaction = false;
+			}
+		},
+		onFieldStart(battle, source, effect) {
+			if (effect?.effectType === 'Ability') {
+				this.add('-fieldstart', 'Move Reaction', '[from] ability: ' + effect, '[of] ' + source);
+			} else {
+				this.add('-fieldstart', 'Move Reaction');
+			}
+			this.add('-message', 'Move Reaction is radiated.');
+		},
+
+		onFieldResidualOrder: 1,
+		onFieldResidual() {
+			this.add('-weather', 'Move Reaction', '[upkeep]');
+			this.eachEvent('Weather');
+			
+		},
+		onFieldEnd() {
+			this.add('-fieldend', 'Move Reaction');
+			this.add('-message', 'The Move Reaction subsided.');
+		},
+	},
+	wrathwell: {
+		name: 'Wrathwell',
+		effectType: 'Weather',
+		duration: 0,
+		onModifyMove(move, pokemon, target) {
+			if(pokemon && pokemon.side ===  this.p2){
+				if (move.category !== 'Status') {
+					move.basePower += Math.min(pokemon.timesAttacked, 6) * 15
+				}
+			}
+		},
+		onModifyDefPriority: 2,
+		onModifyDef(relayVar, target, source, move) {
+			return this.chainModify(1.2);
+		},
+		onModifySpDPriority: 2,
+		onModifySpD(relayVar, target, source, move) {
+			return this.chainModify(1.2);
+		},
+
+		onFieldStart(battle, source, effect) {
+			if (effect?.effectType === 'Ability') {
+				this.add('-fieldstart', 'Wrathwell', '[from] ability: ' + effect, '[of] ' + source);
+			} else {
+				this.add('-fieldstart', 'Wrathwell');
+			}
+			this.add('-message', 'Wrathwell is radiated.');
+		},
+
+		onFieldResidualOrder: 1,
+		onFieldResidual() {
+			this.add('-weather', 'Wrathwell', '[upkeep]');
+			this.eachEvent('Weather');
+		},
+		onFieldEnd() {
+			this.add('-fieldend', 'Wrathwell');
+			this.add('-message', 'The Wrathwellsubsided.');
 		},
 	},
 };
