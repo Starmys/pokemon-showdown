@@ -426,7 +426,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 		effectType: 'Weather',
 		duration: 0,
 
-
+		
 		onModifyMove(move, pokemon, target) {
 			if (move.category !== 'Status' && !move.isZ && move.type === "Water" && pokemon.side === this.p2) {
 				if (move.self)
@@ -792,6 +792,9 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 	deltastream: {
 		inherit: true,
 		onFieldStart(field, source, effect) {
+			if (effect?.effectType === 'Rule' && source.side === this.p2) {
+				this.effectState.duration = 0;
+			}
 			if (effect?.effectType === 'Ability') {
 				this.add('-weather', 'DeltaStream', '[from] ability: ' + effect, '[of] ' + source);
 			} else {

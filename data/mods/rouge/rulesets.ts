@@ -508,7 +508,7 @@ export const relicsEffects = {
 		battle.add('message', 'your Gang Guarantee makes Gang Territory start');
 	},
 	'triforce': (battle: Battle) => {
-		battle.field.setWeather("DeltaStream");
+		battle.field.setWeather("DeltaStream", battle.p2.active[0]);
 		battle.add('message', 'your Tri Force makes it Strong Wings');
 	},
 	'falsemoon': (battle: Battle) => {
