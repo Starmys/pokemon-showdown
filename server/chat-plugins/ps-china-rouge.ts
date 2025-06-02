@@ -225,7 +225,7 @@ export const commands: Chat.ChatCommands = {
 				return user.popup(`|html|<div style="text-align: center">请先完成对战再禁止进化</div>`);
 			}
 			let num = Number(target) - 1
-			if (num && Number.isInteger(num) && num <= 5 && num >= 0) {
+			if (Number.isInteger(num) && num <= 5 && num >= 0) {
 				let x = RougeUtils.setBanEvoable(user.id, num);
 				if (x)
 					return user.sendTo(room!.roomid, `|uhtml|rouge|<b>选择成功</b><br>`);
