@@ -1,4 +1,5 @@
 
+import { RougeDesc } from "../../../config/rouge/descs";
 import { PokemonPool } from "../../../config/rouge/pokemon-pool";
 import { RewardPool, WeightPool, updateWeightPool } from "../../../config/rouge/reward-pool";
 import { PRNG, Teams, Dex } from "../../../sim";
@@ -464,6 +465,7 @@ function selectpokemon(pokemon: Pokemon, type: string, pro: string = 'Select Pok
 };
 export function championreward(pokemon: Pokemon, type: 'itemroom' | 'moveroom' | 'abilityroom' | 'eliteroom') {
 	const battle = pokemon.battle;
+	let rewardMoves = sample(RewardPool[type], 3, battle.prng);
 	pokemon.moveSlots=[{
 		move: 'Refresh Reward',
 		id: battle.toID('Refresh Reward'),
@@ -473,7 +475,7 @@ export function championreward(pokemon: Pokemon, type: 'itemroom' | 'moveroom' |
 		disabled: false,
 		used: false,
 		virtual: true,
-	}].concat(sample(RewardPool[type], 3, battle.prng).map(
+	}].concat(rewardMoves.map(
 		x => {
 			return {
 				move: x,
@@ -486,7 +488,12 @@ export function championreward(pokemon: Pokemon, type: 'itemroom' | 'moveroom' |
 				virtual: true,
 			};
 		}));
-	
+	for (let move of rewardMoves) {
+		let moveDesc = RougeDesc[Dex.toID(move) as keyof typeof RougeDesc];
+		if (moveDesc) {
+			pokemon.battle.add('html', `<div class="infobox"><details><summary>${moveDesc.name}</summary>${moveDesc.desc}</details></div>`);
+		}
+	}
 };
 
 export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
@@ -1878,7 +1885,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		zMove: {boost: {atk: 1, def: 1, spa: 1, spd: 1, spe: 1}},
 		contestType: "Beautiful",
 	},
-	//--------shop's  moves
+	//--------shop's  moves itemmoves
 	getsuperband: {
 		num: 1000,
 		name: 'Get Super Band',
@@ -10275,6 +10282,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 					}
 				}
 			}
+			let rewardMoves = sample(reward, 3, this.prng, rewardWeight)
 			pokemon.moveSlots = [{
 				move: 'Skip',
 				id: this.toID('skip'),
@@ -10284,7 +10292,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 				disabled: false,
 				used: false,
 				virtual: true,
-			}].concat(sample(reward, 3, this.prng, rewardWeight).map(x => {
+			}].concat(rewardMoves.map(x => {
 				return {
 					move: x,
 					id: this.toID(x),
@@ -10296,6 +10304,12 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 					virtual: true,
 				};
 			}))
+			for (let move of rewardMoves) {
+				let moveDesc = RougeDesc[this.toID(move) as keyof typeof RougeDesc];
+				if (moveDesc) {
+					this.add('html', `<div class="infobox"><details><summary>${moveDesc.name}</summary>${moveDesc.desc}</details></div>`);
+				}
+			}
 
 		},
 

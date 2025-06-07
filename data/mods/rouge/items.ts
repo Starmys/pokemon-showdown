@@ -408,6 +408,11 @@ export const Items: import('../../../sim/dex-items').ModdedItemDataTable = {
 		gen: 2,
 	},
 	gladiatorhelmet: {
+		onModifyMove(move, pokemon, target) {
+			if(move.recoil){
+				return this.chainModify(1.1);
+			}
+		},
 		onDamage(damage, target, source, effect) {
 			if (effect.id === 'recoil') {
 				if (!this.activeMove) throw new Error("Battle.activeMove is null");

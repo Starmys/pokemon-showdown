@@ -3,6 +3,7 @@ import { Teams, Pokemon } from "../../../sim";
 import { championreward, evolution, sample } from "./moves";
 import { PokemonPool } from "../../../config/rouge/pokemon-pool";
 import { RewardPool, WeightPool, updateWeightPool } from "../../../config/rouge/reward-pool";
+import { RougeDesc } from "../../../config/rouge/descs";
 import RandomTeams from "../../random-battles/rouge/teams";
 
 
@@ -1108,6 +1109,18 @@ export const Rulesets: import('../../../sim/dex-formats').ModdedFormatDataTable 
 			if (pokemon.m.innate === 'weakness'){
 				if (pokemon.side === this.p2)
 					pokemon.addVolatile('Reweakness');
+			}
+			if (pokemon.name === 'Reward'){
+				for (let move of pokemon.moves) {
+					if (move === 'refreshreward') {
+						continue;
+					}
+					let moveDesc =RougeDesc[move as keyof typeof RougeDesc];
+					if (moveDesc) {
+						this.add('html', `<div class="infobox"><details><summary>${moveDesc.name}</summary>${moveDesc.desc}</details></div>`);
+					}
+				}
+				
 			}
 		},
 		onAnyFaintPriority: 100,
