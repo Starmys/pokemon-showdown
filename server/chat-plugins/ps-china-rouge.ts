@@ -67,6 +67,21 @@ export class Rouge {
 		return [...user.inRooms].find(x => toID(x).indexOf('rougemod') >= 0 && battleWithBot(x));
 	}
 }
+const introduce = '<details><summary><b>简介</b></summary>\
+						开局会获得一只技能、特性、道具全随机的初始精灵，其后获得的每只精灵也都会随机技能、特性、道具（如果该精灵包括进化后有m形态或有专属z则道具有额外概率随机到m石/专属z）。<br >\
+						将好感度作为进化进度条，每次对战结束时进度条等于0时自动进化，对战结束或击败对面精灵都会积累进化进度，<br >\
+						你开局会获得3点生命点，每输一场对战会扣 1点，若是冠军房则扣2点，第一场战斗只会扣0.5点，若你的生命点<=0则彻底失败。<br >\
+						每局第一回合会根据已有的遗物依次发动对应效果。<br >\
+						每回合在无天气的情况下有1/40的概率开启雨天、雪天、晴天、沙暴中的随机一种天气<br >\
+						击败敌人后会获得奖励，其中第一个奖励有1/3的概率是skip，1/3的概率是Evo A Pokemon,2/9的概率是Refresh Reward,1/9的概率是 Evo All。剩下3个是对应房间的奖励，选完奖励之后之后选择下个房间的对应奖励\
+						奖励中选择目标的位置是按照《查看队伍》按钮中的顺序为准<br >\
+						带有精英标签的敌人血量翻倍并且伤害增加30%<br >\
+						battle彻底结束后你的存档会自动保存到你的账号上，此时你才可以对他们进行操作（删除/更改首发）。在你已经存档的情况下点击出发按钮或输入/rouge next会自动继续游戏，这样你可以放心的中断游戏并在以后继续游玩该存档。<br >\
+						通关后会增加对应成就。<br >\
+						<a href=https://docs.qq.com/sheet/DV0lveEpiU0lKQVRL?tab=v4zcy1>所有rouge专属内容的文档</a><br >\
+						交流群：753737429<br >\
+						机制介绍就到这里，祝各位玩的愉快。\
+						</details>';
 const rougeBattleRooms: { [userid: string]: GameRoom | null } = {};
 export const commands: Chat.ChatCommands = {
 
@@ -78,6 +93,7 @@ export const commands: Chat.ChatCommands = {
 			user.sendTo(room.roomid, `|uhtmlchange|rouge-welcome|`);
 			let buttons = [];
 			buttons.push(['<b>欢迎来到宝可梦不归洞穴探险!</b>']);
+			buttons.push([introduce])
 			buttons.push([
 				PetUtils.button('/rouge start', '出发'),
 				PetUtils.button('/rouge clearcache', '清除存档'),
@@ -86,7 +102,7 @@ export const commands: Chat.ChatCommands = {
 				PetUtils.button('/rouge choosebanevoable', '禁止进化'),
 				PetUtils.button('/rouge showpassrecord', '查看成就'),
 				PetUtils.button('/rouge choosediff', '更改难度'),
-			]);
+			]);	
 			user.sendTo(room.roomid, `|uhtml|rouge-welcome|${buttons.map(line => line.join(' ')).join('<br>')}`);
 		},
 
@@ -275,7 +291,6 @@ export const commands: Chat.ChatCommands = {
 			user.sendTo(room!.roomid, `|uhtmlchange|rouge-record|`);
 			user.sendTo(room!.roomid, `|uhtml|rouge-record|${buf}`);
 		},
-
 		clear(target, room, user) {
 			if (!room) return PetUtils.popup(user, "请在房间里使用Rouge系统");
 			user.sendTo(room.roomid, `|uhtmlchange|rouge|`);

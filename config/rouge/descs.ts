@@ -519,7 +519,7 @@ export const RougeDesc = {
 	},
 	gainstope: {
 		name: 'Stope',
-		desc: '第一回合开启场地，友方岩石系精灵每回合结束时从以下内容随机获得一个效果：\n随机提升1级能力\n回1/6血\n开启沙暴若已经开启则使当前敌人受沙暴伤害翻倍\n什么都不发生',
+		desc: '第一回合开启场地，友方岩石系精灵每回合结束时从以下内容随机获得一个效果：<br />随机提升1级能力<br />回1/6血<br />开启沙暴若已经开启则使当前敌人受沙暴伤害翻倍<br />什么都不发生',
 	},
 	gainchampionbelt: {
 		name: 'Champion Belt',
@@ -555,7 +555,7 @@ export const RougeDesc = {
 	},
 	gaincontraryblade: {
 		name: 'Contrary Blade',
-		desc: '我方350种族（包括）以下的精灵全属性（包括hp）提高50%，\n600种族以上（不包括）的精灵全属性（除了hp）降低25%，\n并且他们的技能的物特互换',
+		desc: '我方350种族（包括）以下的精灵全属性（包括hp）提高50%，<br />600种族以上（不包括）的精灵全属性（除了hp）降低25%，<br />并且他们的技能的物特互换',
 	},
 	gainmelodyofsiren: {
 		name: 'Melody Of Siren',
@@ -607,24 +607,24 @@ export const RougeDesc = {
 	},
 	getspearow: {
 		name: 'Spearow',
-		desc: '增加恶属性，特性恶意啄食，会大嘴雀啄钻:\n110威力 飞行系物攻 95%命中\n若目标物防能力值低于使用者攻击能力值则有50%概率畏缩',
+		desc: '增加恶属性，特性恶意啄食，会大嘴雀啄钻:<br />110威力 飞行系物攻 95%命中<br />若目标物防能力值低于使用者攻击能力值则有50%概率畏缩',
 	},
 	getekans: {
 		name: 'Ekans',
-		desc: '增加恶属性，特性花纹变换，会剧毒束缚\n花纹变换:\n回合开始1/3概率降低对面攻击1/3概率回复1/4hp，\n\
-			用变化技能后速度+1用攻击技能后atk+1\n剧毒束缚:35威力 毒系物攻 85%命中\n附带束缚效果并且有50%概率使目标麻痹或中毒',
+		desc: '增加恶属性，特性花纹变换，会剧毒束缚<br />花纹变换:<br />回合开始1/3概率降低对面攻击1/3概率回复1/4hp，<br />\
+			用变化技能后速度+1用攻击技能后atk+1<br />剧毒束缚:35威力 毒系物攻 85%命中<br />附带束缚效果并且有50%概率使目标麻痹或中毒',
 	},
 	getwailmer: {
 		name: 'Wailmer',
-		desc: '特性鲸落，会技能鲸跃\n鲸落:死后对友方场地使用治愈之愿\n鲸跃:水系物理 90%命中,30%害怕\n威力取决于双方hp实数值差，最高250最低60',
+		desc: '特性鲸落，会技能鲸跃<br />鲸落:死后对友方场地使用治愈之愿<br />鲸跃:水系物理 90%命中,30%害怕<br />威力取决于双方hp实数值差，最高250最低60',
 	},
 	getemzzf: {
 		name: 'Emzzf',
-		desc: '舞天鹅特性首席舞者，会大部分舞蹈类技能\n首席舞者:舞蹈类技能先制度+1',
+		desc: '舞天鹅特性首席舞者，会大部分舞蹈类技能<br />首席舞者:舞蹈类技能先制度+1',
 	},
 	getpsyduck: {
 		name: 'Psyduck',
-		desc: '增加超能属性，会技能精神潮汐和意念漩涡\n精神潮汐:80威力 水系特攻,雨天下开启超能场地,意念漩涡:70威力 超能系特攻带束缚效果',
+		desc: '增加超能属性，会技能精神潮汐和意念漩涡<br />精神潮汐:80威力 水系特攻,雨天下开启超能场地,意念漩涡:70威力 超能系特攻带束缚效果',
 	},
 	getwhitedevil: {
 		name: 'White Devil',
@@ -665,5 +665,31 @@ export const RougeDesc = {
 	getindeedee: {
 		name: 'Indeedee',
 		desc: '特性新增上场同时开超场和空间的',
+	},
+	addlife: {
+		name: 'addlife',
+		desc: '加条命，初始有3条命，第一关输了-0.5冠军关输了-2其他情况输了-1',
+	},
+	evoall: {
+		name: 'evo all',
+		desc: '进化队伍里全部可进化的精灵',
+	},
+	retransmissionmovespool: {
+		name: 'Retransmission Moves Pool',
+		desc: '重新随机精灵的技能，只会获得初始就能获得的技能，每个精灵可以用3次',
+	},
+	retransmissionpokemonset: {
+		name: 'Retransmission PokemonSet',
+		desc: '重新随机精灵的技能，道具，特性；只会获得初始就能获得的，每个精灵可以用3次',
+	},
+	chooseonemongetspecificitem: {
+		name: 'Choose One Mon Get Specific Item',
+		desc: '使一个精灵获得其专属道具，若不止一个专属则随机选一个。<br >若没有专属毒疗特性会获得毒珠，毅力特性会获得火珠，\
+		有流星光束和大地掌控会获得强力香草.<br >其他的获得从其携带技能里随机技能属性的z晶石',
+	},
+	promoteapokemon: {
+		name: 'Promote A Pokemon',
+		desc: '晋升你的精灵，晋升会重新随机道具特性技能但是保留努力值。若该精灵没有晋升则获得64点全努力值。\
+			<a href=https://docs.qq.com/sheet/DV0lveEpiU0lKQVRL?tab=xioiyw&_t=1742034832115&nlc=1&u=3f5849502f114c3c95836aaa56128bac>晋升列表</a>',
 	},
 };
