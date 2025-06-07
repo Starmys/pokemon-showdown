@@ -387,7 +387,7 @@ export const RougeDesc = {
 	},
 	gaindragonthrones: {
 		name: 'Dragon Thrones',
-		desc: '第一回合开启场地，友方龙系精灵满pp时的技能会变成炽魂热舞烈音爆',
+		desc: '第一回合开启场地，己方龙系精灵满pp时的技能会变成炽魂热舞烈音爆',
 	},
 	gainacupressuremat: {
 		name: 'Acupressure Mat',
@@ -407,7 +407,7 @@ export const RougeDesc = {
 	},
 	gainticketofcolosseum: {
 		name: 'Ticket Of Colosseum',
-		desc: '第一回合开启场地，友方格斗系技能威力降低25%可以攻击鬼系并且对自身特效变成物攻+1',
+		desc: '第一回合开启场地，己方格斗系技能威力降低25%可以攻击鬼系并且对自身特效变成物攻+1',
 	},
 	gaingardenguardian: {
 		name: 'Garden Guardian',
@@ -447,7 +447,7 @@ export const RougeDesc = {
 	},
 	gaininfestation2: {
 		name: 'Infestation2',
-		desc: '敌方精灵第一次受到我方虫系精灵攻击后全属性-1',
+		desc: '敌方精灵第一次受到己方虫系精灵攻击后全属性-1',
 	},
 	gaingangguarantee: {
 		name: 'Gang Guarantee',
@@ -479,11 +479,11 @@ export const RougeDesc = {
 	},
 	gaintimejewel: {
 		name: 'Time Jewel',
-		desc: '我方宝可梦速度提高30%',
+		desc: '己方宝可梦速度提高30%',
 	},
 	gainfairyegg: {
 		name: 'Fairy Egg',
-		desc: '我方获得一个小精灵，每次攻击后对敌方宝可梦造成最大生命值10%的妖精属性伤害',
+		desc: '己方获得一个小精灵，每次攻击后对敌方宝可梦造成最大生命值10%的妖精属性伤害',
 	},
 	gainmisfortunemirror: {
 		name: 'Misfortune Mirror',
@@ -499,7 +499,7 @@ export const RougeDesc = {
 	},
 	gainpsychoanalysis: {
 		name: 'Psychoanalysis',
-		desc: '友方超能系技能有50%概率使敌人混乱，友方超能系精灵使用技能后回10%hp',
+		desc: '己方超能系技能有50%概率使敌人混乱，己方超能系精灵使用技能后回10%hp',
 	},
 	gainfuturescope: {
 		name: 'Future Scope',
@@ -519,7 +519,7 @@ export const RougeDesc = {
 	},
 	gainstope: {
 		name: 'Stope',
-		desc: '第一回合开启场地，友方岩石系精灵每回合结束时从以下内容随机获得一个效果：<br />随机提升1级能力<br />回1/6血<br />开启沙暴若已经开启则使当前敌人受沙暴伤害翻倍<br />什么都不发生',
+		desc: '第一回合开启场地，己方岩石系精灵每回合结束时从以下内容随机获得一个效果：<br />随机提升1级能力<br />回1/6血<br />开启沙暴若已经开启则使当前敌人受沙暴伤害翻倍<br />什么都不发生',
 	},
 	gainchampionbelt: {
 		name: 'Champion Belt',
@@ -531,7 +531,7 @@ export const RougeDesc = {
 	},
 	gainpacklight: {
 		name: 'Pack Light',
-		desc: '友方宝可梦入场时消耗道具并速度翻倍',
+		desc: '己方宝可梦入场时消耗道具并速度翻倍',
 	},
 	gainreplication: {
 		name: 'Replication',
@@ -547,7 +547,7 @@ export const RougeDesc = {
 	},
 	gainheroicsword: {
 		name: 'Heroic Sword',
-		desc: '我方场地添加类似预知未来的效果，2回合后使我方场上精灵回满血',
+		desc: '己方场地添加类似预知未来的效果，2回合后使己方场上精灵回满血',
 	},
 	gainphysicalsuppression: {
 		name: 'Physical Suppression',
@@ -555,19 +555,19 @@ export const RougeDesc = {
 	},
 	gaincontraryblade: {
 		name: 'Contrary Blade',
-		desc: '我方350种族（包括）以下的精灵全属性（包括hp）提高50%，<br />600种族以上（不包括）的精灵全属性（除了hp）降低25%，<br />并且他们的技能的物特互换',
+		desc: '己方350种族（包括）以下的精灵全属性（包括hp）提高50%，<br />600种族以上（不包括）的精灵全属性（除了hp）降低25%，<br />并且他们的技能的物特互换',
 	},
 	gainmelodyofsiren: {
 		name: 'Melody Of Siren',
-		desc: '我方攻击会治疗对面的异常状态，如果成功治疗，则本次伤害增加50%',
+		desc: '己方攻击会治疗对面的异常状态，如果成功治疗，则本次伤害增加50%',
 	},
 	gainconjuringshow: {
 		name: 'Conjuring Show',
-		desc: '降低敌方命中率12%同时我方所有技能都有1/256概率miss',
+		desc: '降低敌方命中率12%同时己方所有技能都有1/256概率miss',
 	},
 	gainfinalact: {
 		name: 'Final Act',
-		desc: '第一回合使我方所有精灵最大hp翻倍，在此遗物后获得的所有遗物失效',
+		desc: '第一回合使己方所有精灵最大hp翻倍，在此遗物后获得的所有遗物失效',
 	},
 	gainpiercingattack: {
 		name: 'Piercing Attack',
@@ -575,15 +575,15 @@ export const RougeDesc = {
 	},
 	gaincockatriceeye: {
 		name: 'Cockatrice Eye',
-		desc: '我方全体宝可梦伤害*1.6但是只能随机选择技能',
+		desc: '己方全体宝可梦伤害*1.6但是只能随机选择技能',
 	},
 	gainfallrise: {
 		name: 'Fall Rise',
-		desc: '我方倒下的精灵等级+1',
+		desc: '己方倒下的精灵等级+1',
 	},
 	gainorderwayup: {
 		name: 'Order Way Up',
-		desc: '我方全体宝可梦换入时使用一个低威力技能池里的随机技能',
+		desc: '己方全体宝可梦换入时使用一个低威力技能池里的随机技能',
 	},
 	gainexpofspring: {
 		name: 'Exp Of Spring',
@@ -603,7 +603,7 @@ export const RougeDesc = {
 	},
 	gainwrathwell: {
 		name: 'Wrathwell',
-		desc: '双方防御都增加20%，我方技能增加受击次数*15的威力（最高6次）',
+		desc: '双方防御都增加20%，己方技能增加受击次数*15的威力（最高6次）',
 	},
 	getspearow: {
 		name: 'Spearow',
@@ -616,7 +616,7 @@ export const RougeDesc = {
 	},
 	getwailmer: {
 		name: 'Wailmer',
-		desc: '特性鲸落，会技能鲸跃<br />鲸落:死后对友方场地使用治愈之愿<br />鲸跃:水系物理 90%命中,30%害怕<br />威力取决于双方hp实数值差，最高250最低60',
+		desc: '特性鲸落，会技能鲸跃<br />鲸落:死后对己方场地使用治愈之愿<br />鲸跃:水系物理 90%命中,30%害怕<br />威力取决于双方hp实数值差，最高250最低60',
 	},
 	getemzzf: {
 		name: 'Emzzf',
@@ -665,6 +665,14 @@ export const RougeDesc = {
 	getindeedee: {
 		name: 'Indeedee',
 		desc: '特性新增上场同时开超场和空间的',
+	},
+	getangod: {
+		name: 'Angod',
+		desc: '特性安拳(拳类技能威力*4)，会一堆拳类技能',
+	},
+	getlegendunown: {
+		name: 'Legend-Unown',
+		desc: '特性50%概率变成抵抗对面攻击的属性，觉醒力量传说会克制所有属性',
 	},
 	addlife: {
 		name: 'addlife',
