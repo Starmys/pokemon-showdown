@@ -920,7 +920,11 @@ export const Abilities: import('../../../sim/dex-abilities').ModdedAbilityDataTa
 		num: 5,
 	},
 	haven: {
-
+		onModifyMove(move, pokemon, target) {
+			if (move.flags['heal'] && move.heal && move.category === 'Status') {
+				move.heal = [move.heal[0]*2 + 1, move.heal[1] * 2]
+			}
+		},
 		onTryHeal(damage, target, source, effect) {
 			return this.chainModify(1.5);
 		},

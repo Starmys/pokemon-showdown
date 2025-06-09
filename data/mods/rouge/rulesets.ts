@@ -630,7 +630,9 @@ export const relicsEffects = {
 	'holographicprojection': (battle: Battle) => {
 		if (RougeUtils.getRoom(battle.toID(battle.p2.name)) !== 'championroom') {
 			let pokemon = battle.sample(battle.p1.pokemon.filter(x => battle.toID(x.ability) !== 'shopman'));
-			let newpoke = new Pokemon(pokemon.set, battle.p2)
+			let newSet = pokemon.set;
+			newSet.level += 10;
+			let newpoke = new Pokemon(newSet, battle.p2);
 			battle.p2.pokemon.push(newpoke);
 			battle.p2.pokemonLeft++;
 			newpoke.position = battle.p2.pokemon.length - 1;
@@ -651,7 +653,7 @@ export const relicsEffects = {
 			newpokemon.maxhp = Math.floor(newpokemon.maxhp * 0.5);
 			newpokemon.hp = Math.floor(newpokemon.hp * 0.5);
 			newpokemon.position = battle.p2.pokemon.length - 1;
-			newpokemon.canTerastallize = null;
+			// newpokemon.canTerastallize = null;
 			battle.add('message', 'Replication action');
 		} else {
 			battle.add('message', 'your team is full');

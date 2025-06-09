@@ -4125,7 +4125,7 @@ export const PokemonPool = {
 		"name": 'Miraidon',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf',  'Choice Specs', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry'],
-		"ability": ['SHadron Engine'],
+		"ability": ['Hadron Engine'],
 		"moves": ['Discharge', 'Draco Meteor', 'Dragon Pulse', 'Electro Drift', 'Overheat', 'Power Gem', 'Taunt', 'Volt Switch', 'Dazzling Gleam','Calm Mind','Parabolic Charge'],
 		'nature': '',
 		'gender': '',

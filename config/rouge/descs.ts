@@ -527,7 +527,7 @@ export const RougeDesc = {
 	},
 	gainholographicprojection: {
 		name: 'Holographic Projection',
-		desc: '第一回合复制对面的一只精灵（不能在冠军房使用，不能超过6只）',
+		desc: '第一回合复制对面的一只精灵并且等级提高10级（不能在冠军房使用，不能超过6只）',
 	},
 	gainpacklight: {
 		name: 'Pack Light',
