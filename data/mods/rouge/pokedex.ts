@@ -49,6 +49,14 @@ export const Pokedex: import('../../../sim/dex-species').ModdedSpeciesDataTable 
 		inherit: true,
 		abilities: {0: "bugtohero", H: "Technician"},
 	},
+	florges: {
+		inherit: true,
+		types: ["Fairy", "Grass"],
+	},
+	floette: {
+		inherit: true,
+		types: ["Fairy", "Grass"],
+	},
 	kricketunehero: {
 		num: 401,
 		name: "Kricketune-Hero",
