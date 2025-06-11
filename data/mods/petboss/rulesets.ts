@@ -43,6 +43,7 @@ export const Rulesets: import('../../../sim/dex-formats').ModdedFormatDataTable 
 				return;
 			}
 			this.p1.emitRequest = (update: ChoiceRequest) => {
+				update = update || this.p1.activeRequest;
 				this.send('sideupdate', `${this.p1.id}\n|request|${JSON.stringify(update)}`);
 				this.p1.activeRequest = update;
 				// @ts-ignore
