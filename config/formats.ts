@@ -18,6 +18,7 @@ The column value will be ignored for repeat sections.
 */
 
 import { Pokemon } from '../sim';
+import { DynamaxOptions } from '../sim/side';
 export const Formats: import('../sim/dex-formats').FormatList = [
 
 	// S/V Singles
@@ -5278,6 +5279,74 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 	// 	mod: 'gen7',
 	// 	ruleset: ['-Nonexistent', 'Team Preview', 'HP Percentage Mod', 'Cancel Mod', 'Endless Battle Clause'],
 	// },
+	{
+		name: "[Gen 9] ND all mechanics",
+		mod: 'gen9',
+		ruleset: ['Standard NatDex'],
+		banlist: [
+			'ND Uber', 'ND AG', 'Arena Trap', 'Moody', 'Power Construct', 'Shadow Tag', 'King\'s Rock',
+			'Quick Claw', 'Razor Fang', 'Assist', 'Baton Pass', 'Last Respects', 'Shed Tail',
+		],
+		onBegin(this) {
+			for (let side of this.sides) {
+				side.dynamaxUsed = false
+				
+				side.canDynamaxNow = () => {
+					if (this.gameType === 'multi' && this.turn % 2 !== [1, 1, 0, 0][side.n]) return false;
+					// if (this.battle.gameType === 'multitriples' && this.battle.turn % 3 !== [1, 1, 2, 2, 0, 0][this.side.n]) {
+					//		return false;
+					// }
+					return !side.dynamaxUsed;
+				}
+			}
+			for(let pokemon of this.getAllPokemon()){
+				this.add('message',`${pokemon.teraType}`);
+				if(!pokemon.canTerastallize){
+					// pokemon.teraType=this.sample(pokemon.moves.map(move => Dex.moves.get(move).type));
+					pokemon.canTerastallize=pokemon.teraType;
+
+				}
+				pokemon.getDynamaxRequest
+				let mega = pokemon.species.otherFormes?.filter(x => x.includes('Mega'));
+				if (mega){
+					pokemon.canMegaEvo = this.sample(mega);
+				}
+				pokemon.getDynamaxRequest = (skipChecks?: boolean) => {
+					// {gigantamax?: string, maxMoves: {[k: string]: string} | null}[]
+					if (!pokemon.side.canDynamaxNow()) return;
+					const result: DynamaxOptions = { maxMoves: [] };
+					let atLeastOne = false;
+					for (const moveSlot of pokemon.moveSlots) {
+						const move = this.dex.moves.get(moveSlot.id);
+						const maxMove = this.actions.getMaxMove(move, pokemon);
+						if (maxMove) {
+							if (pokemon.maxMoveDisabled(move)) {
+								result.maxMoves.push({ move: maxMove.id, target: maxMove.target, disabled: true });
+							} else {
+								result.maxMoves.push({ move: maxMove.id, target: maxMove.target });
+								atLeastOne = true;
+							}
+						}
+					}
+					if (!atLeastOne) return;
+					if (pokemon.canGigantamax) result.gigantamax = pokemon.canGigantamax;
+					return result;
+				};
+			}
+		},
+		// onAfterMove(source, target, move) {
+		// 	if (move.isZ){
+		// 		source.side.zMoveUsed = false
+		// 	}
+		// },
+		onAfterMega(pokemon) {
+			this.add('message',`${pokemon.teraType}`);
+			if(!pokemon.canTerastallize){
+				pokemon.canTerastallize=pokemon.teraType;
+			}
+		},
+
+	},
 	{
 		name: "[Gen 8] Stat Gift",
 		desc: `1号位精灵hp种族翻倍, 2号位精灵atk种族翻倍, 3号位精灵def种族翻倍, 4号位精灵spa种族翻倍, 5号位精灵spd种族翻倍, 6号位精灵spe种族翻倍,最高255.\n` +
