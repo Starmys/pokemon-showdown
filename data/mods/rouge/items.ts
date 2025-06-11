@@ -110,7 +110,7 @@ export const Items: import('../../../sim/dex-items').ModdedItemDataTable = {
 	superquickclaw: {
 		onFractionalPriorityPriority: -2,
 		onFractionalPriority(priority, pokemon) {
-			if (priority <= 0 && this.randomChance(2, 5)) {
+			if (priority <= 0 && this.randomChance(1, 2)) {
 				this.add('-activate', pokemon, 'item: Quick Claw');
 				return 0.1;
 			}
@@ -408,6 +408,11 @@ export const Items: import('../../../sim/dex-items').ModdedItemDataTable = {
 		gen: 2,
 	},
 	gladiatorhelmet: {
+		onModifyMove(move, pokemon, target) {
+			if(move.recoil){
+				return this.chainModify(1.1);
+			}
+		},
 		onDamage(damage, target, source, effect) {
 			if (effect.id === 'recoil') {
 				if (!this.activeMove) throw new Error("Battle.activeMove is null");
@@ -701,7 +706,7 @@ export const Items: import('../../../sim/dex-items').ModdedItemDataTable = {
 		},
 		onEat(pokemon) {
 			for(let i in pokemon.set.evs){
-				pokemon.set.evs[i as keyof typeof pokemon.set.evs]=Math.min( pokemon.set.evs[i as keyof typeof pokemon.set.evs]+20,252);
+				pokemon.set.evs[i as keyof typeof pokemon.set.evs]=Math.min( pokemon.set.evs[i as keyof typeof pokemon.set.evs]+24,252);
 			}
 			
 		},
@@ -769,6 +774,36 @@ export const Items: import('../../../sim/dex-items').ModdedItemDataTable = {
 		},
 		num: 210,
 		gen: 4,
+	},
+	supershellbell: {
+		name: "Super Shell Bell",
+		spritenum: 438,
+		fling: {
+			basePower: 30,
+		},
+		onAfterMoveSecondarySelfPriority: -1,
+		onAfterMoveSecondarySelf(pokemon, target, move) {
+			if (move.totalDamage && !pokemon.forceSwitchFlag) {
+				this.heal(move.totalDamage * 0.4, pokemon);
+			}
+		},
+		num: 253,
+		gen: 3,
+	},
+	priorityglove: {
+		name: "Priority Glove",
+		spritenum: 438,
+		fling: {
+			basePower: 30,
+		},
+		onModifyPriority(priority, pokemon, target, move) {
+			if (move.category !== 'Status') return priority + 1;
+		},
+		onModifyDamage(damage, source, target, move) {
+			return this.chainModify([2731, 4096]);
+		},
+		num: 253,
+		gen: 3,
 	},
 	
 };
