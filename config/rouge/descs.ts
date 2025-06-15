@@ -612,7 +612,7 @@ export const RougeDesc = {
 	getekans: {
 		name: 'Ekans',
 		desc: '增加恶属性，特性花纹变换，会剧毒束缚<br />花纹变换:<br />回合开始1/3概率降低对面攻击1/3概率回复1/4hp，<br />\
-			用变化技能后速度+1用攻击技能后atk+1<br />剧毒束缚:35威力 毒系物攻 85%命中<br />附带束缚效果并且有50%概率使目标麻痹或中毒',
+<br >\用变化技能后速度+1用攻击技能后atk+1<br />剧毒束缚:35威力 毒系物攻 85%命中<br />附带束缚效果并且有50%概率使目标麻痹或中毒',
 	},
 	getwailmer: {
 		name: 'Wailmer',
@@ -632,7 +632,7 @@ export const RougeDesc = {
 	},
 	getmiraclesinger: {
 		name: 'Miracle Singer',
-		desc: '帕奇利兹，特性有概率是庞克摇滚',
+		desc: '美洛耶塔，特性有概率是庞克摇滚',
 	},
 	getshucklemega: {
 		name: 'Shuckle-Mega',
@@ -674,6 +674,19 @@ export const RougeDesc = {
 		name: 'Legend-Unown',
 		desc: '特性50%概率变成抵抗对面攻击的属性，觉醒力量传说会克制所有属性',
 	},
+	getgeodudealola: {
+		name: 'Geodude-Alola',
+		desc: '技能池里多了神速',
+	},
+	getenamorus: {
+		name: 'Enamorus',
+		desc: '技能池里多了花炮和龙星',
+	},
+	getfloette: {
+		name: 'Floette',
+		desc: '增加草属性',
+	},
+
 	addlife: {
 		name: 'addlife',
 		desc: '加条命，初始有3条命，第一关输了-0.5冠军关输了-2其他情况输了-1',
@@ -698,6 +711,34 @@ export const RougeDesc = {
 	promoteapokemon: {
 		name: 'Promote A Pokemon',
 		desc: '晋升你的精灵，晋升会重新随机道具特性技能但是保留努力值。若该精灵没有晋升则获得64点全努力值。\
-			<a href=https://docs.qq.com/sheet/DV0lveEpiU0lKQVRL?tab=xioiyw&_t=1742034832115&nlc=1&u=3f5849502f114c3c95836aaa56128bac>晋升列表</a>',
+			绿毛虫->裂空座<br >\
+			烈雀/大嘴雀->凤王<br >\
+			长翅鸥/大嘴鸥->洛奇亚<br >\
+			梦幻->超梦<br >\
+			吼吼鲸/吼鲸王->盖欧卡<br >\
+			煤炭龟->固拉多<br >\
+			铝钢龙->帝牙卢卡<br >\
+			多龙一家->骑拉帝纳<br >\
+			刺龙王一家 ->帕路奇亚<br >\
+			秃鹫一家->伊裴尔塔尔<br >\
+			四季鹿/萌芽鹿->哲尔尼亚斯<br >\
+			毒澡龙（没一家，从头进化）->无极汰那<br >\
+			冰马->冰马王<br >\
+			鬼马（目前不存在）->鬼马王<br >\
+			长毛狗一家->苍响<br >\
+			风速狗一家->藏马然特<br >\
+			基格尔德10%->基格尔德50%<br >\
+			小猫怪一家->莱希拉姆<br >\
+			奈克洛兹玛->日耐/月耐<br >\
+			赤面龙->捷克罗姆<br >\
+			拉普拉斯->酋雷姆<br >\
+			电击兽一家->黑酋雷姆<br >\
+			青鸟一家->白酋雷姆<br >\
+			忍蛙->小智忍蛙<br >\
+			银伴战兽->720<br >\
+			摩托蜥->故勒顿/密勒顿<br >\
+			太乐巴尔斯->星晶形态<br >\
+			皮卡丘->伙伴皮卡丘<br >\
+<br >\<a href=https://docs.qq.com/sheet/DV0lveEpiU0lKQVRL?tab=xioiyw&_t=1742034832115&nlc=1&u=3f5849502f114c3c95836aaa56128bac>晋升列表</a>',
 	},
 };

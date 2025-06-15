@@ -214,6 +214,8 @@ function setMoveName(pokemon:Pokemon,name:string){
 function getPromote(battle:Battle,oldpoke:PokemonSet){
 	let newpoke=undefined
 	switch (Dex.toID(oldpoke.species)) {
+		case 'pikachuoriginal':
+		case 'pikachu': newpoke = Teams.unpack(getRougeSet(PokemonPool["Pikachu-Starter"], battle.prng, oldpoke.level, oldpoke.evs))![0]; break
 		case 'terapagos': newpoke = Teams.unpack(getRougeSet(PokemonPool["Terapagos-Stellar"], battle.prng, oldpoke.level, oldpoke.evs))![0]; break
 		case 'cyclizar': newpoke = battle.random(2) === 1 ? Teams.unpack(getRougeSet(PokemonPool["Miraidon"], battle.prng, oldpoke.level, oldpoke.evs))![0] : Teams.unpack(getRougeSet(PokemonPool["Koraidon"], battle.prng, oldpoke.level, oldpoke.evs))![0]; break
 		case 'silvally': 
@@ -10261,7 +10263,6 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 			if (room === 'championroom') room = this.p1.faintedLastTurn?.name === 'Shopowner' ? this.p1.faintedLastTurn?.item as keyof typeof RewardPool : 'itemroom';
 			if (!room) room = 'itemroom';
 			
-			this.add('message', `${relics}\n`);
 			// @ts-ignore
 			let reward = RewardPool[room] as string[]
 			// let reward2 = RewardPool[(room + '2') as keyof typeof RewardPool] as string[];
@@ -10275,10 +10276,8 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 				
 				for (let x of relics) {
 					x = 'Gain ' + x;
-					this.add('message', `${x}\n`);
 					if (x in rewardWeight){
 						rewardWeight[x] = 0
-						this.add('message', `${rewardWeight[x]}\n`);
 					}
 				}
 			}
