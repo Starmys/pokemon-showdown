@@ -168,6 +168,18 @@ export const PokemonPool = {
 		'ivs': '31,31,31,31,31,31',
 		'level': 10,
 	},
+	"Pikachu-Starter": {
+		"name": 'Pikachu-Starter',
+		"species": "",
+		"item": ['Light Ball'],
+		"ability": ['Static', 'Lightning Rod'],
+		"moves": ['Nasty Plot', 'Knock Off', 'Iron Tail', 'Extreme Speed', 'Focus Blast', 'Thunderbolt', 'Wild Charge', 'Volt Switch', 'Thunder', 'Splishy Splash','Floaty Fall', 'Zippy Zap', 'Fake Out'],
+		'nature': '',
+		'gender': '',
+		'evs': '0,0,0,0,0,0',
+		'ivs': '31,31,31,31,31,31',
+		'level': 10,
+	},
 	"Munchlax": {
 		"name": 'Munchlax',
 		"species": "",
