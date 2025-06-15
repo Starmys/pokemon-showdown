@@ -1584,7 +1584,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 					}
 
 					let newDamage = basePower * source.level / 100 * 2 * typemod * critMod * boootMod
-					this.add('message', `newDamage = ${newDamage}\n`);
+					// this.add('message', `newDamage = ${newDamage}\n`);
 					return newDamage
 				}
 			}

@@ -544,7 +544,7 @@ const canPromote = [
 	'pelipper', 'wingull', 'mew', 'wailord', 'wailmer', 'torkoal', 'archaludon', 'duraludon', 'dreepy', 'drakloak',
 	'dragapult', 'kingdra', 'seadra', 'mandibuzz', 'vullaby', 'deerling', 'sawsbuck', 'dragalge', 'glastrier', 'spectrier',
 	'herdier', 'lillipup', 'stoutland', 'arcanine', 'growlithe', 'zygarde10', 'shinx', 'luxio', 'luxray', 'necrozma', 'druddigon',
-	'lapras', 'electivire', 'electabuzz', 'altaria', 'swablu'
+	'lapras', 'electivire', 'electabuzz', 'altaria', 'swablu', 'pikachuoriginal', 'pikachu'
 ];
 const recoil = [
 	'headcharge', 'bravebird', 'doubleedge', 'flareblitz', 'headsmash', 'superlightofruin', 'volttackle', 'wavecrash',
