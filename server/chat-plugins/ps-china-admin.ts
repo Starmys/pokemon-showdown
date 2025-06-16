@@ -244,6 +244,7 @@ export class AdminUtils {
 			rowNames.forEach((rowName, i) => tableBody[i].unshift(th(rowName)));
 			colNames.unshift('');
 		}
+		if (!tableBody[0]) return '';
 		if (colNames.length === tableBody[0].length) tableBody.unshift(colNames.map(th));
 		const tableBodyStr = tableBody.map((row, i) => tr(row.join(''))).join('');
 		return `<table>${tableBodyStr}</table>`;
