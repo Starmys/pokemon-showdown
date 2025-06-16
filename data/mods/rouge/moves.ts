@@ -3,7 +3,7 @@ import { RougeDesc } from "../../../config/rouge/descs";
 import { PokemonPool } from "../../../config/rouge/pokemon-pool";
 import { RewardPool, WeightPool, updateWeightPool } from "../../../config/rouge/reward-pool";
 import { PRNG, Teams, Dex } from "../../../sim";
-import RandomTeams from "../../random-battles/rouge/teams";
+import { RandomTeams } from "../../random-battles/rouge/teams";
 import { RougeUtils } from "./rulesets";
 
 const natures = Dex.natures.all().map(x => x.name);
@@ -325,9 +325,10 @@ export function sample<T>(items : T[], n:number,prng: PRNG = new PRNG(), weightM
         
         result.push(tempArr[selectedIndex]);
         totalWeight -= weightArr[selectedIndex];
-        tempArr.splice(selectedIndex, 1);
-        weightArr.splice(selectedIndex, 1);
-        
+        // tempArr.splice(selectedIndex, 1);
+        // weightArr.splice(selectedIndex, 1);
+        RandomTeams.fastPop(tempArr, selectedIndex)
+		RandomTeams.fastPop(weightArr, selectedIndex)
     }
 
     return result;
@@ -10257,8 +10258,8 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		flags: {},
 		onHit(pokemon) {
 			this.add('html', `<div class="broadcast-green"><strong>your Refresh the reward</strong></div>`);
-			
-			let [room, relics] = RougeUtils.getRoomAndRelics(this.toID(this.p2.name));
+			let [user, room, relics] = RougeUtils.getUserAndRoomAndRelics(this.toID(this.p2.name));
+			if (!user) return;
 			if (!room) room = 'pokemonroom';
 			if (room === 'championroom') room = this.p1.faintedLastTurn?.name === 'Shopowner' ? this.p1.faintedLastTurn?.item as keyof typeof RewardPool : 'itemroom';
 			if (!room) room = 'itemroom';
@@ -10269,10 +10270,21 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 			let rewardWeight: Record<string, number> = {...WeightPool[(room + 'weight') as keyof typeof WeightPool]};
 			// @ts-ignore
 			updateWeightPool[room](this, rewardWeight, relics);
+			if (room === 'pokemonroom') {
+				for (let i of RougeUtils.unlock.index[room as keyof typeof RougeUtils.unlock.index]) {
+					if (user?.passrecord?.cave[i])
+						reward.push(RougeUtils.unlock.caveBody[i])
+				}
+			} else {
+				for (let i of RougeUtils.unlock.index[room as keyof typeof RougeUtils.unlock.index]) {
+					if (user?.passrecord?.void[i])
+						reward.push(RougeUtils.unlock.voidBody[i])
+				}
+			}
 			if (room === 'eliteroom') {
 				reward = reward.concat();
 				// reward2 = reward2.concat();
-				this.prng.sample(this.p1.pokemon).m.innate = 'elite';
+				// this.prng.sample(this.p1.pokemon).m.innate = 'elite';
 				
 				for (let x of relics) {
 					x = 'Gain ' + x;
