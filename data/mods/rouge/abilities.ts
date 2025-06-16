@@ -1064,7 +1064,7 @@ export const Abilities: import('../../../sim/dex-abilities').ModdedAbilityDataTa
 		onFaint(target, source, effect) {
 			if(target.side===this.p2){
 				let relic='';
-				let allRelics =  RewardPool.eliteroom;
+				let allRelics =  RewardPool.eliteroom.concat();
 				
 				for (let i of RougeUtils.unlock.index.eliteroom) {
 					allRelics.push(RougeUtils.unlock.voidBody[i])

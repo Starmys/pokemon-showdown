@@ -152,12 +152,14 @@ export class RougeUtils {
 			return userid?.rouge?.split("&")[4] || '';
 	}
 	
-	static getRoomAndRelics(userid: ID | rougeUserProperty): (string|string[])[] {
-		let str = this.getUser(userid)?.rouge?.split("&")
+	static getUserAndRoomAndRelics(userid: ID | rougeUserProperty): (any)[] {
+		let user = this.getUser(userid);
+		if (!user) return [undefined, '' , []];
+		let str = user.rouge?.split("&")
 		if (str){
-			return [str[4] || '', str[3].split(',')||[]];
+			return [user, str[4] || '', str[3].split(',')||[]];
 		} else {
-			return ['' , []]
+			return [undefined, '' , []];
 		}
 	}
 
@@ -653,7 +655,7 @@ export const relicsEffects = {
 			newpokemon.maxhp = Math.floor(newpokemon.maxhp * 0.5);
 			newpokemon.hp = Math.floor(newpokemon.hp * 0.5);
 			newpokemon.position = battle.p2.pokemon.length - 1;
-			// newpokemon.canTerastallize = null;
+			newpokemon.canTerastallize = null;
 			battle.add('message', 'Replication action');
 		} else {
 			battle.add('message', 'your team is full');
@@ -804,9 +806,8 @@ export const Rulesets: import('../../../sim/dex-formats').ModdedFormatDataTable 
 		],
 		onBegin() {
 			// this.p1.pokemon = this.p1.pokemon.concat([new Pokemon(Teams.unpack('Shop|||shopman|Retransmission Moves Pool,getsuperband,getsuperspecs,getsuperscarf,Learn Extreme Speed,skip|Careful|252,4,,,252,|||||')![0], this.p2)]);
-			let user = RougeUtils.getUser(this.toID(this.p2.name))
+			let [user, room, relics] = RougeUtils.getUserAndRoomAndRelics(this.toID(this.p2.name));
 			if (!user) return;
-			let [room, relics] = RougeUtils.getRoomAndRelics(this.toID(this.p2.name));
 			if (!room) room = 'pokemonroom'
 			// @ts-ignore
 			let reward = (RewardPool[room] as string[]).concat();
