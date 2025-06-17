@@ -10265,7 +10265,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 			if (!room) room = 'itemroom';
 			
 			// @ts-ignore
-			let reward = RewardPool[room] as string[]
+			let reward = [...RewardPool[room] as string[]]
 			// let reward2 = RewardPool[(room + '2') as keyof typeof RewardPool] as string[];
 			let rewardWeight: Record<string, number> = {...WeightPool[(room + 'weight') as keyof typeof WeightPool]};
 			// @ts-ignore
