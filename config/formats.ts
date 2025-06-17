@@ -5923,12 +5923,14 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 			'Quick Claw', 'Razor Fang', 'Assist', 'Baton Pass', 'Last Respects', 'Shed Tail',
 		],
 		restricted: [
-			'ND Uber'
+			'Restricted Legendary'
 		],
 		onValidateTeam(team) {
-			const gods = new Set<string>();
+			const gods = [];
 			let healnum=0;
 			let regenerator=0;
+			let gen = 0
+			let sameGenNum = 0
 			let healmoves=['rest','recover','softboiled','morningsun','moonlight','wish','slackoff','roost'];
 			for (const set of team) {
 				let species = this.dex.species.get(set.species);
@@ -5946,7 +5948,8 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 					}
 				}
 				if (this.ruleTable.isRestrictedSpecies(species)) {
-					gods.add(species.name);
+					gods.push(species.name);
+					gen = species.gen;
 				}
 				if (this.dex.toID(set.ability)=='regenerator'){
 					regenerator++;
@@ -5957,14 +5960,37 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 					}
 				}
 			}
-			if (regenerator > 1) {
-				return [`你有超过1只再生力.)`];
+			// if (regenerator > 1) {
+			// 	return [`你有超过1只再生力.)`];
+			// }
+			// if (healnum > 2) {
+			// 	return [`你有超过2个回复技能)`];
+			// }
+			if (gods.length > 1) {
+				return [`你有超过1只一级神`, `(${Array.from(gods).join(', ')} 是一级神宝可梦.)`];
 			}
-			if (healnum > 2) {
-				return [`你有超过2个回复技能)`];
+			for (const set of team) {
+				let species = this.dex.species.get(set.species);
+				if (typeof species.battleOnly === 'string') species = this.dex.species.get(species.battleOnly);
+				if (
+					(species.baseSpecies === 'Zamazenta' && this.toID(set.item) === 'rustedshield') ||
+					(species.baseSpecies === 'Zacian' && this.toID(set.item) === 'rustedsword')
+				) {
+					species = this.dex.species.get(`${species.baseSpecies}-Crowned`);
+				}
+				if (set.item && this.dex.items.get(set.item).megaStone) {
+					const item = this.dex.items.get(set.item);
+					if (item.megaEvolves === species.baseSpecies) {
+						species = this.dex.species.get(item.megaStone);
+					}
+				}
+				if (species.name === gods[0]) continue;
+				if (species.gen === gen) {
+					sameGenNum++;
+				}
 			}
-			if (gods.size > 1) {
-				return [`你有超过1只uber`, `(${Array.from(gods).join(', ')} 是uber宝可梦.)`];
+			if (sameGenNum < 1) {
+				return [`你没有跟1级神同世代的宝可梦)`];
 			}
 		},
 	},
