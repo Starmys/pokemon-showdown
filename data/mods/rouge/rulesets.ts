@@ -1017,7 +1017,7 @@ export const Rulesets: import('../../../sim/dex-formats').ModdedFormatDataTable 
 					if (!this.p1.isChoiceDone()) {
 						let expectMove;
 						let movesNotHeal = activemoves.filter(move => !isHealMove(move));
-						if (this.randomChance(4,5)){
+						if (this.randomChance(5,6)){
 							movesNotHeal=movesNotHeal.filter(move => checkImmune(move));
 						}
 						// const movesNotImmune = movesNotHeal.filter(move => checkImmune(move));
