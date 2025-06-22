@@ -5920,21 +5920,25 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 		ruleset: ['Standard NatDex'],
 		banlist: [
 			'Zygarde', 'Zygarde-Complete','Ultranecrozium Z','Xerneas','Red Orb','Terapagos','Blue Orb','Eternatus','ND AG', 'Arena Trap', 'Moody', 'Power Construct', 'Shadow Tag', 'King\'s Rock',
-			'Quick Claw', 'Razor Fang', 'Assist', 'Baton Pass', 'Last Respects', 'Shed Tail',
+			'Quick Claw', 'Razor Fang', 'Assist', 'Baton Pass', 'Last Respects', 'Shed Tail'
 		],
+		unbanlist: ['Calyrex', 'Cosmoem', 'Cosmog'],
 		restricted: [
-			'Restricted Legendary'
+			'Restricted Legendary','Arceus','Calyrex-Ice'
 		],
 		onValidateTeam(team) {
 			const gods = [];
+			const ubers = []
 			let healnum=0;
 			let regenerator=0;
 			let gen = 0
 			let sameGenNum = 0
 			let healmoves=['rest','recover','softboiled','morningsun','moonlight','wish','slackoff','roost'];
+			
 			for (const set of team) {
 				let species = this.dex.species.get(set.species);
 				if (typeof species.battleOnly === 'string') species = this.dex.species.get(species.battleOnly);
+				let baseSpecies = species;
 				if (
 					(species.baseSpecies === 'Zamazenta' && this.toID(set.item) === 'rustedshield') ||
 					(species.baseSpecies === 'Zacian' && this.toID(set.item) === 'rustedsword')
@@ -5949,7 +5953,8 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 				}
 				if (this.ruleTable.isRestrictedSpecies(species)) {
 					gods.push(species.name);
-					gen = species.gen;
+					
+					gen = species.isMega?baseSpecies.gen:species.gen;
 				}
 				if (this.dex.toID(set.ability)=='regenerator'){
 					regenerator++;
@@ -5960,18 +5965,23 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 					}
 				}
 			}
-			// if (regenerator > 1) {
-			// 	return [`你有超过1只再生力.)`];
-			// }
-			// if (healnum > 2) {
-			// 	return [`你有超过2个回复技能)`];
-			// }
+			if (regenerator > 1) {
+				return [`你有超过1只再生力.)`];
+			}
+			if (healnum > 2) {
+				return [`你有超过2个回复技能)`];
+			}
 			if (gods.length > 1) {
 				return [`你有超过1只一级神`, `(${Array.from(gods).join(', ')} 是一级神宝可梦.)`];
 			}
+			if (gods.length < 1) {
+				return [`你没有一级神`];
+			}
+			
 			for (const set of team) {
 				let species = this.dex.species.get(set.species);
 				if (typeof species.battleOnly === 'string') species = this.dex.species.get(species.battleOnly);
+				let baseSpecies = species;
 				if (
 					(species.baseSpecies === 'Zamazenta' && this.toID(set.item) === 'rustedshield') ||
 					(species.baseSpecies === 'Zacian' && this.toID(set.item) === 'rustedsword')
@@ -5985,9 +5995,20 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 					}
 				}
 				if (species.name === gods[0]) continue;
-				if (species.gen === gen) {
+				let ygen = species.isMega?baseSpecies.gen:species.gen; 
+				if (ygen === gen) {
 					sameGenNum++;
 				}
+				if (species.natDexTier === 'Uber' || species.natDexTier === '(Uber)') {
+					if (ygen === gen) {
+						ubers.push(species.name);
+					} else {
+						return [`你有跟1级神不同世代的ub宝可梦)`];
+					}
+				}
+			}
+			if (ubers.length > 1) {
+				return [`你有超过1只ub宝可梦`, `(${Array.from(ubers).join(', ')} 是ub宝可梦.)`];
 			}
 			if (sameGenNum < 1) {
 				return [`你没有跟1级神同世代的宝可梦)`];
