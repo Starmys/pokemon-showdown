@@ -5919,7 +5919,7 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 		mod: 'gen9',
 		ruleset: ['Standard NatDex'],
 		banlist: [
-			'Zygarde', 'Zygarde-Complete','Ultranecrozium Z','Xerneas','Red Orb','Terapagos','Blue Orb','Eternatus','ND AG', 'Arena Trap', 'Moody', 'Power Construct', 'Shadow Tag', 'King\'s Rock',
+			'Ultranecrozium Z','Xerneas','Red Orb','Blue Orb','ND AG', 'Arena Trap', 'Moody',  'Shadow Tag', 'King\'s Rock',
 			'Quick Claw', 'Razor Fang', 'Assist', 'Baton Pass', 'Last Respects', 'Shed Tail'
 		],
 		unbanlist: ['Calyrex', 'Cosmoem', 'Cosmog'],
