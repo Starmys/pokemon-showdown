@@ -5954,7 +5954,10 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 				if (this.ruleTable.isRestrictedSpecies(species)) {
 					gods.push(species.name);
 					
-					gen = species.isMega?baseSpecies.gen:species.gen;
+					gen = species.gen;
+					if(species.isMega || species.id === 'dialgaorigin' || species.id === 'palkiaorigin'){
+						gen = baseSpecies.gen
+					}
 				}
 				if (this.dex.toID(set.ability)=='regenerator'){
 					regenerator++;
