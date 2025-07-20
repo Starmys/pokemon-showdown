@@ -251,7 +251,7 @@ export class PetUtils {
 	}
 }
 
-class Pet {
+export class Pet {
 
 	static sprites = new Set(PokemonSprites);
 

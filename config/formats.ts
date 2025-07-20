@@ -5543,6 +5543,15 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 		ruleset: ['Dynamax Clause', 'Standard NatDex'],
 	},
 	{
+		name: "[Gen 9] Battlegrounds",
+		desc: `出发, 去往未知洞穴里探险`,
+
+		challengeShow: false,
+
+		mod: 'battlegrounds',
+		ruleset: ['Dynamax Clause', 'Standard NatDex'],
+	},
+	{
 		name: "[Gen 9] Pet Mode 宠物模式",
 		desc: `与自己培养的宝可梦并肩作战吧！`,
 
