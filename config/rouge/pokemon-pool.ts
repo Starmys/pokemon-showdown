@@ -1852,7 +1852,7 @@ export const PokemonPool = {
 		"name": 'Zygarde',
 		"species": "Zygarde",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Groundium Z', 'Dragonium Z'],
-		"ability": ["Aura Break", 'Power Construct'],
+		"ability": ['Power Construct'],
 		"moves": ['Core Enforcer', 'Crunch', 'Draco Meteor', 'Dragon Dance', "Outrage", 'Earthquake', 'Extreme Speed', 'Glare', 'Iron Tail', 'Stone Edge', 'Superpower', 'Thousand Arrows', 'Thousand Waves', 'Toxic'],
 		'nature': '',
 		'gender': '',
