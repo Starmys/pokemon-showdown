@@ -5911,114 +5911,114 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 		]
 	},
 	////////////////////   吧主甲群赛
-	{
-		name: "[Gen 9] Reshiram Cup莱西拉姆杯",
-		desc: `详情咨询吧主甲舰长群`,
+	// {
+	// 	name: "[Gen 9] Reshiram Cup莱西拉姆杯",
+	// 	desc: `详情咨询吧主甲舰长群`,
 
 
-		mod: 'gen9',
-		ruleset: ['Standard NatDex'],
-		banlist: [
-			'Ultranecrozium Z','Xerneas','Red Orb','Blue Orb','ND AG', 'Arena Trap', 'Moody',  'Shadow Tag', 'King\'s Rock',
-			'Quick Claw', 'Razor Fang', 'Assist', 'Baton Pass', 'Last Respects', 'Shed Tail'
-		],
-		unbanlist: ['Calyrex', 'Cosmoem', 'Cosmog'],
-		restricted: [
-			'Restricted Legendary','Arceus','Calyrex-Ice'
-		],
-		onValidateTeam(team) {
-			const gods = [];
-			const ubers = []
-			let healnum=0;
-			let regenerator=0;
-			let gen = 0
-			let sameGenNum = 0
-			let healmoves=['rest','recover','softboiled','morningsun','moonlight','wish','slackoff','roost'];
+	// 	mod: 'gen9',
+	// 	ruleset: ['Standard NatDex'],
+	// 	banlist: [
+	// 		'Ultranecrozium Z','Xerneas','Red Orb','Blue Orb','ND AG', 'Arena Trap', 'Moody',  'Shadow Tag', 'King\'s Rock',
+	// 		'Quick Claw', 'Razor Fang', 'Assist', 'Baton Pass', 'Last Respects', 'Shed Tail'
+	// 	],
+	// 	unbanlist: ['Calyrex', 'Cosmoem', 'Cosmog'],
+	// 	restricted: [
+	// 		'Restricted Legendary','Arceus','Calyrex-Ice'
+	// 	],
+	// 	onValidateTeam(team) {
+	// 		const gods = [];
+	// 		const ubers = []
+	// 		let healnum=0;
+	// 		let regenerator=0;
+	// 		let gen = 0
+	// 		let sameGenNum = 0
+	// 		let healmoves=['rest','recover','softboiled','morningsun','moonlight','wish','slackoff','roost'];
 			
-			for (const set of team) {
-				let species = this.dex.species.get(set.species);
-				if (typeof species.battleOnly === 'string') species = this.dex.species.get(species.battleOnly);
-				let baseSpecies = species;
-				if (
-					(species.baseSpecies === 'Zamazenta' && this.toID(set.item) === 'rustedshield') ||
-					(species.baseSpecies === 'Zacian' && this.toID(set.item) === 'rustedsword')
-				) {
-					species = this.dex.species.get(`${species.baseSpecies}-Crowned`);
-				}
-				if (set.item && this.dex.items.get(set.item).megaStone) {
-					const item = this.dex.items.get(set.item);
-					if (item.megaEvolves === species.baseSpecies) {
-						species = this.dex.species.get(item.megaStone);
-					}
-				}
-				if (this.ruleTable.isRestrictedSpecies(species)) {
-					gods.push(species.name);
+	// 		for (const set of team) {
+	// 			let species = this.dex.species.get(set.species);
+	// 			if (typeof species.battleOnly === 'string') species = this.dex.species.get(species.battleOnly);
+	// 			let baseSpecies = species;
+	// 			if (
+	// 				(species.baseSpecies === 'Zamazenta' && this.toID(set.item) === 'rustedshield') ||
+	// 				(species.baseSpecies === 'Zacian' && this.toID(set.item) === 'rustedsword')
+	// 			) {
+	// 				species = this.dex.species.get(`${species.baseSpecies}-Crowned`);
+	// 			}
+	// 			if (set.item && this.dex.items.get(set.item).megaStone) {
+	// 				const item = this.dex.items.get(set.item);
+	// 				if (item.megaEvolves === species.baseSpecies) {
+	// 					species = this.dex.species.get(item.megaStone);
+	// 				}
+	// 			}
+	// 			if (this.ruleTable.isRestrictedSpecies(species)) {
+	// 				gods.push(species.name);
 					
-					gen = species.gen;
-					if(species.isMega || species.id === 'dialgaorigin' || species.id === 'palkiaorigin'){
-						gen = baseSpecies.gen
-					}
-				}
-				if (this.dex.toID(set.ability)=='regenerator'){
-					regenerator++;
-				}
-				for(let move of set.moves){
-					if(healmoves.includes(this.toID(move))){
-						healnum++;
-					}
-				}
-			}
-			if (regenerator > 1) {
-				return [`你有超过1只再生力.)`];
-			}
-			if (healnum > 2) {
-				return [`你有超过2个回复技能)`];
-			}
-			if (gods.length > 1) {
-				return [`你有超过1只一级神`, `(${Array.from(gods).join(', ')} 是一级神宝可梦.)`];
-			}
-			if (gods.length < 1) {
-				return [`你没有一级神`];
-			}
+	// 				gen = species.gen;
+	// 				if(species.isMega || species.id === 'dialgaorigin' || species.id === 'palkiaorigin'){
+	// 					gen = baseSpecies.gen
+	// 				}
+	// 			}
+	// 			if (this.dex.toID(set.ability)=='regenerator'){
+	// 				regenerator++;
+	// 			}
+	// 			for(let move of set.moves){
+	// 				if(healmoves.includes(this.toID(move))){
+	// 					healnum++;
+	// 				}
+	// 			}
+	// 		}
+	// 		if (regenerator > 1) {
+	// 			return [`你有超过1只再生力.)`];
+	// 		}
+	// 		if (healnum > 2) {
+	// 			return [`你有超过2个回复技能)`];
+	// 		}
+	// 		if (gods.length > 1) {
+	// 			return [`你有超过1只一级神`, `(${Array.from(gods).join(', ')} 是一级神宝可梦.)`];
+	// 		}
+	// 		if (gods.length < 1) {
+	// 			return [`你没有一级神`];
+	// 		}
 			
-			for (const set of team) {
-				let species = this.dex.species.get(set.species);
-				if (typeof species.battleOnly === 'string') species = this.dex.species.get(species.battleOnly);
-				let baseSpecies = species;
-				if (
-					(species.baseSpecies === 'Zamazenta' && this.toID(set.item) === 'rustedshield') ||
-					(species.baseSpecies === 'Zacian' && this.toID(set.item) === 'rustedsword')
-				) {
-					species = this.dex.species.get(`${species.baseSpecies}-Crowned`);
-				}
-				if (set.item && this.dex.items.get(set.item).megaStone) {
-					const item = this.dex.items.get(set.item);
-					if (item.megaEvolves === species.baseSpecies) {
-						species = this.dex.species.get(item.megaStone);
-					}
-				}
-				if (species.name === gods[0]) continue;
-				let ygen = species.isMega?baseSpecies.gen:species.gen; 
-				if (ygen === gen) {
-					sameGenNum++;
-				}
-				if (species.natDexTier === 'Uber' || species.natDexTier === '(Uber)') {
-					if (ygen === gen) {
-						ubers.push(species.name);
-					} else {
-						return [`你有跟1级神不同世代的ub宝可梦)`];
-					}
-				}
-			}
-			if (ubers.length > 1) {
-				return [`你有超过1只ub宝可梦`, `(${Array.from(ubers).join(', ')} 是ub宝可梦.)`];
-			}
-			if (sameGenNum < 1) {
-				return [`你没有跟1级神同世代的宝可梦)`];
-			}
-		},
-	},
-	////////////////////   奈亚子杯
+	// 		for (const set of team) {
+	// 			let species = this.dex.species.get(set.species);
+	// 			if (typeof species.battleOnly === 'string') species = this.dex.species.get(species.battleOnly);
+	// 			let baseSpecies = species;
+	// 			if (
+	// 				(species.baseSpecies === 'Zamazenta' && this.toID(set.item) === 'rustedshield') ||
+	// 				(species.baseSpecies === 'Zacian' && this.toID(set.item) === 'rustedsword')
+	// 			) {
+	// 				species = this.dex.species.get(`${species.baseSpecies}-Crowned`);
+	// 			}
+	// 			if (set.item && this.dex.items.get(set.item).megaStone) {
+	// 				const item = this.dex.items.get(set.item);
+	// 				if (item.megaEvolves === species.baseSpecies) {
+	// 					species = this.dex.species.get(item.megaStone);
+	// 				}
+	// 			}
+	// 			if (species.name === gods[0]) continue;
+	// 			let ygen = species.isMega?baseSpecies.gen:species.gen; 
+	// 			if (ygen === gen) {
+	// 				sameGenNum++;
+	// 			}
+	// 			if (species.natDexTier === 'Uber' || species.natDexTier === '(Uber)') {
+	// 				if (ygen === gen) {
+	// 					ubers.push(species.name);
+	// 				} else {
+	// 					return [`你有跟1级神不同世代的ub宝可梦)`];
+	// 				}
+	// 			}
+	// 		}
+	// 		if (ubers.length > 1) {
+	// 			return [`你有超过1只ub宝可梦`, `(${Array.from(ubers).join(', ')} 是ub宝可梦.)`];
+	// 		}
+	// 		if (sameGenNum < 1) {
+	// 			return [`你没有跟1级神同世代的宝可梦)`];
+	// 		}
+	// 	},
+	// },
+	////////////////////   奈亚子杯和其他双打比赛分级
 	{
 		name: "[Gen 8] VGC 2021 Series 9",
 
@@ -6042,6 +6042,127 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 		ruleset: ['Flat Rules', '!! Adjust Level = 50', 'Min Source Gen = 8', 'VGC Timer', 'Limit One Restricted'],
 		restricted: ['Restricted Legendary'],
 	},
+	{
+		name: "[Gen 9] VGC 2026 Reg Ultra",
+
+		mod: 'gen9',
+		gameType: 'doubles',
+		bestOfDefault: true,
+		ruleset: ['Flat Rules', '!! Adjust Level = 50', 'Min Source Gen = 9', 'VGC Timer', 'Open Team Sheets'],
+		unbanlist: ['Tapu Koko', 'Tapu Lele', 'Tapu Fini', 'Tapu Bulu', 'Nihilego', 'Buzzwole', 'Pheromosa', 'Xurkitree', 'Celesteela',
+			'Kartana', 'Guzzlord', 'Naganadel', 'Poipole', 'Stakataka', 'Blacephalon'],
+		checkCanLearn(move, species, lsetData, set) {
+			if (move.id == 'terablast') {
+				return null;
+			}
+			if (species.id == 'tapukoko' && ['Alluring Voice', 'Supercell Slam', 'Snatch'].includes(move.name)) {
+				return null
+			}
+			if (species.id == 'tapulele' && ['Alluring Voice', 'Psychic Noise', 'Snatch'].includes(move.name)) {
+				return null
+			}
+			if (species.id == 'tapubulu' && ['Alluring Voice', 'Grassy Glide', 'Play Rough', 'Snatch'].includes(move.name)) {
+				return null
+			}
+			if (species.id == 'tapufini' && ['Alluring Voice', 'Flip Turn', 'Chilling Water','Snatch'].includes(move.name)) {
+				return null
+			}
+			if (species.id == 'buzzwole' && ['Body Press', 'U-turn', 'Upper Hand'].includes(move.name)) {
+				return null
+			}
+			if (species.id == 'pheromosa' && ['Dual Wingbeat', 'Ice Spinner', 'Upper Hand'].includes(move.name)) {
+				return null
+			}
+			if (species.id == 'Xurkitree' && ['Tail Glow', 'Electro Shot'].includes(move.name)) {
+				return null
+			}
+			if (species.id == 'celesteela' && ['Fire Spin'].includes(move.name)) {
+				return null
+			}
+			if (species.id == 'kartana' && ['Aqua Cutter', 'Superpower'].includes(move.name)) {
+				return null
+			}
+			if (species.id == 'guzzlord' && ['Scale Shot'].includes(move.name)) {
+				return null
+			}
+			if (species.id == 'incineroar' && ['Snatch'].includes(move.name)) {
+				return null
+			}
+			if (['Tapu Koko', 'Tapu Lele', 'Tapu Fini', 'Tapu Bulu', 'Nihilego', 'Buzzwole', 'Pheromosa', 'Xurkitree', 'Celesteela',
+			'Kartana', 'Guzzlord', 'Naganadel', 'Poipole', 'Stakataka', 'Blacephalon'].includes(species.name)) {
+				const validator = Object.create(this) as TeamValidator & { minSourceGen: number };
+				validator.minSourceGen = 8;
+				return validator.checkCanLearn(move, species, lsetData, set);
+			}
+            
+			return this.checkCanLearn(move, species, lsetData, set);
+		},
+	},
+	{
+		name: "[Gen 9] VGC 2026 Reg Ultra (Bo3)",
+
+		mod: 'gen9',
+		gameType: 'doubles',
+		ruleset: ['Flat Rules', '!! Adjust Level = 50', 'Min Source Gen = 9', 'VGC Timer', 'Force Open Team Sheets', 'Best of = 3'],
+		unbanlist: ['Tapu Koko', 'Tapu Lele', 'Tapu Fini', 'Tapu Bulu', 'Nihilego', 'Buzzwole', 'Pheromosa', 'Xurkitree', 'Celesteela',
+			'Kartana', 'Guzzlord', 'Naganadel', 'Poipole', 'Stakataka', 'Blacephalon'],
+		checkCanLearn(move, species, lsetData, set) {
+			if (move.id == 'terablast') {
+				return null;
+			}
+			if (species.id == 'tapukoko' && ['Alluring Voice', 'Supercell Slam', 'Snatch'].includes(move.name)) {
+				return null
+			}
+			if (species.id == 'tapulele' && ['Alluring Voice', 'Psychic Noise', 'Snatch'].includes(move.name)) {
+				return null
+			}
+			if (species.id == 'tapubulu' && ['Alluring Voice', 'Grassy Glide', 'Play Rough', 'Snatch'].includes(move.name)) {
+				return null
+			}
+			if (species.id == 'tapufini' && ['Alluring Voice', 'Flip Turn', 'Chilling Water','Snatch'].includes(move.name)) {
+				return null
+			}
+			if (species.id == 'buzzwole' && ['Body Press', 'U-turn', 'Upper Hand'].includes(move.name)) {
+				return null
+			}
+			if (species.id == 'pheromosa' && ['Dual Wingbeat', 'Ice Spinner', 'Upper Hand'].includes(move.name)) {
+				return null
+			}
+			if (species.id == 'Xurkitree' && ['Tail Glow', 'Electro Shot'].includes(move.name)) {
+				return null
+			}
+			if (species.id == 'celesteela' && ['Fire Spin'].includes(move.name)) {
+				return null
+			}
+			if (species.id == 'kartana' && ['Aqua Cutter', 'Superpower'].includes(move.name)) {
+				return null
+			}
+			if (species.id == 'guzzlord' && ['Scale Shot'].includes(move.name)) {
+				return null
+			}
+			if (species.id == 'incineroar' && ['Snatch'].includes(move.name)) {
+				return null
+			}
+			if (['Tapu Koko', 'Tapu Lele', 'Tapu Fini', 'Tapu Bulu', 'Nihilego', 'Buzzwole', 'Pheromosa', 'Xurkitree', 'Celesteela',
+			'Kartana', 'Guzzlord', 'Naganadel', 'Poipole', 'Stakataka', 'Blacephalon'].includes(species.name)) {
+				const validator = Object.create(this) as TeamValidator & { minSourceGen: number };
+				validator.minSourceGen = 8;
+				return validator.checkCanLearn(move, species, lsetData, set);
+			}
+            
+			return this.checkCanLearn(move, species, lsetData, set);
+		},
+		
+	},
+	{
+		name: "[Gen 9] Doubles Custom Game 6c4 (BO3)",
+
+		mod: 'gen9',
+		gameType: 'doubles',
+		ruleset: ['Flat Rules', '!! Adjust Level = 50', 'Min Source Gen = 9', 'VGC Timer', 'Open Team Sheets', '!Obtainable Moves'],
+		unbanlist: ['Restricted Legendary'],
+	},
+	
 	///////////////国服多人分级
 	{
 		section: "PSChina Multi-Player",
