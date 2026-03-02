@@ -6048,14 +6048,14 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 		mod: 'gen9',
 		gameType: 'doubles',
 		bestOfDefault: true,
-		ruleset: ['Flat Rules', '!! Adjust Level = 50', 'Min Source Gen = 9', 'VGC Timer', 'Open Team Sheets'],
+		ruleset: ['Flat Rules', '!! Adjust Level = 50', 'Min Source Gen = 9', 'VGC Timer', 'Open Team Sheets', 'Sketch Post-Gen 7 Moves'],
 		unbanlist: ['Tapu Koko', 'Tapu Lele', 'Tapu Fini', 'Tapu Bulu', 'Nihilego', 'Buzzwole', 'Pheromosa', 'Xurkitree', 'Celesteela',
-			'Kartana', 'Guzzlord', 'Naganadel', 'Poipole', 'Stakataka', 'Blacephalon'],
+			'Kartana', 'Guzzlord', 'Naganadel', 'Poipole', 'Stakataka', 'Blacephalon', 'Snatch', 'Tail Glow'],
 		checkCanLearn(move, species, lsetData, set) {
 			if (move.id == 'terablast') {
 				return null;
 			}
-			if (species.id == 'tapukoko' && ['Alluring Voice', 'Supercell Slam', 'Snatch'].includes(move.name)) {
+			if (species.id == 'tapukoko' && ['Alluring Voice', 'Supercell Slam', 'Play Rough', 'Snatch'].includes(move.name)) {
 				return null
 			}
 			if (species.id == 'tapulele' && ['Alluring Voice', 'Psychic Noise', 'Snatch'].includes(move.name)) {
@@ -6073,7 +6073,7 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 			if (species.id == 'pheromosa' && ['Dual Wingbeat', 'Ice Spinner', 'Upper Hand'].includes(move.name)) {
 				return null
 			}
-			if (species.id == 'Xurkitree' && ['Tail Glow', 'Electro Shot'].includes(move.name)) {
+			if (species.id == 'Xurkitree' && ['Tail Glow'].includes(move.name)) {
 				return null
 			}
 			if (species.id == 'celesteela' && ['Fire Spin'].includes(move.name)) {
@@ -6103,14 +6103,14 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 
 		mod: 'gen9',
 		gameType: 'doubles',
-		ruleset: ['Flat Rules', '!! Adjust Level = 50', 'Min Source Gen = 9', 'VGC Timer', 'Force Open Team Sheets', 'Best of = 3'],
+		ruleset: ['Flat Rules', '!! Adjust Level = 50', 'Min Source Gen = 9', 'VGC Timer', 'Force Open Team Sheets', 'Best of = 3', 'Sketch Post-Gen 7 Moves',],
 		unbanlist: ['Tapu Koko', 'Tapu Lele', 'Tapu Fini', 'Tapu Bulu', 'Nihilego', 'Buzzwole', 'Pheromosa', 'Xurkitree', 'Celesteela',
-			'Kartana', 'Guzzlord', 'Naganadel', 'Poipole', 'Stakataka', 'Blacephalon'],
+			'Kartana', 'Guzzlord', 'Naganadel', 'Poipole', 'Stakataka', 'Blacephalon', 'Snatch', 'Tail Glow'],
 		checkCanLearn(move, species, lsetData, set) {
 			if (move.id == 'terablast') {
 				return null;
 			}
-			if (species.id == 'tapukoko' && ['Alluring Voice', 'Supercell Slam', 'Snatch'].includes(move.name)) {
+			if (species.id == 'tapukoko' && ['Alluring Voice', 'Supercell Slam', 'Play Rough', 'Snatch'].includes(move.name)) {
 				return null
 			}
 			if (species.id == 'tapulele' && ['Alluring Voice', 'Psychic Noise', 'Snatch'].includes(move.name)) {
@@ -6128,7 +6128,7 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 			if (species.id == 'pheromosa' && ['Dual Wingbeat', 'Ice Spinner', 'Upper Hand'].includes(move.name)) {
 				return null
 			}
-			if (species.id == 'Xurkitree' && ['Tail Glow', 'Electro Shot'].includes(move.name)) {
+			if (species.id == 'Xurkitree' && ['Tail Glow'].includes(move.name)) {
 				return null
 			}
 			if (species.id == 'celesteela' && ['Fire Spin'].includes(move.name)) {
