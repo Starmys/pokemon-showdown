@@ -24,6 +24,7 @@ export const RewardPool = {
 		'Get Urshifu', 'Get Zarude', 'Get Melmetal', 'Get Latios', 'Get Latias', 'Get Hoopa-Unbound',
 		'Get Genesect', 'Get Regigigas','Get Geodude-Alola', 'Get Happiny', 'Get Bergmite', 'Get Enamorus',
 		'Get Enamorus-Therian', 'Get Landorus','Get Landorus-Therian','Get Floette', 'Get Sableye','Get Dondozo',
+		'Get Floette-Eternal', 'Get Chandelure', 'Get Hawlucha', 'Get Chimecho'
 	],
 	"pokemonroom2": [],
 	'commonroom': [
@@ -78,7 +79,7 @@ export const RewardPool = {
 		'Become Fortitude Shield', 'Become Poison Around', 'Become Alpha Bond', 'Become Incomplete Nirvana',
 		'Become Sheer Force', 'Become Beast Boost', 'Become Protean', 'Become Regenerator',
 		'Become Speed Boost', 'Become Concentrator', 'Become Immolating', 'Become Renewal', 'Become Sacrifice',
-		'Become Power Priority',
+		'Become Power Priority', 'Become Master All'
 	],
 	'abilityroom2': [],
 
@@ -241,7 +242,10 @@ export const WeightPool = {
 		'Get Floette': 10,
 		'Get Sableye':10,
 		'Get Dondozo':10,
-
+		'Get Floette-Eternal':8,
+		'Get Chandelure':10,
+		'Get Hawlucha':10,
+		'Get Chimecho':10,
 	},
 	"commonroomweight": {
 		'Evo All': 5,
@@ -434,6 +438,7 @@ export const WeightPool = {
 		"Become Born Of Explosion": 10,
 		"Become Szpenguin": 10,
 		'Become Power Priority': 10,
+		'Become Master All': 10,
 	},
 	'eliteroomweight': {
 		'Gain Artirain': 10,

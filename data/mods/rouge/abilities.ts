@@ -559,7 +559,7 @@ export const Abilities: import('../../../sim/dex-abilities').ModdedAbilityDataTa
 	},
 	searabit: {
 		onTryHit(target, source, move) {
-			if (target !== source && (move.type === 'Water' || move.type === 'Glass')) {
+			if (target !== source && (move.type === 'Water' || move.type === 'Grass')) {
 				if (!this.boost({ spa: 1 })) {
 					this.add('-immune', target, '[from] ability: Storm Drain');
 				}
@@ -1118,6 +1118,16 @@ export const Abilities: import('../../../sim/dex-abilities').ModdedAbilityDataTa
 			}	
 		},
 		name: "Power Priority",
+		rating: 3,
+		num: 5,
+	},
+	masterall: {
+		onBasePower(damage, source, target, move) {
+			if (!source.types.includes(move.type)) {
+				return this.chainModify([5734, 4096]);
+			}	
+		},
+		name: "Master All",
 		rating: 3,
 		num: 5,
 	},

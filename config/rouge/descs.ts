@@ -336,6 +336,10 @@ export const RougeDesc = {
 		name: 'Power Priority',
 		desc: '先至技能先至度减半威力翻倍',
 	},
+	becomemasterall: {
+		name: 'Master All',
+		desc: '非本系技能威力提高40%',
+	},
 	//----------------elitemoves---------
 	gainartirain: {
 		name: 'Artirain',
@@ -685,6 +689,14 @@ export const RougeDesc = {
 	getfloette: {
 		name: 'Floette',
 		desc: '增加草属性',
+	},
+	getfloetteeternal: {
+		name: 'Floette-Eternal',
+		desc: 'mega石携带概率高（25%携带率）',
+	},
+	getchandelure: {
+		name: 'Chandelure',
+		desc: '技能池里多了星碎，冤冤相报，回火',
 	},
 
 	addlife: {
