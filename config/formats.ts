@@ -6354,7 +6354,7 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 		ruleset: [
 			'Timer Starting = 300', 'Timer Add Per Turn = 30', 'Timer Max Per Turn = 300', 'Timer Max First Turn = 300', 'Timer Grace = 300',
 			'Obtainable', 'Team Preview', 'Gravity Sleep Clause','Species Clause', 'Nickname Clause', 'OHKO Clause',
-			'Moody Clause', 'Evasion Moves Clause', 'Endless Battle Clause', 'HP Percentage Mod', 'Cancel Mod',
+			'Evasion Moves Clause', 'Endless Battle Clause', 'HP Percentage Mod', 'Cancel Mod',
 		],
 		banlist: [
 			'Jirachi', 'Magearna', 'swagger', 'Uber', 'Arena Trap', 'Power Construct', 'Shadow Tag', 'Baton Pass',
