@@ -543,7 +543,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 			this.actions.useMoveInner('Baton Pass', target);
 		},
 		
-		secondary: null,
+		secondary: undefined,
 		target: "self",
 		type: "Normal",
 		isZ: true,
@@ -563,7 +563,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 			atk: 2,
 			spe: 2,
 		},
-		secondary: null,
+		secondary: undefined,
 		target: "self",
 		type: "Dragon",
 		contestType: "Cool",
@@ -589,7 +589,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 			def: 1,
 			spd: 1,
 		},
-		secondary: null,
+		secondary: undefined,
 		target: "self",
 		type: "Psychic",
 		zMove: {boost: {spd: 1}},
@@ -616,7 +616,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 			spd: 1,
 			accuracy:1,
 		},
-		secondary: null,
+		secondary: undefined,
 		target: "self",
 		type: "Bug",
 		noPPBoosts:true,
@@ -762,7 +762,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 				this.directDamage(pokemon.baseMaxhp * (0.25+i*0.05));
 			},
 		},
-		secondary: null,
+		secondary: undefined,
 		target: "randomNormal",
 		type: "Ghost",
 		zMove: { effect: 'curse' },
@@ -794,7 +794,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 			def: 2,
 			spd: 2,
 		},
-		secondary: null,
+		secondary: undefined,
 		target: "self",
 		type: "Normal",
 		zMove: { effect: 'stockpile' },
@@ -817,7 +817,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 			spd: 1,
 			spe: 1,
 		},
-		secondary: null,
+		secondary: undefined,
 		target: "self",
 		type: "Normal",
 		contestType: "Beautiful",
@@ -847,7 +847,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 			this.add('-anim', source, 'Hidden Power', target);
 		},
 		ignoreImmunity: true,
-		secondary: null,
+		secondary: undefined,
 		target: "normal",
 		type: "Normal",
 		zMove: { basePower: 120 },
@@ -873,7 +873,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 			this.actions.useMoveInner(this.sample(target.baseMoves),target);
 		},
 		
-		secondary: null,
+		secondary: undefined,
 		target: "self",
 		type: "Normal",
 		zMove: {effect: 'clearnegativeboost'},
@@ -899,7 +899,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		onPrepareHit(target, source) {
 			this.add('-anim', source, 'Steel Beam', target);
 		},
-		secondary: null,
+		secondary: undefined,
 		target: "normal",
 		type: "Steel",
 		zMove: { basePower: 200 },
@@ -918,7 +918,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		pp: 5,
 		priority: 0,
 		flags: { protect: 1, mirror: 1 },
-		secondary: null,
+		secondary: undefined,
 		ohko: 'Ice',
 		target: "normal",
 		type: "Ice",
@@ -947,7 +947,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 				return false;
 			}
 		},
-		secondary: null,
+		secondary: undefined,
 		target: "normal",
 		type: "Bug",
 		contestType: "Cute",
@@ -971,7 +971,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		priority: 0,
 		flags: { protect: 1, mirror: 1 },
 		recoil: [1, 2],
-		secondary: null,
+		secondary: undefined,
 		target: "normal",
 		type: "Fairy",
 		zMove: { basePower: 200 },
@@ -1024,7 +1024,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		onHit(pokemon) {
 			this.damage(pokemon.maxhp * 0.1, pokemon, pokemon, "recoil");
 		},
-		secondary: null,
+		secondary: undefined,
 		target: "self",
 		type: "Normal",
 		zMove: { effect: 'clearnegativeboost' },
@@ -1058,7 +1058,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		boosts: {
 			spa: 12,
 		},
-		secondary: null,
+		secondary: undefined,
 		target: "self",
 		type: "Psychic",
 		onTryMove() {
@@ -1076,7 +1076,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		name: "Twining Vine",
 		pp: 20,
 		priority: 0,
-		flags: { reflectable: 1 },
+		flags: { reflectable: 1, nonsky: 1, mustpressure: 1 },
 		sideCondition: 'twiningvine',
 		condition: {
 			onSideStart(side) {
@@ -1091,8 +1091,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 				
 			},
 		},
-		secondary: null,
-		pressureTarget: "self",
+		secondary: undefined,
 		target: "foeSide",
 		type: "Grass",
 		zMove: { boost: { spe: 1 } },
@@ -1112,7 +1111,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		name: "Stasis Ward",
 		pp: 20,
 		priority: 0,
-		flags: { reflectable: 1 },
+		flags: { reflectable: 1, nonsky: 1, mustpressure: 1 },
 		sideCondition: 'stasisward',
 		condition: {
 			onSideStart(side) {
@@ -1132,8 +1131,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 				this.add('-sideend', targetSide, 'Grass Pledge');
 			},
 		},
-		secondary: null,
-		pressureTarget: "self",
+		secondary: undefined,
 		target: "foeSide",
 		type: "Ice",
 		zMove: { boost: { spe: 1 } },
@@ -1159,7 +1157,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 				return this.chainModify(2);
 			}
 		},
-		secondary: null,
+		secondary: undefined,
 		target: "normal",
 		type: "Flying",
 		contestType: "Cute",
@@ -1186,7 +1184,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 				return this.chainModify(2);
 			}
 		},
-		secondary: null,
+		secondary: undefined,
 		target: "normal",
 		type: "Water",
 		contestType: "Cute",
@@ -1212,7 +1210,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 				this.field.setTerrain('Psychic Terrain', source);
 			}
 		},
-		secondary: null,
+		secondary: undefined,
 		target: "normal",
 		type: "Water",
 		contestType: "Cute",
@@ -1234,7 +1232,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		priority: 0,
 		flags: { protect: 1, mirror: 1 },
 		volatileStatus: 'partiallytrapped',
-		secondary: null,
+		secondary: undefined,
 		target: "normal",
 		type: "Psychic",
 		contestType: "Beautiful",
@@ -1300,7 +1298,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 				this.add('-message', 'The battlefield is no longer covered in Steel.');
 			},
 		},
-		secondary: null,
+		secondary: undefined,
 		target: "all",
 		type: "Steel",
 	},
@@ -1347,7 +1345,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		priority: 0,
 		flags: { protect: 1, mirror: 1, heal: 1 },
 		drain: [1, 2],
-		secondary: null,
+		secondary: undefined,
 		target: "allAdjacent",
 		type: "Electric",
 		contestType: "Clever",
@@ -1394,7 +1392,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		priority: 0,
 		flags: { contact: 1, protect: 1, mirror: 1 },
 		multihit: 2,
-		secondary: null,
+		secondary: undefined,
 		target: "normal",
 		type: "Flying",
 		maxMove: { basePower: 130 },
@@ -1415,7 +1413,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		pp: 20,
 		priority: 0,
 		flags: { contact: 1, protect: 1, mirror: 1, distance: 1 },
-		secondary: null,
+		secondary: undefined,
 		target: "any",
 		type: "Flying",
 		contestType: "Cool",
@@ -1506,7 +1504,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		pp: 5,
 		priority: 0,
 		flags: { protect: 1, mirror: 1,slicing: 1 },
-		secondary: null,
+		secondary: undefined,
 		target: "normal",
 		type: "Psychic",
 		contestType: "Beautiful",
@@ -1541,7 +1539,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		onPrepareHit(target, source) {
 			this.add('-anim', source, 'Hidden Power', target);
 		},
-		secondary: null,
+		secondary: undefined,
 		target: "normal",
 		type: "Fire",
 		zMove: { basePower: 120 },
@@ -1564,7 +1562,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		onPrepareHit(target, source) {
 			this.add('-anim', source, 'Surf', target);
 		},
-		secondary: null,
+		secondary: undefined,
 		target: "normal",
 		type: "Water",
 		zMove: { basePower: 140 },
@@ -1633,7 +1631,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		onPrepareHit(target, source) {
 			this.add('-anim', source, 'Judgment', target);
 		},
-		secondary: null,
+		secondary: undefined,
 		target: "normal",
 		type: "Normal",
 		zMove: { basePower: 175 },
@@ -1699,7 +1697,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 			this.attrLastMove('[still]');
 		},
 		
-		secondary: null,
+		secondary: undefined,
 		target: "self",
 		type: "Grass",
 		zMove: { boost: { def: 1 } },
@@ -1720,7 +1718,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		pp: 10,
 		priority: 0,
 		flags: { contact: 1, protect: 1, mirror: 1 },
-		secondary: null,
+		secondary: undefined,
 		target: "normal",
 		type: "Fighting",
 		zMove: { basePower: 160 },
@@ -1777,7 +1775,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		onPrepareHit(target, source) {
 			this.add('-anim', source, 'Healing Wish', target);
 		},
-		secondary: null,
+		secondary: undefined,
 		target: "self",
 		type: "Psychic",
 		contestType: "Beautiful",
@@ -1791,7 +1789,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		pp: 15,
 		priority: 1,
 		flags: {contact: 1, protect: 1, mirror: 1, punch: 1},
-		secondary: null,
+		secondary: undefined,
 		hasSheerForce: true,
 		target: "normal",
 		type: "Bug",
@@ -1807,7 +1805,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		noPPBoosts:true,
 		priority: 0,
 		flags: {},
-		secondary: null,
+		secondary: undefined,
 		target: "self",
 		type: "Normal",
 		zMove: {effect: 'clearnegativeboost'},
@@ -1882,7 +1880,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		onPrepareHit(target, source) {
 			this.add('-anim', source, 'Geomancy', target);
 		},
-		secondary: null,
+		secondary: undefined,
 		target: "self",
 		type: "Normal",
 		zMove: {boost: {atk: 1, def: 1, spa: 1, spd: 1, spe: 1}},
@@ -8138,6 +8136,102 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		},
 
 	},
+	getfloetteeternal: {
+		num: 1000,
+		name: 'Get Floette-Eternal',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(getRougeSet(PokemonPool['Floette-Eternal'], this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Floette-Eternal has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
+	getchandelure: {
+		num: 1000,
+		name: 'Get Chandelure',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(getRougeSet(PokemonPool['Chandelure'], this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Chandelure has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
+	gethawlucha: {
+		num: 1000,
+		name: 'Get Hawlucha',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(getRougeSet(PokemonPool['Hawlucha'], this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Hawlucha has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
+	getchimecho: {
+		num: 1000,
+		name: 'Get Chimecho',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(getRougeSet(PokemonPool['Chimecho'], this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Chimecho has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
 	//-------------abilitymoves------------
 
 	becomebomber: {
@@ -8864,6 +8958,24 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 	becomepowerpriority: {
 		num: 1002,
 		name: 'Become Power Priority',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			selectpokemon(pokemon, ' Transform Ability');
+		},
+		desc: '',
+		shortDesc: '',
+	},
+	becomemasterall: {
+		num: 1002,
+		name: 'Become Master All',
 		type: 'Normal',
 		accuracy: true,
 		basePower: 0,
