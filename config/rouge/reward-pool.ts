@@ -24,7 +24,8 @@ export const RewardPool = {
 		'Get Urshifu', 'Get Zarude', 'Get Melmetal', 'Get Latios', 'Get Latias', 'Get Hoopa-Unbound',
 		'Get Genesect', 'Get Regigigas','Get Geodude-Alola', 'Get Happiny', 'Get Bergmite', 'Get Enamorus',
 		'Get Enamorus-Therian', 'Get Landorus','Get Landorus-Therian','Get Floette', 'Get Sableye','Get Dondozo',
-		'Get Floette-Eternal', 'Get Chandelure', 'Get Hawlucha', 'Get Chimecho'
+		'Get Floette-Eternal', 'Get Chandelure', 'Get Hawlucha', 'Get Chimecho', 'Get Eelektross', 'Get Venipede',
+		'Get Staraptor'
 	],
 	"pokemonroom2": [],
 	'commonroom': [
@@ -67,6 +68,7 @@ export const RewardPool = {
 		'Learn Blizzard', 'Learn Solar Beam', 'Learn Solar Blade', 'Learn Hurricane', 'Learn Thunder',
 		'Learn Weather Ball', 'Learn Tri Attack', 'Learn Explosion', 'Learn Self-Destruct',
 		'Learn Quick Attack','Learn Vacuum Wave','Learn Bullet Punch','Learn Water Shuriken','Learn Accelerock','Learn Sucker Punch',
+		'Learn Shift Gear', 'Learn Coil','Learn Super Acupressure',
 	],
 	'moveroom2': [],
 
@@ -246,6 +248,9 @@ export const WeightPool = {
 		'Get Chandelure':10,
 		'Get Hawlucha':10,
 		'Get Chimecho':10,
+		'Get Eelektross':10,
+		'Get Venipede':10,
+		'Get Staraptor':10
 	},
 	"commonroomweight": {
 		'Evo All': 5,
@@ -395,6 +400,9 @@ export const WeightPool = {
 		'Learn Water Shuriken': 0,
 		'Learn Accelerock': 0,
 		'Learn Sucker Punch': 8,
+		'Learn Shift Gear': 7,
+		'Learn Coil': 8,
+		'Learn Super Acupressure': 10,
 	},
 	'abilityroomweight': {
 		'Become Bomber': 10,
@@ -503,8 +511,8 @@ export const WeightPool = {
 		"Gain Contrary Blade": 10,
 		"Gain Melody Of Siren": 10,
 		"Gain Conjuring Show": 10,
-		"Gain Holographic Projection": 5,
-		"Gain Replication": 5,
+		"Gain Holographic Projection": 10,
+		"Gain Replication": 6,
 		"Gain Physical Suppression": 5,
 		'Gain Move Reaction': 5,
 		'Gain Wrathwell': 8,

@@ -856,7 +856,7 @@ export const Abilities: import('../../../sim/dex-abilities').ModdedAbilityDataTa
 	},
 	magicbeam: {
 		onAfterMoveSecondarySelf(source, target, move) {
-			if (move.category !== 'Status' && move.flags['heal'] && move.hit===1) {
+			if (move.category !== 'Status' && move.flags['heal'] && move.hit <= 2) {
 				
 				let x: StatIDExceptHP;
 				let stats: StatIDExceptHP = 'atk';
@@ -1129,6 +1129,25 @@ export const Abilities: import('../../../sim/dex-abilities').ModdedAbilityDataTa
 		},
 		name: "Master All",
 		rating: 3,
+		num: 5,
+	},
+	scolipedeshellarmor: {
+		onCriticalHit: false,
+		// flags: { breakable: 1 },
+		onDamagingHit(damage, target, source, move) {
+			if (!source.trySetStatus('psn', target) && !source.status && source.hasType('Poison')) {
+				this.add('-immune', source);
+			}
+		},
+		onResidualOrder: 28,
+		onResidualSubOrder: 2,
+		onResidual(pokemon) {
+			if (pokemon.activeTurns) {
+				this.boost({ spe: 1 });
+			}
+		},
+		name: "Scolipede Shell Armor",
+		rating: 1,
 		num: 5,
 	},
 };
