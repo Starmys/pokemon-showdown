@@ -50,11 +50,11 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 				pokemon.maxhp = Math.floor(pokemon.maxhp * ratio);
 				pokemon.hp = Math.floor(pokemon.hp * ratio);
 				this.add('-heal', pokemon, pokemon.getHealth, '[silent]');
-				pokemon.storedStats.atk = Math.floor(pokemon.storedStats.atk * 1.5);
-				pokemon.storedStats.spa = Math.floor(pokemon.storedStats.spa * 1.5);
-				pokemon.storedStats.def = Math.floor(pokemon.storedStats.def * 1.5);
-				pokemon.storedStats.spd = Math.floor(pokemon.storedStats.spd * 1.5);
-				pokemon.storedStats.spe = Math.floor(pokemon.storedStats.spe * 1.5);
+				pokemon.storedStats.atk = Math.floor(pokemon.storedStats.atk * 1.8);
+				pokemon.storedStats.spa = Math.floor(pokemon.storedStats.spa * 1.8);
+				pokemon.storedStats.def = Math.floor(pokemon.storedStats.def * 1.8);
+				pokemon.storedStats.spd = Math.floor(pokemon.storedStats.spd * 1.8);
+				pokemon.storedStats.spe = Math.floor(pokemon.storedStats.spe * 1.8);
 			}else if(pokemon.species.bst>600){
 				pokemon.storedStats.atk = Math.floor(pokemon.storedStats.atk * 0.75);
 				pokemon.storedStats.spa = Math.floor(pokemon.storedStats.spa * 0.75);
