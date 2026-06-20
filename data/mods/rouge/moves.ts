@@ -148,17 +148,25 @@ function chooseroom(pokemon: Pokemon, prng: PRNG) {
 	else
 		pokemon.moveSlots = pokemon.moveSlots.concat(sample(rooms(), 2, prng))
 }
+
 export function evolution(x:PokemonSet,battle:Battle){
 	let lastname = x.species || x.name;
 	let species=Dex.species.get(x.species)
 	let evo = Dex.species.get(x.species).evos;
 	
+	function getMovesNumByCategory(x:PokemonSet, category:string):number {
+		return x.moves.filter(move => Dex.moves.get(move).category === category).length;
+	}
+	function getMovesNumByType(x:PokemonSet, type:string):number {
+		return x.moves.filter(move => Dex.moves.get(move).type === type).length;
+	}
+
 	if (evo.length !== 0) {
 
-		if(species.name=='Kirlia'&&x.item=='Galladite'){
+		if(species.name=='Kirlia'&&(x.item=='Galladite'||(x.item!='Gardevoirite'&&getMovesNumByCategory(x,'Physical')>=2))){
 			x.species='Gallade';
 			x.name=x.species;
-		}else if(species.name=='Kirlia'&&x.item=='Gardevoirite'){
+		}else if(species.name=='Kirlia'&&(x.item=='Gardevoirite'||getMovesNumByCategory(x,'Special')>=2)){
 			x.species='Gardevoir';
 			x.name=x.species;
 		}else if(species.name=='Scyther'&&x.item=='Scizorite'){
@@ -172,6 +180,15 @@ export function evolution(x:PokemonSet,battle:Battle){
 			x.name=x.species;
 		}else if(species.name=='Pikachu'&&x.item=='Aloraichium Z'){
 			x.species='Raichu-Alola';
+			x.name=x.species;
+		}else if(species.name=='Pikachu'&&(x.item=='Raichunite X'||x.item=='Raichunite Y')){
+			x.species='Raichu';
+			x.name=x.species;
+		}else if(species.name=='Cosmoem'&&(x.item=='Lunalium Z'||(getMovesNumByType(x, 'Ghost') > 0 && getMovesNumByType(x, 'Steel') === 0))){
+			x.species='Lunala';
+			x.name=x.species;
+		}else if(species.name=='Cosmoem'&&(x.item=='Solganium Z'||(getMovesNumByType(x, 'Steel') > 0 && getMovesNumByType(x, 'Ghost') === 0))){
+			x.species='Solgaleo';
 			x.name=x.species;
 		}else if (Dex.toID(x.name) === Dex.toID(x.species) || x.species.includes('-')) {
 			x.species = battle.prng.sample(evo);
@@ -1644,7 +1661,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		name: "Parry",
 		pp: 5,
 		priority: 4,
-		flags: {},
+		flags: { noassist: 1, failcopycat: 1 },
 		stallingMove: true,
 		volatileStatus: 'parry',
 		onPrepareHit(pokemon,source) {
@@ -1661,11 +1678,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 			},
 			onTryHitPriority: 3,
 			onTryHit(target, source, move) {
-				if (!move.flags['protect'] || move.category === 'Status') {
-					if (['gmaxoneblow', 'gmaxrapidflow'].includes(move.id)) return;
-					if (move.isZ || move.isMax) target.getMoveHitData(move).zBrokeProtect = true;
-					return;
-				}
+				if (this.checkMoveBypassesProtect(move, source, target)) return;
 				if (move.smartTarget) {
 					move.smartTarget = false;
 				} else {
@@ -1789,8 +1802,6 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		pp: 15,
 		priority: 1,
 		flags: {contact: 1, protect: 1, mirror: 1, punch: 1},
-		secondary: undefined,
-		hasSheerForce: true,
 		target: "normal",
 		type: "Bug",
 		contestType: "Cool",
@@ -1885,6 +1896,46 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		type: "Normal",
 		zMove: {boost: {atk: 1, def: 1, spa: 1, spd: 1, spe: 1}},
 		contestType: "Beautiful",
+	},
+	superacupressure: {
+		num: 367,
+		accuracy: true,
+		basePower: 0,
+		category: "Status",
+		name: "Super Acupressure",
+		pp: 30,
+		priority: 0,
+		flags: { metronome: 1 },
+		onHit(target) {
+			let stats: BoostID[] = [];
+			let stat: BoostID;
+			for (stat in target.boosts) {
+				if (target.boosts[stat] < 6) {
+					stats.push(stat);
+				}
+			}
+			if (stats.length) {
+				let randomStat = this.sample(stats);
+				const boost: SparseBoostsTable = {};
+				boost[randomStat] = 2;
+				stats = [];
+				for (stat in target.boosts) {
+					if (target.boosts[stat] < 6 && stat !== randomStat) {
+						stats.push(stat);
+					}
+				}
+				randomStat = this.sample(stats);
+				boost[randomStat] = 1;
+				this.boost(boost);
+
+			} else {
+				return false;
+			}
+		},
+		target: "adjacentAllyOrSelf",
+		type: "Normal",
+		zMove: { effect: 'crit2' },
+		contestType: "Tough",
 	},
 	//--------shop's  moves itemmoves
 	getsuperband: {
@@ -4288,6 +4339,63 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		},
 
 	},
+	learnshiftgear: {
+		num: 1000,
+		name: 'Learn Shift Gear',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon, source, move) {
+			selectpokemon(pokemon, ' Learn Move');
+			setMoveName(pokemon,move.name);
+
+		},
+
+	},
+	learncoil: {
+		num: 1000,
+		name: 'Learn Coil',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon, source, move) {
+			selectpokemon(pokemon, ' Learn Move');
+			setMoveName(pokemon,move.name);
+
+		},
+
+	},
+	learnsuperacupressure: {
+		num: 1000,
+		name: 'Learn Super Acupressure',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon, source, move) {
+			selectpokemon(pokemon, ' Learn Move');
+			setMoveName(pokemon,move.name);
+
+		},
+
+	},
 	//------------- commonmoves--------------
 	evoapokemon: {
 		num: 1000,
@@ -4305,19 +4413,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 			let x: PokemonSet[] | PokemonSet = pokemon.side.team.filter(x => Dex.species.get(x.species).evos.length);
 			if (x.length > 0) {
 				x = this.prng.sample(x);
-				let lastname = x.species || x.name;
-				let evo = Dex.species.get(x.species).evos;
-				if (evo.length !== 0) {
-					if (this.toID(x.name) === this.toID(x.species) || x.species.includes('-')) {
-						x.species = this.prng.sample(evo);
-						x.name = x.species;
-					} else {
-						x.species = this.prng.sample(evo);
-					}
-					x = restoreAbility(x,lastname);
-				}
-
-				this.add('html', `<div class="broadcast-green"><strong>your ${lastname} has evolved to ${x.species}</strong></div>`);
+				evolution(x, this);
 			} else
 				this.add('html', `<div class="broadcast-green"><strong>none of your pokemons has evos</strong></div>`);
 			chooseroom(pokemon, this.prng);
@@ -4338,19 +4434,8 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		flags: {},
 		onHit(pokemon) {
 			for (let x of pokemon.side.team.filter(x => Dex.species.get(x.species).evos)) {
-				let evo = Dex.species.get(x.species).evos;
-				if (evo.length !== 0) {
-					let lastname = x.species || x.name;
-					if (this.toID(x.name) === this.toID(x.species) || x.species.includes('-')) {
-						x.species = this.prng.sample(evo);
-						x.name = x.species;
-					} else {
-						x.species = this.prng.sample(evo);
-					}
-					x = restoreAbility(x,lastname);
-				}
+				evolution(x, this);
 			}
-			this.add('html', `<div class="broadcast-green"><strong>your pokemons have been evolved</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
 		desc: 'evo your every pokemon which can evo',
@@ -8224,6 +8309,78 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 			if (pokemon.side.team.length < 6) {
 				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(getRougeSet(PokemonPool['Chimecho'], this.prng, pokemon.side.team[0].level))!);
 				this.add('html', `<div class="broadcast-green"><strong>Chimecho has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
+	geteelektross: {
+		num: 1000,
+		name: 'Get Eelektross',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(getRougeSet(PokemonPool['Eelektross'], this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Eelektross has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
+	getvenipede: {
+		num: 1000,
+		name: 'Get Venipede',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(getRougeSet(PokemonPool['Venipede'], this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Venipede has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
+	getstaraptor: {
+		num: 1000,
+		name: 'Get Staraptor',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(getRougeSet(PokemonPool['Staraptor'], this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Staraptor has joined in your team</strong></div>`);
 				chooseroom(pokemon, this.prng);
 			} else {
 				selectpokemon(pokemon, '', 'Replace Pokemon ');
