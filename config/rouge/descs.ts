@@ -249,13 +249,15 @@ export const RougeDesc = {
 		name: 'Level Wish',
 		desc: '同治愈之愿，在此基础上受到效果的精灵回合结束后升1级，最大110级',
 	},
+	learnsuperacupressure: {
+		name: 'Super Acupressure',
+		desc: '随机提升一项能力2级,另一项能力1级'
+	},
+
 	becomebomber: {
 		name: 'Bomber',
 		desc: '物攻特攻翻倍,所有技能pp变成1,下场回复pp',
 	},
-
-
-
 	becomehide: {
 		name: 'Hide',
 		desc: '免斗（对胆气无效），鬼系技能威力*1.5',
@@ -559,7 +561,7 @@ export const RougeDesc = {
 	},
 	gaincontraryblade: {
 		name: 'Contrary Blade',
-		desc: '己方350种族（包括）以下的精灵全属性（包括hp）提高50%，<br />600种族以上（不包括）的精灵全属性（除了hp）降低25%，<br />并且他们的技能的物特互换',
+		desc: '己方350种族（包括）以下的精灵全属性提高80%,hp提高50%，<br />600种族以上（不包括）的精灵全属性（除了hp）降低25%，<br />并且他们的技能的物特互换',
 	},
 	gainmelodyofsiren: {
 		name: 'Melody Of Siren',
@@ -697,6 +699,18 @@ export const RougeDesc = {
 	getchandelure: {
 		name: 'Chandelure',
 		desc: '技能池里多了星碎，冤冤相报，回火',
+	},
+	getvenipede: {
+		name: 'Venipede',
+		desc: 'm蜈蚣王特性改成了硬壳盔甲+受到攻击使对面中毒+加速',
+	},
+	getralts: {
+		name: 'Ralts',
+		desc: '根据mega石和物攻特工技能是否大于等于2个选择进化分支',
+	},
+	getcosmog: {
+		name: 'Cosmog',
+		desc: '根据专属z和是否会钢系和鬼系技能选择进化分支',
 	},
 
 	addlife: {
