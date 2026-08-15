@@ -1924,10 +1924,11 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 						stats.push(stat);
 					}
 				}
-				randomStat = this.sample(stats);
-				boost[randomStat] = 1;
-				this.boost(boost);
-
+				if (stats.length) {
+					randomStat = this.sample(stats);
+					boost[randomStat] = 1;
+					this.boost(boost);
+				}
 			} else {
 				return false;
 			}
@@ -10485,6 +10486,26 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		onHit(pokemon) {
 			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Wrathwell');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Wrathwell</strong></div>`);
+			chooseroom(pokemon, this.prng);
+		},
+		desc: '',
+		shortDesc: '',
+	},
+	gainnaturalmastery: {
+		num: 1002,
+		name: 'Gain Natural Mastery',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Natural Mastery');
+			this.add('html', `<div class="broadcast-green"><strong>you get the Natural Mastery</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
 		desc: '',

@@ -110,7 +110,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 	},
 	hardmode:{
 		name: 'Hard Mode',
-		effectType: 'Weather',
+		effectType: 'Condition',
 		duration: 0,
 		onModifyAtkPriority:-101,
 		onModifyAtk(relayVar, source, target, move) {
@@ -292,7 +292,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 	},
 	focusroom: {
 		name: 'Focus Room',
-		effectType: 'Weather',
+		effectType: 'Condition',
 		duration: 0,
 	
 		onDamage(damage, target, source, effect) {
@@ -319,10 +319,9 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 	},
 	guerrilla: {
 		name: 'Guerrilla',
-		effectType: 'Weather',
+		effectType: 'Condition',
 		duration: 0,
-
-		onWeatherModifyDamage(damage,source ,target, move) {
+		onModifyDamage(damage,source ,target, move) {
 			if (damage && source && source.side === this.p2 && !move.isZ)
 				return this.chainModify(0.2);
 		},
@@ -359,7 +358,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 	},
 	boxingarea: {
 		name: 'Boxing Area',
-		effectType: 'Weather',
+		effectType: 'Condition',
 		duration: 0,
 		
 		onModifyMove(move, pokemon, target) {
@@ -376,8 +375,6 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 			}
 
 		},
-	
-
 	
 		onFieldStart(battle, source, effect) {
 			if (effect?.effectType === 'Ability') {
@@ -396,7 +393,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 	},
 	purgatory: {
 		name: 'Purgatory',
-		effectType: 'Weather',
+		effectType: 'Condition',
 		duration: 0,
 
 		
@@ -423,7 +420,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 	},
 	rainbow: {
 		name: 'Rainbow',
-		effectType: 'Weather',
+		effectType: 'Condition',
 		duration: 0,
 
 		
@@ -453,7 +450,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 	},
 	mercyaura: {
 		name: 'Mercy Aura',
-		effectType: 'Weather',
+		effectType: 'Condition',
 		duration: 0,
 		onEffectivenessPriority: -1,
 		onEffectiveness(typeMod, target, type, move) {
@@ -485,7 +482,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 	},
 	ballaura: {
 		name: 'Ball Aura',
-		effectType: 'Weather',
+		effectType: 'Condition',
 		duration: 0,
 		onEffectivenessPriority: -1,
 		onEffectiveness(typeMod, target, type, move) {
@@ -516,7 +513,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 
 		},
 
-		onWeatherModifyDamage(relayVar: number, source: Pokemon, target: Pokemon, move) {
+		onModifyDamage(relayVar: number, source: Pokemon, target: Pokemon, move) {
 			if (source.side === this.p2) {
 				if (move.type === 'Electric' && this.prng.random(3)===1) {
 					if (!target.status) target.setStatus('par', source, move, true);
@@ -537,7 +534,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 	},
 	dragonsmajesty: {
 		name: "Dragon's Majesty",
-		effectType: 'Weather',
+		effectType: 'Condition',
 		duration: 0,
 		onEffectivenessPriority: -1,
 		
@@ -589,7 +586,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 	},
 	gardenshield: {
 		name: "Garden Shield",
-		effectType: 'Weather',
+		effectType: 'Condition',
 		duration: 0,
 		onDamagingHit(damage, target, source, effect) {
 			if (target.hasType('Fairy') && target.side === this.p2) {
@@ -631,7 +628,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 		effectType: 'Weather',
 		duration: 0,
 		
-		onWeatherModifyDamage(relayVar: number, source: Pokemon, target: Pokemon, move) {
+		onModifyDamage(relayVar: number, source: Pokemon, target: Pokemon, move) {
 			if (move.type === 'Poison') {
 				this.debug('Acid Rain Day poison boost');
 				return this.chainModify(1.5);
@@ -654,12 +651,10 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 			this.add('-weather', 'Acid Rain', '[upkeep]');
 			this.eachEvent('Weather');
 		},
-		onWeather(target,source,effect) {
-			if (effect&&effect.id === 'acidrain') {
-				if (!target.hasType('Poison') && target.side === this.p1) {
-					this.damage(target.baseMaxhp / 16);
-					this.add('-message', 'The Acid Rain hurt the Pokemon.');
-				}
+		onResidual(target,source,effect) {
+			if (!target.hasType('Poison') && target.side === this.p1) {
+				this.damage(target.baseMaxhp / 16);
+				this.add('-message', 'The Acid Rain hurt the Pokemon.');
 			}
 		},
 		onFieldEnd() {
@@ -669,7 +664,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 	},
 	iceberg: {
 		name: 'Iceberg',
-		effectType: 'Weather',
+		effectType: 'Condition',
 		duration: 0,
 
 		
@@ -687,16 +682,15 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 			this.add('-weather', 'Iceberg', '[upkeep]');
 			this.eachEvent('Weather');
 		},
-		onWeather(target,source,effect) {
-			if (effect&&effect.id === 'iceberg') {
-				if (target.hasType('Ice') && target.side === this.p2) {
-					this.heal(target.baseMaxhp / 8);
-					this.add('-message', 'The Iceberg heal the Pokemon.');
-				}
-				if (!target.hasType('Ice') && target.side === this.p1) {
-					this.damage(target.baseMaxhp / 8);
-					this.add('-message', 'The Iceberg hurt the Pokemon.');
-				}
+		onResidualPriority: -1,
+		onResidual(target,source,effect) {
+			if (target.hasType('Ice') && target.side === this.p2) {
+				this.heal(target.baseMaxhp / 8);
+				this.add('-message', 'The Iceberg heal the Pokemon.');
+			}
+			if (!target.hasType('Ice') && target.side === this.p1) {
+				this.damage(target.baseMaxhp / 8);
+				this.add('-message', 'The Iceberg hurt the Pokemon.');
 			}
 		},
 		onFieldEnd() {
@@ -716,7 +710,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 	},
 	infestation2: {
 		name: "Infestation2",
-		effectType: 'Weather',
+		effectType: 'Condition',
 		duration: 0,
 		onModifyMovePriority: 1000,
 		onModifyMove(move, pokemon, target) {
@@ -749,7 +743,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 	},
 	gangterritory: {
 		name: "Gang Territory",
-		effectType: 'Weather',
+		effectType: 'Condition',
 		duration: 0,
 		onModifyMovePriority: 1000,
 		onModifyMove(move, pokemon, target) {
@@ -809,7 +803,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 	},
 	hyakkiyakou: {
 		name: "Hyakkiyakou",
-		effectType: 'Weather',
+		effectType: 'Condition',
 		duration: 0,
 		onModifyMovePriority: 1000,
 		onModifyMove(move, pokemon, target) {
@@ -844,7 +838,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 	},
 	normalstrong: {
 		name: "Normal Strong",
-		effectType: 'Weather',
+		effectType: 'Condition',
 		duration: 0,
 		onModifyTypePriority: 0,
 		onModifyType(move, pokemon) {
@@ -899,7 +893,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 	},
 	eightdiagramtactics: {
 		name: 'Eight-Diagram Tactics',
-		effectType: 'Weather',
+		effectType: 'Condition',
 		duration: 0,
 		onEffectivenessPriority: -1,
 		onEffectiveness(typeMod, target, type, move) {
@@ -943,7 +937,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 	},
 	surcharge: {
 		name: 'Surcharge',
-		effectType: 'Weather',
+		effectType: 'Condition',
 		duration: 0,
 		
 		
@@ -985,7 +979,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 	},
 	timeacceleration: {
 		name: 'Time Acceleration',
-		effectType: 'Weather',
+		effectType: 'Condition',
 		duration: 0,
 
 
@@ -1015,7 +1009,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 	},
 	fairyhalper: {
 		name: 'Fairy Halper',
-		effectType: 'Weather',
+		effectType: 'Condition',
 		duration: 0,
 
 
@@ -1047,7 +1041,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 	},
 	misfortunemirror: {
 		name: 'Misfortune Mirror',
-		effectType: 'Weather',
+		effectType: 'Condition',
 		duration: 0,
 		
 
@@ -1078,7 +1072,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 	},
 	healingarea: {
 		name: 'Healing Area',
-		effectType: 'Weather',
+		effectType: 'Condition',
 		duration: 0,
 
 		onSwitchOut(pokemon) {
@@ -1108,10 +1102,10 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 	},
 	trueshotaura: {
 		name: 'Trueshot Aura',
-		effectType: 'Weather',
+		effectType: 'Condition',
 		duration: 0,
 
-		onWeatherModifyDamage(damage, source, target, move) {
+		onModifyDamage(damage, source, target, move) {
 			if (source && source.side === this.p2 && !move.flags['contact'])
 				return this.chainModify(1.2);
 		},
@@ -1138,7 +1132,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 	},
 	psychoanalysis: {
 		name: 'Psychoanalysis',
-		effectType: 'Weather',
+		effectType: 'Condition',
 		duration: 0,
 
 		onModifyMovePriority: 100,
@@ -1177,7 +1171,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 	},
 	statuspush: {
 		name: 'Status Push',
-		effectType: 'Weather',
+		effectType: 'Condition',
 		duration: 0,
 
 		onAfterMoveSecondary(target, source, move) {
@@ -1209,40 +1203,38 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 	},
 	stope: {
 		name: 'Stope',
-		effectType: 'Weather',
+		effectType: 'Condition',
 		duration: 0,
 
 		
-		onWeather(target, source, effect) {
-			if (effect && effect.id === 'stope') {
-				if (target.hasType('Rock') && target.side === this.p2) {
-					let i = this.sample([1, 2, 3, 4]);
-					switch (i) {
-					case 1:
-						this.boost(this.sample([{ atk: 1 }, { def: 1 }, { spa: 1 }, { spd: 1 }, { spe: 1 }]), target);
-						break;
-					case 2:
-						this.heal(target.baseMaxhp / 6, target);
-						break;
-					case 3:
-						if (this.field.isWeather('sandstorm')) {
-							if (target.foes().length >= 1) {
-								if (target.foes()[0].m.sanddamage) {
-									target.foes()[0].m.sanddamage *= 2;
-								} else {
-									target.foes()[0].m.sanddamage = 2;
-								}
+		onResidual(target, source, effect) {
+			if (target.hasType('Rock') && target.side === this.p2) {
+				let i = this.sample([1, 2, 3, 4]);
+				switch (i) {
+				case 1:
+					this.boost(this.sample([{ atk: 1 }, { def: 1 }, { spa: 1 }, { spd: 1 }, { spe: 1 }]), target);
+					break;
+				case 2:
+					this.heal(target.baseMaxhp / 6, target);
+					break;
+				case 3:
+					if (this.field.isWeather('sandstorm')) {
+						if (target.foes().length >= 1) {
+							if (target.foes()[0].m.sanddamage) {
+								target.foes()[0].m.sanddamage *= 2;
 							} else {
-								this.field.setWeather('sandstorm');
+								target.foes()[0].m.sanddamage = 2;
 							}
+						} else {
+							this.field.setWeather('sandstorm');
 						}
-						break;
-					case 4:
-						break;
 					}
+					break;
+				case 4:
+					break;
 				}
-
 			}
+
 		},
 
 		onFieldStart(battle, source, effect) {
@@ -1265,7 +1257,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 	},
 	championbelt: {
 		name: 'Champion Belt',
-		effectType: 'Weather',
+		effectType: 'Condition',
 		duration: 0,
 
 		onModifyAtkPriority: -102,
@@ -1299,7 +1291,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 	},
 	packlight: {
 		name: 'Pack Light',
-		effectType: 'Weather',
+		effectType: 'Condition',
 		duration: 0,
 
 
@@ -1338,7 +1330,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 	},
 	enchantments: {
 		name: 'Enchantments',
-		effectType: 'Weather',
+		effectType: 'Condition',
 		duration: 0,
 
 		onStart() {
@@ -1374,7 +1366,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 	},
 	flameshield: {
 		name: 'Flame Shield',
-		effectType: 'Weather',
+		effectType: 'Condition',
 		duration: 0,
 
 		onDamagePriority:-102,
@@ -1411,7 +1403,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 	},
 	physicalsuppression: {
 		name: 'Physical Suppression',
-		effectType: 'Weather',
+		effectType: 'Condition',
 		duration: 0,
 
 		onTryBoost(boost, target, source, effect) {
@@ -1445,7 +1437,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 	},
 	contraryblade: {
 		name: 'Contrary Blade',
-		effectType: 'Weather',
+		effectType: 'Condition',
 		duration: 0,
 		onModifyMovePriority: 102,
 		onModifyMove(move, pokemon, target) {
@@ -1481,10 +1473,10 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 	},
 	melodyofsiren: {
 		name: 'Melody Of Siren',
-		effectType: 'Weather',
+		effectType: 'Condition',
 		duration: 0,
 
-		onWeatherModifyDamage(damage, source, target, move) {
+		onModifyDamage(damage, source, target, move) {
 			if (target && target.side === this.p1&& target.cureStatus()) {
 				this.chainModify(1.5);
 			}
@@ -1511,7 +1503,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 	},
 	conjuringshow: {
 		name: 'Conjuring Show',
-		effectType: 'Weather',
+		effectType: 'Condition',
 		duration: 0,
 
 		onModifyAccuracy(accuracy, target, source, move) {
@@ -1542,7 +1534,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 	},
 	piercingattack: {
 		name: 'Piercing Attack',
-		effectType: 'Weather',
+		effectType: 'Condition',
 		duration: 0,
 
 		// onModifyDef(this, relayVar, target, source, move) {
@@ -1612,11 +1604,11 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 	},
 	cockatriceeye: {
 		name: 'Cockatrice Eye',
-		effectType: 'Weather',
+		effectType: 'Condition',
 		duration: 0,
 
 		onSwitchIn(target) {
-			if(target && target.side === this.p2&&target.ability!=='shopman'&&!target.hasMove('confusion')){
+			if(target && target.side === this.p2&&target.ability!=='shopman'&&!target.hasMove('confusionmove')){
 				target.moveSlots=[{move: 'Confusion Move',
 				id: Dex.toID('confusionmove'),
 				pp: 8,
@@ -1678,7 +1670,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 	},
 	fallrise: {
 		name: 'Fall Rise',
-		effectType: 'Weather',
+		effectType: 'Condition',
 		duration: 0,
 
 		onFaint(target, source, effect) {
@@ -1708,7 +1700,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 	},
 	orderwayup: {
 		name: 'Order Way Up',
-		effectType: 'Weather',
+		effectType: 'Condition',
 		duration: 0,
 
 		onSwitchIn(pokemon) {
@@ -1738,7 +1730,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 	},
 	movereaction: {
 		name: 'Move Reaction',
-		effectType: 'Weather',
+		effectType: 'Condition',
 		duration: 0,
 		onAfterMoveSecondarySelf(source, target, move) {
 			if (this.randomChance(1, 3) || source.m.isReaction) {
@@ -1795,7 +1787,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 	},
 	wrathwell: {
 		name: 'Wrathwell',
-		effectType: 'Weather',
+		effectType: 'Condition',
 		duration: 0,
 		onModifyMove(move, pokemon, target) {
 			if(pokemon && pokemon.side ===  this.p2){
@@ -1830,6 +1822,117 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 		onFieldEnd() {
 			this.add('-fieldend', 'Wrathwell');
 			this.add('-message', 'The Wrathwellsubsided.');
+		},
+	},
+	naturalmastery: {
+		name: 'Natural Mastery',
+		effectType: 'Condition',
+		duration: 0,
+		onModifyMovePriority: -6,
+		onModifyMove(move, pokemon, target) {
+			if(pokemon && pokemon.side ===  this.p2){
+				if (this.field.weather === '') {
+					if (move.secondaries){
+						move.secondaries.push({ chance: 20, status: this.sample(['brn', 'par', 'frz', 'psn', 'slp']) });
+					} else {
+						move.secondaries = [{ chance: 20, status: this.sample(['brn', 'par', 'frz', 'psn', 'slp']) }];
+					}
+				} else if (this.field.isWeather('raindance')) {
+					if (move.type === 'Electric' || move.type === 'Flying') {
+						this.chainModify(1.3);
+					}
+				} else if (this.field.isWeather('sunnyday') || pokemon.effectiveWeather() === 'sunnyday') {
+					if (move.type === 'Grass') {
+						this.chainModify(1.3);
+					}
+				} else if (this.field.isWeather('hail')) {
+					if (move.type === 'Ice') {
+						this.chainModify(1.5);
+					}
+				} else if (this.field.isWeather('desolateland')) {
+					if (move.type === 'Ground') {
+						this.chainModify(1.3);
+					}
+				}
+			}
+			if(pokemon && pokemon.side ===  this.p1){
+				if (this.field.isWeather('desolateland')) {
+					if (move.type === 'Ground') {
+						this.chainModify(0.75);
+					}
+				}
+			}
+		},
+		onModifyAccuracyPriority: 100,
+		onModifyAccuracy(accuracy, target, source, move) {
+			if (typeof accuracy !== 'number') return;
+			if (this.field.isWeather('sandstorm')) {
+				if(target && target.side ===  this.p2){
+					this.debug('Natural Mastery - decreasing accuracy');
+					return this.chainModify([3277, 4096]);
+				}
+			} else if (this.field.isWeather('sunnyday') || source.effectiveWeather() === 'sunnyday') {
+				if(target && target.side ===  this.p1){
+					this.debug('Natural Mastery - increasing accuracy');
+					return this.chainModify([5120, 4096]);
+				}
+			}
+		},
+		onResidual(target, source, effect) {
+			if (this.field.isWeather('snowscape') && target && target.side === this.p2) {
+				this.heal(target.baseMaxhp / 16);
+			}
+			if (this.field.isWeather('acidrain') && target && target.side === this.p1) {
+				if (this.randomChance(1, 4)) return;
+				let stats: BoostID[] = ['atk', 'def', 'spa', 'spd', 'spe'];
+				const boost: SparseBoostsTable = {};
+				boost[this.sample(stats)] = -1;
+				this.boost(boost, target);
+			}
+		},
+		onSourceModifyDamage(damage, source, target, move) {
+			if (target && target.side === this.p2 && this.field.isWeather('deltastream')) {
+				if (target.getMoveHitData(move).typeMod > 0) {
+					return this.chainModify(0.75);
+				}
+			}
+		},
+		onEffectivenessPriority: 0,
+		onEffectiveness(typeMod, target, type, move) {
+			if (target && target.side === this.p1 && this.field.isWeather('primordialsea')) {
+				if (move.type === 'Water' && type === 'Grass') {
+					return 0;
+				}
+				if (move.type === 'Ice' && type === 'Water') {
+					return 1;
+				}
+			}
+		},
+		onModifySpePriority: 2,
+		onModifySpe(spe, pokemon) {
+			if(pokemon && pokemon.side ===  this.p1){
+				if (this.field.isWeather('snowscape')) {
+					return this.chainModify(0.9);
+				}
+			}
+		},
+		onFieldStart(battle, source, effect) {
+			if (effect?.effectType === 'Ability') {
+				this.add('-fieldstart', 'Natural Mastery', '[from] ability: ' + effect, '[of] ' + source);
+			} else {
+				this.add('-fieldstart', 'Natural Mastery');
+			}
+			this.add('-message', 'Natural Mastery is radiated.');
+		},
+
+		onFieldResidualOrder: 1,
+		onFieldResidual() {
+			this.add('-weather', 'Natural Mastery', '[upkeep]');
+			this.eachEvent('Weather');
+		},
+		onFieldEnd() {
+			this.add('-fieldend', 'Natural Mastery');
+			this.add('-message', 'The Natural Mastery subsided.');
 		},
 	},
 };
