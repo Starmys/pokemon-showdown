@@ -1831,13 +1831,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 		onModifyMovePriority: -6,
 		onModifyMove(move, pokemon, target) {
 			if(pokemon && pokemon.side ===  this.p2){
-				if (this.field.weather === '') {
-					if (move.secondaries){
-						move.secondaries.push({ chance: 20, status: this.sample(['brn', 'par', 'frz', 'psn', 'slp']) });
-					} else {
-						move.secondaries = [{ chance: 20, status: this.sample(['brn', 'par', 'frz', 'psn', 'slp']) }];
-					}
-				} else if (this.field.isWeather('raindance')) {
+				if (this.field.isWeather('raindance')) {
 					if (move.type === 'Electric' || move.type === 'Flying') {
 						this.chainModify(1.3);
 					}
@@ -1853,7 +1847,13 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 					if (move.type === 'Ground') {
 						this.chainModify(1.3);
 					}
-				}
+				} else if (this.field.weather === '') {
+					if (move.secondaries){
+						move.secondaries.push({ chance: 20, status: this.sample(['brn', 'par', 'frz', 'psn', 'slp']) });
+					} else {
+						move.secondaries = [{ chance: 20, status: this.sample(['brn', 'par', 'frz', 'psn', 'slp']) }];
+					}
+				} 
 			}
 			if(pokemon && pokemon.side ===  this.p1){
 				if (this.field.isWeather('desolateland')) {
