@@ -1830,7 +1830,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 		duration: 0,
 		onModifyMovePriority: -6,
 		onModifyMove(move, pokemon, target) {
-			if(pokemon && pokemon.side ===  this.p2){
+			if(pokemon && pokemon.side ===  this.p2 && move.category !== 'Status'){
 				if (this.field.isWeather('raindance')) {
 					if (move.type === 'Electric' || move.type === 'Flying') {
 						this.chainModify(1.3);
