@@ -1835,7 +1835,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 					if (move.type === 'Electric' || move.type === 'Flying') {
 						this.chainModify(1.3);
 					}
-				} else if (this.field.isWeather('sunnyday') || pokemon.effectiveWeather() === 'sunnyday') {
+				} else if (this.field.isWeather('sunnyday') || pokemon.hasAbility('megasol')) {
 					if (move.type === 'Grass') {
 						this.chainModify(1.3);
 					}
@@ -1871,7 +1871,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 					this.debug('Natural Mastery - decreasing accuracy');
 					return this.chainModify([3277, 4096]);
 				}
-			} else if (this.field.isWeather('sunnyday') || source.effectiveWeather() === 'sunnyday') {
+			} else if (this.field.isWeather('sunnyday') || source.hasAbility('megasol')) {
 				if(target && target.side ===  this.p1){
 					this.debug('Natural Mastery - increasing accuracy');
 					return this.chainModify([5120, 4096]);
