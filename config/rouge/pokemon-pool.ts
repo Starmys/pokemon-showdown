@@ -1395,7 +1395,7 @@ export const PokemonPool = {
 	"Totodile": {
 		"name": 'Totodile',
 		"species": "",
-		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Waterium Z', 'Mystic Water',  'Eviolite', 'Feraligatrite', 'Feraligatrite'],
+		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Waterium Z', 'Mystic Water',  'Eviolite', 'Feraligite', 'Feraligite'],
 		"ability": ['Torrent', 'Torrent', 'Torrent', 'Torrent', 'Sheer Force'],
 		"moves": ['Aqua Jet', 'Aqua Tail', 'Crunch', 'Dragon Dance', 'Earthquake', 'Ice Beam', 'Ice Punch', 'Body Slam', 'Liquidation', 'Low Kick', 'Rock Slide', 'Superpower', 'Waterfall', 'Swords Dance', 'Water Pulse'],
 		'nature': '',
@@ -1407,7 +1407,7 @@ export const PokemonPool = {
 	"Croconaw": {
 		"name": 'Totodile',
 		"species": "",
-		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Waterium Z', 'Mystic Water', 'Eviolite', 'Feraligatrite', 'Feraligatrite'],
+		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Waterium Z', 'Mystic Water', 'Eviolite', 'Feraligite', 'Feraligite'],
 		"ability": ['Torrent', 'Torrent', 'Torrent', 'Torrent', 'Sheer Force'],
 		"moves": ['Aqua Jet', 'Aqua Tail', 'Crunch', 'Dragon Dance', 'Earthquake', 'Ice Beam', 'Ice Punch', 'Body Slam', 'Liquidation', 'Low Kick', 'Rock Slide', 'Superpower', 'Waterfall', 'Swords Dance', 'Water Pulse'],
 		'nature': '',
@@ -1419,7 +1419,7 @@ export const PokemonPool = {
 	"Feraligatr": {
 		"name": 'Totodile',
 		"species": "",
-		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Waterium Z', 'Mystic Water', 'Eviolite', 'Feraligatrite', 'Feraligatrite'],
+		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Waterium Z', 'Mystic Water', 'Eviolite', 'Feraligite', 'Feraligite'],
 		"ability": ['Torrent', 'Torrent', 'Torrent', 'Torrent', 'Sheer Force'],
 		"moves": ['Aqua Jet', 'Aqua Tail', 'Crunch', 'Dragon Dance', 'Earthquake', 'Ice Beam', 'Ice Punch', 'Body Slam', 'Liquidation', 'Low Kick', 'Rock Slide', 'Superpower', 'Waterfall', 'Swords Dance', 'Water Pulse'],
 		'nature': '',
