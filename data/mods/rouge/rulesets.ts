@@ -630,16 +630,18 @@ export const relicsEffects = {
 
 	},
 	'holographicprojection': (battle: Battle) => {
-		if (RougeUtils.getRoom(battle.toID(battle.p2.name)) !== 'championroom') {
+		if (battle.p2.pokemon.length < 6) {
 			let pokemon = battle.sample(battle.p1.pokemon.filter(x => battle.toID(x.ability) !== 'shopman'));
 			let newSet = pokemon.set;
-			newSet.level += 10;
+			newSet.level += 5;
 			let newpoke = new Pokemon(newSet, battle.p2);
 			battle.p2.pokemon.push(newpoke);
 			battle.p2.pokemonLeft++;
 			newpoke.position = battle.p2.pokemon.length - 1;
 			newpoke.canTerastallize = null;
 			battle.add('message', 'Holographic Projection action');
+		} else {
+			battle.add('message', 'your team is full');
 		}
 	},
 	'packlight': (battle: Battle) => {
@@ -785,6 +787,10 @@ export const relicsEffects = {
 	'wrathwell': (battle: Battle) => {
 		battle.field.addPseudoWeather("wrathwell");
 		battle.add('message', 'Wrathwell start');
+	},
+	'naturalmastery': (battle: Battle) => {
+		battle.field.addPseudoWeather("naturalmastery");
+		battle.add('message', 'Natural Mastery start');
 	},
 };
 

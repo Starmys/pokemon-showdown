@@ -99,7 +99,7 @@ export const RewardPool = {
 		'Gain Industrial Emissions', 'Gain Sun Shower', 'Gain Combustible', 'Gain Infestation2',
 		'Gain Gang Guarantee', 'Gain False Moon', 'Gain Gun of Nerf', 'Gain Eight Diagrams drawing',
 		'Gain Psychoanalysis', 'Gain Gravity Generator', 'Gain Stope', 'Gain Final Act',
-		'Gain Piercing Attack', 'Gain Move Reaction', 'Gain Wrathwell',
+		'Gain Piercing Attack', 'Gain Move Reaction', 'Gain Wrathwell','Gain Natural Mastery',
 	],
 	'eliteroom2': [],
 };
@@ -511,11 +511,12 @@ export const WeightPool = {
 		"Gain Contrary Blade": 10,
 		"Gain Melody Of Siren": 10,
 		"Gain Conjuring Show": 10,
-		"Gain Holographic Projection": 10,
+		"Gain Holographic Projection": 8,
 		"Gain Replication": 6,
 		"Gain Physical Suppression": 5,
 		'Gain Move Reaction': 5,
 		'Gain Wrathwell': 8,
+		'Gain Natural Mastery': 10,
 	},
 };
 
