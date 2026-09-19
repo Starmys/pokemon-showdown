@@ -57,6 +57,10 @@ export const Pokedex: import('../../../sim/dex-species').ModdedSpeciesDataTable 
 		inherit: true,
 		types: ["Fairy", "Grass"],
 	},
+	scolipedemega: {
+		inherit: true,
+		abilities: {0: "scolipedeshellarmor"},
+	},
 	kricketunehero: {
 		num: 401,
 		name: "Kricketune-Hero",
