@@ -6688,14 +6688,15 @@ export const Formats: import('../sim/dex-formats').FormatList = [
 					pokemon.canTerastallize=pokemon.teraType;
 
 				}
-				pokemon.getDynamaxRequest
 				let mega = pokemon.species.otherFormes?.filter(x => x.includes('Mega'));
 				if (mega){
 					pokemon.canMegaEvo = this.sample(mega);
 				}
 				pokemon.getDynamaxRequest = (skipChecks?: boolean) => {
 					// {gigantamax?: string, maxMoves: {[k: string]: string} | null}[]
-					if (!pokemon.side.canDynamaxNow()) return;
+					if (!skipChecks) {
+						if (!pokemon.side.canDynamaxNow()) return;
+					}
 					const result: DynamaxOptions = { maxMoves: [] };
 					let atLeastOne = false;
 					for (const moveSlot of pokemon.moveSlots) {

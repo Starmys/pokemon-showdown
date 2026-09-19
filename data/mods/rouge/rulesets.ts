@@ -792,6 +792,16 @@ export const relicsEffects = {
 		battle.field.addPseudoWeather("naturalmastery");
 		battle.add('message', 'Natural Mastery start');
 	},
+	'gigaenergycell': (battle: Battle) => {
+		battle.p2.dynamaxUsed = false;
+		// battle.p2.canDynamaxNow = () => {
+
+		// 	if (battle.gameType === 'multi' && battle.turn % 2 !== [1, 1, 0, 0][battle.p2.n]) return false;
+		// 	return !battle.p2.dynamaxUsed;
+		// }
+		battle.field.addPseudoWeather("gigaenergycell");
+		battle.add('message', 'Giga Energy Cell start');
+	},
 };
 
 
@@ -1197,7 +1207,7 @@ export const Rulesets: import('../../../sim/dex-formats').ModdedFormatDataTable 
 		effectType: 'Rule',
 		name: 'PS China Rouge Hard Mode',
 		onBegin() {
-			this.p1.dynamaxUsed=false;
+			this.p1.dynamaxUsed = false;
 			for(let pokemon of this.p1.pokemon){
 				if(!pokemon.canTerastallize){
 					pokemon.teraType=this.sample(pokemon.moves.map(move => Dex.moves.get(move).type));

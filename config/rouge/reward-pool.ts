@@ -25,7 +25,7 @@ export const RewardPool = {
 		'Get Genesect', 'Get Regigigas','Get Geodude-Alola', 'Get Happiny', 'Get Bergmite', 'Get Enamorus',
 		'Get Enamorus-Therian', 'Get Landorus','Get Landorus-Therian','Get Floette', 'Get Sableye','Get Dondozo',
 		'Get Floette-Eternal', 'Get Chandelure', 'Get Hawlucha', 'Get Chimecho', 'Get Eelektross', 'Get Venipede',
-		'Get Staraptor'
+		'Get Staraptor', 'Get Spectrier', 'Get Honedge',
 	],
 	"pokemonroom2": [],
 	'commonroom': [
@@ -100,6 +100,7 @@ export const RewardPool = {
 		'Gain Gang Guarantee', 'Gain False Moon', 'Gain Gun of Nerf', 'Gain Eight Diagrams drawing',
 		'Gain Psychoanalysis', 'Gain Gravity Generator', 'Gain Stope', 'Gain Final Act',
 		'Gain Piercing Attack', 'Gain Move Reaction', 'Gain Wrathwell','Gain Natural Mastery',
+		'Gain Giga Energy Cell'
 	],
 	'eliteroom2': [],
 };
@@ -250,7 +251,9 @@ export const WeightPool = {
 		'Get Chimecho':10,
 		'Get Eelektross':10,
 		'Get Venipede':10,
-		'Get Staraptor':10
+		'Get Staraptor':10,
+		'Get Spectrier':5,
+		'Get Honedge':10
 	},
 	"commonroomweight": {
 		'Evo All': 5,
@@ -517,6 +520,7 @@ export const WeightPool = {
 		'Gain Move Reaction': 5,
 		'Gain Wrathwell': 8,
 		'Gain Natural Mastery': 10,
+		'Gain Giga Energy Cell': 7
 	},
 };
 

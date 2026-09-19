@@ -624,7 +624,10 @@ export const RougeDesc = {
 			'终结大地使我方地面系技能威力提高30%，受到地面系技能的伤害降低25%<br>' +
 			'始源之海使我方水系技能打草变为1倍，冰系技能打水变为1倍'
 	},
-
+	gaingigaenergycell: {
+		name: 'Giga Energy Cell',
+		desc: '每个精灵的攻击和挨打都会积攒极巨能量，满了之后可以极巨化，每场战斗只能极巨化一次',
+	},
 
 	/* gainmove */
 	getspearow: {

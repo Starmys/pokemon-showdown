@@ -1,3 +1,5 @@
+import { DynamaxOptions } from '../../../sim/side';
+
 export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDataTable = {
 	elite: {
 		name: 'Elite',
@@ -179,7 +181,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 		},
 		onSetWeather(target, source, weather) {
 			if (this.effectState.duration === 0)  {
-				if (['raindance', 'snow', 'sunnyday', 'sandstorm'].includes(weather.id)) return false;
+				if (['raindance', 'snow', 'sunnyday', 'sandstorm', 'hail'].includes(weather.id)) return false;
 			}
 		},
 	},
@@ -227,7 +229,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 		},
 		onSetWeather(target, source, weather) {
 			if (this.effectState.duration === 0)  {
-				if (['raindance', 'snow', 'sunnyday', 'sandstorm'].includes(weather.id)) return false;
+				if (['raindance', 'snow', 'sunnyday', 'sandstorm', 'hail'].includes(weather.id)) return false;
 			}
 		},
 	},
@@ -265,7 +267,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 		},
 		onSetWeather(target, source, weather) {
 			if (this.effectState.duration === 0)  {
-				if (['raindance', 'snow', 'sunnyday', 'sandstorm'].includes(weather.id)) return false;
+				if (['raindance', 'snow', 'sunnyday', 'sandstorm', 'hail'].includes(weather.id)) return false;
 			}
 		},
 		
@@ -1880,7 +1882,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 		},
 		onResidual(target, source, effect) {
 			if (this.field.isWeather('snowscape') && target && target.side === this.p2) {
-				this.heal(target.baseMaxhp / 16);
+				this.heal(target.baseMaxhp / 16, target);
 			}
 			if (this.field.isWeather('acidrain') && target && target.side === this.p1) {
 				if (this.randomChance(1, 4)) return;
@@ -1933,6 +1935,72 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 		onFieldEnd() {
 			this.add('-fieldend', 'Natural Mastery');
 			this.add('-message', 'The Natural Mastery subsided.');
+		},
+	},
+	gigaenergycell : {
+		name: 'Giga Energy Cell',
+		effectType: 'Condition',
+		duration: 0,
+		
+		onDamagingHit(damage, target, source, move) {
+			if (target && move.category !== 'Status' && damage && !this.p2.dynamaxUsed) {
+				const playerActive = this.p2.active[0];
+				if (playerActive && playerActive.hp <= 0) return;
+				if (playerActive.m.maxengery) {
+					playerActive.m.maxengery += damage;
+				}  else {
+					playerActive.m.maxengery = damage;
+				}
+				const energy = Math.round(playerActive.m.maxengery/((playerActive.species.bst ** 2 / 400 + playerActive.species.bst/2 - 100) * playerActive.level / 100) * 10000) / 100;
+				if (energy >= 100) {
+					
+					playerActive.getDynamaxRequest = (skipChecks?: boolean) => {
+						// {gigantamax?: string, maxMoves: {[k: string]: string} | null}[]
+						if (!skipChecks) {
+							if (playerActive.side.dynamaxUsed) return;
+						}
+						const result: DynamaxOptions = { maxMoves: [] };
+						let atLeastOne = false;
+						for (const moveSlot of playerActive.moveSlots) {
+							const move = this.dex.moves.get(moveSlot.id);
+							const maxMove = this.actions.getMaxMove(move, playerActive);
+							if (maxMove) {
+								if (playerActive.maxMoveDisabled(move)) {
+									result.maxMoves.push({ move: maxMove.id, target: maxMove.target, disabled: true });
+								} else {
+									result.maxMoves.push({ move: maxMove.id, target: maxMove.target });
+									atLeastOne = true;
+								}
+							}
+						}
+						if (!atLeastOne) return;
+						if (playerActive.canGigantamax) result.gigantamax = playerActive.canGigantamax;
+						return result;
+					};
+					playerActive.m.maxengery = 0;
+				}
+				this.add('-message', `${playerActive.name} 获得极具能量，当前能量: ${Math.min(energy, 100)}%`);
+
+			}
+		},
+
+		onFieldStart(battle, source, effect) {
+			if (effect?.effectType === 'Ability') {
+				this.add('-fieldstart', 'Giga Energy Cell', '[from] ability: ' + effect, '[of] ' + source);
+			} else {
+				this.add('-fieldstart', 'Giga Energy Cell');
+			}
+			this.add('-message', 'Giga Energy Cell is radiated.');
+		},
+
+		onFieldResidualOrder: 1,
+		onFieldResidual() {
+			this.add('-weather', 'Giga Energy Cell', '[upkeep]');
+			this.eachEvent('Weather');
+		},
+		onFieldEnd() {
+			this.add('-fieldend', 'Giga Energy Cell');
+			this.add('-message', 'The Giga Energy Cell subsided.');
 		},
 	},
 };
