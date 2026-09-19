@@ -868,6 +868,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: "normal",
 		type: "Normal",
 		zMove: { basePower: 120 },
+		maxMove: { basePower: 100 },
 	},
 	confusionmove: {
 		num: 796,
@@ -920,6 +921,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: "normal",
 		type: "Steel",
 		zMove: { basePower: 200 },
+		maxMove: { basePower: 150 },
 	},
 	sheercolder: {
 		num: 329,
@@ -976,6 +978,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		onPrepareHit(target, source) {
 			this.add('-anim', source, 'First Impression', target);
 		},
+		maxMove: { basePower: 130 },
 	},
 	superlightofruin: {
 		num: 617,
@@ -999,6 +1002,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		onPrepareHit(target, source) {
 			this.add('-anim', source, 'Light of Ruin', target);
 		},
+		maxMove: { basePower: 150 },
 	},
 	swamppower: {
 		num: 414,
@@ -1023,6 +1027,8 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		onPrepareHit(target, source) {
 			this.add('-anim', source, 'Earth Power', target);
 		},
+		zMove: { basePower: 180 },
+		maxMove: { basePower: 140 },
 	},
 	stimpack: {
 		num: 349,
@@ -1185,6 +1191,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 			this.add('-anim', source, 'Facade', target);
 		},
 		zMove: { basePower: 140 },
+		maxMove	: { basePower: 120 },
 	},
 	swandance: {
 		num: 263,
@@ -1212,6 +1219,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 			this.add('-anim', source, 'Snipe Shot', target);
 		},
 		zMove: { basePower: 160 },
+		maxMove: { basePower: 130 },
 	},
 	spiritualtide: {
 		num: 263,
@@ -1238,6 +1246,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 			this.add('-anim', source, 'Whirlpool', target);
 		},
 		zMove: { basePower: 160 },
+		maxMove: { basePower: 130 },
 	},
 	zenwhirlpool: {
 		num: 250,
@@ -1260,6 +1269,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 			this.add('-anim', source, 'Psychic', target);
 		},
 		zMove: { basePower: 140 },
+		maxMove: { basePower: 120 },
 	},
 	steelterrain: {
 		accuracy: true,
@@ -1351,6 +1361,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 			this.add('-anim', source, 'Silver Wind', target);
 		},
 		zMove: { basePower: 160 },
+		maxMove: { basePower: 130 },
 	},
 	superparaboliccharge: {
 		num: 570,
@@ -1373,6 +1384,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 			this.add('-anim', source, 'Parabolic Charge', target);
 		},
 		zMove: { basePower: 170 },
+		maxMove: { basePower: 130 },
 	},
 	superspiritbreak: {
 		num: 789,
@@ -1398,6 +1410,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 			this.add('-anim', source, 'Spirit Break', target);
 		},
 		zMove: { basePower: 175 },
+		maxMove: { basePower: 130 },
 	},
 	dualace: {
 		num: 814,
@@ -1449,6 +1462,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 			this.add('-anim', source, 'Drill Peck', target);
 		},
 		zMove: { basePower: 180 },
+		maxMove: { basePower: 130 },
 	},
 	toxicwrap: {
 		num: 35,
@@ -1480,6 +1494,8 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		onPrepareHit(target, source) {
 			this.add('-anim', source, 'Poison Fang', target);
 		},
+		zMove: { basePower: 100 },
+		maxMove: { basePower: 70 },
 	},
 	whaleleap: {
 		num: 462,
@@ -1537,6 +1553,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 			this.add('-anim', source, 'Secret Sword', target);
 		},
 		zMove: { basePower: 185 },
+		maxMove: { basePower: 140 },
 	},
 	backdraft: {
 		num: 796,
@@ -1560,6 +1577,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: "normal",
 		type: "Fire",
 		zMove: { basePower: 120 },
+		maxMove	:{ basePower: 120 },
 	},
 	spring: {
 		num: 796,
@@ -1583,6 +1601,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: "normal",
 		type: "Water",
 		zMove: { basePower: 140 },
+		maxMove	:{ basePower: 120 },
 	},
 	fakeshot: {
 		num: 252,
@@ -1625,6 +1644,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		type: "Normal",
 		contestType: "Cute",
 		zMove: { basePower: 100 },
+		maxMove: { basePower: 100 },
 	},
 	mewball: {
 		num: 796,
@@ -1652,6 +1672,7 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: "normal",
 		type: "Normal",
 		zMove: { basePower: 175 },
+		maxMove: { basePower: 120 },
 	},
 	parry: {
 		num: 596,
@@ -1805,6 +1826,8 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		target: "normal",
 		type: "Bug",
 		contestType: "Cool",
+		zMove: {basePower: 120},
+		maxMove: {basePower: 110},
 	},
 	lifeblessing: {
 		num: 349,
@@ -8390,6 +8413,54 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		},
 
 	},
+	getspectrier: {
+		num: 1000,
+		name: 'Get Spectrier',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(getRougeSet(PokemonPool['Spectrier'], this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Spectrier has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
+	gethonedge: {
+		num: 1000,
+		name: 'Get Honedge',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			if (pokemon.side.team.length < 6) {
+				pokemon.side.team = pokemon.side.team.concat(Teams.unpack(getRougeSet(PokemonPool['Honedge'], this.prng, pokemon.side.team[0].level))!);
+				this.add('html', `<div class="broadcast-green"><strong>Honedge has joined in your team</strong></div>`);
+				chooseroom(pokemon, this.prng);
+			} else {
+				selectpokemon(pokemon, '', 'Replace Pokemon ');
+			}
+
+		},
+
+	},
 	//-------------abilitymoves------------
 
 	becomebomber: {
@@ -10506,6 +10577,26 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		onHit(pokemon) {
 			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Natural Mastery');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Natural Mastery</strong></div>`);
+			chooseroom(pokemon, this.prng);
+		},
+		desc: '',
+		shortDesc: '',
+	},
+	gaingigaenergycell: {
+		num: 1002,
+		name: 'Gain Giga Energy Cell',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Giga Energy Cell');
+			this.add('html', `<div class="broadcast-green"><strong>you get the Giga Energy Cell</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
 		desc: '',
