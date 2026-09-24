@@ -25,7 +25,8 @@ export const RewardPool = {
 		'Get Genesect', 'Get Regigigas','Get Geodude-Alola', 'Get Happiny', 'Get Bergmite', 'Get Enamorus',
 		'Get Enamorus-Therian', 'Get Landorus','Get Landorus-Therian','Get Floette', 'Get Sableye','Get Dondozo',
 		'Get Floette-Eternal', 'Get Chandelure', 'Get Hawlucha', 'Get Chimecho', 'Get Eelektross', 'Get Venipede',
-		'Get Staraptor', 'Get Spectrier', 'Get Honedge',
+		'Get Staraptor', 'Get Spectrier', 'Get Honedge', 'Get Jigglypuff', 'Get Sneasel-Hisui', 'Get Farfetch’d',
+		'Get Sirfetch’d', 'Get Toxtricity',
 	],
 	"pokemonroom2": [],
 	'commonroom': [
@@ -253,7 +254,13 @@ export const WeightPool = {
 		'Get Venipede':10,
 		'Get Staraptor':10,
 		'Get Spectrier':5,
-		'Get Honedge':10
+		'Get Honedge':10,
+		'Get Jigglypuff':10,
+		'Get Sneasel-Hisui':10,
+		'Get Farfetch’d':10,
+		'Get Sirfetch’d':10,
+		'Get Toxtricity':10,
+
 	},
 	"commonroomweight": {
 		'Evo All': 5,

@@ -731,7 +731,15 @@ export const RougeDesc = {
 		name: 'Cosmog',
 		desc: '根据专属z和是否会钢系和鬼系技能选择进化分支',
 	},
-
+	getfarfetchd: {
+		name: 'Farfetch’d',
+		desc: '道具固定大葱，特性是狙击手+超幸运+全属性*1.2',
+	},
+	getjigglypuff: {
+		name: 'Jigglypuff',
+		desc: '特性为无防守',
+	},
+	/* --------- pokemon ------*/
 	addlife: {
 		name: 'addlife',
 		desc: '加条命，初始有3条命，第一关输了-0.5冠军关输了-2其他情况输了-1',
