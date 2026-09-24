@@ -1150,4 +1150,40 @@ export const Abilities: import('../../../sim/dex-abilities').ModdedAbilityDataTa
 		rating: 1,
 		num: 5,
 	},
+	leek: {
+		onModifyAtkPriority: 5,
+		onModifyAtk(relayVar, source, target, move) {
+			return this.chainModify(1.2);
+		},
+		onModifySpAPriority:5,
+		onModifySpA(relayVar, source, target, move) {
+			return this.chainModify(1.2);
+		},
+		onModifySpDPriority:6,
+		onModifySpD(relayVar, target, source, move) {
+			return this.chainModify(1.2);
+		},
+		onModifyDefPriority:6,
+		onModifyDef(relayVar, target, source, move) {
+			return this.chainModify(1.2);
+		},
+		onModifySpePriority:5,
+		onModifySpe(spe, pokemon) {
+			return this.chainModify(1.2);
+		},
+		onModifyCritRatio(critRatio) {
+			return critRatio + 1;
+		},
+
+		onModifyDamage(damage, source, target, move) {
+			if (target.getMoveHitData(move).crit) {
+				this.debug('Sniper boost');
+				return this.chainModify(1.5);
+			}
+		},
+		flags: {},
+		name: "Leek",
+		rating: 2,
+		num: 97,
+	},
 };
