@@ -944,7 +944,7 @@ export const Rulesets: import('../../../sim/dex-formats').ModdedFormatDataTable 
 						//return move.category === 'Status' || move.pp===1;
 						return move.category === 'Status';
 					}
-					
+
 					let event:'mega' | 'zmove' | 'ultra' | 'dynamax' | 'terastallize' | ''  = activePoke.canMegaEvo ? 'mega' : '';
 					if(!event && this.toID(activePoke.ability)!=='shopman'){
 						// this.add('html',`${this.p1.pokemonLeft}        ${this.p1.team.length}`)
@@ -1058,7 +1058,7 @@ export const Rulesets: import('../../../sim/dex-formats').ModdedFormatDataTable 
 											
 										}
 										if(move.priority>0&&activePoke.speed < foeActivePoke.speed){
-											power+=50;
+											power=100;
 										}
 										
 										if(move.flags['heal']){
