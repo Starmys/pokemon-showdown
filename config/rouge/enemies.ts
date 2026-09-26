@@ -1583,7 +1583,7 @@ export const Enemies = [
 		},
 		{
 			"name": '全聚葱',
-			"species": "",
+			"species": "Farfetch'd",
 			"item": ['Leek'],
 			"ability": ['Leek'],
 			"moves": ['Brave Bird', 'Leaf Blade', 'Quick Attack', 'Close Combat', 'Swords Dance', 'Slash'],
@@ -1813,7 +1813,7 @@ export const Enemies = [
 		},
 		{
 			"name": '全聚葱',
-			"species": "",
+			"species": "Farfetch'd",
 			"item": ['Leek'],
 			"ability": ['Leek'],
 			"moves": ['Brave Bird', 'Leaf Blade', 'Quick Attack', 'Close Combat', 'Swords Dance', 'Slash'],
