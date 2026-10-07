@@ -400,7 +400,7 @@ export const relicsEffects = {
 		battle.add('message', 'your Artisunny makes it sunny');
 	},
 	'confidentstart': (battle: Battle) => {
-		let x = Math.min(RougeUtils.getNextWave(battle.toID(battle.p2.name)) / 5, 3);
+		let x = Math.min(RougeUtils.getNextWave(battle.toID(battle.p2.name)) / 5, 4);
 		for (let i = 0; i < x; i++)
 			battle.boost(battle.sample([{ atk: 1 }, { def: 1 }, { spa: 1 }, { spd: 1 }, { spe: 1 }]), battle.p2.active[0]);
 	},
@@ -568,6 +568,7 @@ export const relicsEffects = {
 				name: "Future Scope",
 				accuracy: 100,
 				basePower: 0,
+				damage: 100,
 				category: "Special",
 				priority: 0,
 				flags: {},
@@ -596,7 +597,7 @@ export const relicsEffects = {
 				id: 'doomdesire',
 				name: "Doom Desire",
 				accuracy: 100,
-				basePower: 140,
+				basePower: 200,
 				category: "Special",
 				priority: 0,
 				flags: {},
@@ -687,7 +688,7 @@ export const relicsEffects = {
 				effectType: 'Move',
 				isFutureMove: true,
 				type: 'Steel',
-				heal: [3, 4],
+				heal: [4, 4],
 			},
 		});
 		battle.add('message', "you chose Heroic Sword as its destiny!");

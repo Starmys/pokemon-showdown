@@ -805,5 +805,24 @@ export const Items: import('../../../sim/dex-items').ModdedItemDataTable = {
 		num: 253,
 		gen: 3,
 	},
-	
+	rockyarmor: {
+		name: "Rocky Armor",
+		spritenum: 438,
+		fling: {
+			basePower: 100,
+		},
+		onDamagingHitOrder: 2,
+		onDamagingHit(damage, target, source, move) {
+			if (this.checkMoveMakesContact(move, source, target)) {
+				this.damage(source.baseMaxhp / 6, source, target);
+			}
+		},
+		onHit(target, source, move) {
+			if (this.checkMoveMakesContact(move, target, source)) {
+				this.damage(target.baseMaxhp / 6, target, source);
+			}
+		},
+		num: 253,
+		gen: 5,
+	},
 };
