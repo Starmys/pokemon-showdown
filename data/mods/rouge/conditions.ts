@@ -303,6 +303,10 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 					return target.hp - 1;
 				}
 			}
+			if (this.randomChance(1, 10) && damage >= target.hp && effect && effect.effectType === 'Move' && target.side===this.p2) {
+				this.add("-activate", target, "Focus Room");
+				return target.hp - 1;
+			}
 		},
 		onFieldStart(battle, source, effect) {
 			if (effect?.effectType === 'Ability') {
@@ -947,15 +951,14 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 		onModifyMove(move, pokemon, target) {
 			if (['endeavor', 'fling', 'iceball', 'rollout'].includes(move.id)) return;
 			if (move.flags['charge']) return;
-			if (move.category !== 'Status' && !move.isZ && (!move.multihit || move.multihit === 1) && pokemon.side === this.p2) {
-				
-				move.basePower *= 3;                                         
+			if (move.category !== 'Status' && (!move.multihit || move.multihit === 1) && pokemon.side === this.p2) {
+				move.basePower *= 3.3;                                         
 			}
 
 		},
 
 		onAfterMoveSecondarySelf(source, target, move) {
-			if (move.category !== 'Status' && !move.isZ && (!move.multihit || move.multihit === 1) && source.side === this.p2 && source.isActive) {
+			if (move.category !== 'Status' && !move.isZ && !move.isMax && (!move.multihit || move.multihit === 1) && source.side === this.p2 && source.isActive) {
 				source.addVolatile('mustrecharge');
 			}
 		},
@@ -1018,7 +1021,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 		onAfterMoveSecondary(target, source, move) {
 			if (source.side === this.p2 && move.category !== "Status" && target && target.hp > 0) {
 				const typeMod = this.clampIntRange(target.runEffectiveness(this.dex.getActiveMove('dazzlinggleam')), -6, 6);
-				this.damage(target.maxhp * 0.1 * Math.pow(2, typeMod), target, source);
+				this.damage(target.baseMaxhp * 0.1 * Math.pow(2, typeMod), target, source);
 			}
 		},
 		onFieldStart(battle, source, effect) {
@@ -1300,16 +1303,20 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 		onStart() {
 			if (this.p2.active[0] && this.p2.active[0].useItem()) {
 				this.p2.active[0].addVolatile('unburden');
+				this.boost({atk: 1, spa: 1}, this.p2.active[0], this.p2.active[0]);
 			}
 		},
 		onSwitchIn(pokemon) {
 			if (pokemon && pokemon.side === this.p2 && this.p2.active[0].useItem()) {
 				pokemon.addVolatile('unburden');
+				this.boost({atk: 1, spa: 1}, pokemon, pokemon);
 			}
 		},
 		onTakeItem(item, pokemon) {
-			if (pokemon && pokemon.side === this.p2)
+			if (pokemon && pokemon.side === this.p2) {
 				pokemon.addVolatile('unburden');
+				this.boost({atk: 1, spa: 1}, pokemon, pokemon);
+			}
 		},
 		onFieldStart(battle, source, effect) {
 			if (effect?.effectType === 'Ability') {
@@ -1327,7 +1334,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 		},
 		onFieldEnd() {
 			this.add('-fieldend', 'Pack Light');
-			this.add('-message', 'The Champion Belt subsided.');
+			this.add('-message', 'The Pack Light subsided.');
 		},
 	},
 	enchantments: {
@@ -2001,6 +2008,40 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 		onFieldEnd() {
 			this.add('-fieldend', 'Giga Energy Cell');
 			this.add('-message', 'The Giga Energy Cell subsided.');
+		},
+	},
+	closebuckshot: {
+		name: 'Close Buckshot',
+		effectType: 'Condition',
+		duration: 0,
+		onBasePowerPriority: 105,
+		onBasePower(basePower, attacker, defender, move) {
+			if (attacker && attacker.side === this.p2) {
+				if (move.target === 'allAdjacent' || move.target === 'allAdjacentFoes') {
+					let dmgmuti = this.randomChance(1, 2) ? 1.2 : 1.4;
+					return this.chainModify(dmgmuti);
+				}
+			}
+
+		},
+
+		onFieldStart(battle, source, effect) {
+			if (effect?.effectType === 'Ability') {
+				this.add('-fieldstart', 'Close Buckshot', '[from] ability: ' + effect, '[of] ' + source);
+			} else {
+				this.add('-fieldstart', 'Close Buckshot');
+			}
+			this.add('-message', 'Close Buckshot is radiated.');
+		},
+
+		onFieldResidualOrder: 1,
+		onFieldResidual() {
+			this.add('-weather', 'Close Buckshot', '[upkeep]');
+			this.eachEvent('Weather');
+		},
+		onFieldEnd() {
+			this.add('-fieldend', 'Close Buckshot');
+			this.add('-message', 'The Close Buckshot subsided.');
 		},
 	},
 };

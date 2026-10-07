@@ -48,7 +48,7 @@ export const RewardPool = {
 		'Get Portable Earth', 'Get Death Speaker', 'Get Giant Clothes', "Get Power Herb",
 		'Get Explosive Arm', 'Get Double-edged Sword', 'Get Flexible Device', 'Get Pain Connector',
 		'Get Immunity Herb', 'Get Deep Sea Dew', 'Get Seismic Lever', 'Get Azure Flute', 'Get Super Shell Bell',
-		'Get Priority Glove',
+		'Get Priority Glove', 'Get Rocky Armor'
 	],
 	'itemroom2': [],
 	'moveroom': [
@@ -82,7 +82,7 @@ export const RewardPool = {
 		'Become Fortitude Shield', 'Become Poison Around', 'Become Alpha Bond', 'Become Incomplete Nirvana',
 		'Become Sheer Force', 'Become Beast Boost', 'Become Protean', 'Become Regenerator',
 		'Become Speed Boost', 'Become Concentrator', 'Become Immolating', 'Become Renewal', 'Become Sacrifice',
-		'Become Power Priority', 'Become Master All'
+		'Become Power Priority', 'Become Master All', 'Become Fickle Body'
 	],
 	'abilityroom2': [],
 
@@ -101,7 +101,7 @@ export const RewardPool = {
 		'Gain Gang Guarantee', 'Gain False Moon', 'Gain Gun of Nerf', 'Gain Eight Diagrams drawing',
 		'Gain Psychoanalysis', 'Gain Gravity Generator', 'Gain Stope', 'Gain Final Act',
 		'Gain Piercing Attack', 'Gain Move Reaction', 'Gain Wrathwell','Gain Natural Mastery',
-		'Gain Giga Energy Cell'
+		'Gain Giga Energy Cell', 'Gain Close Buckshot'
 	],
 	'eliteroom2': [],
 };
@@ -328,6 +328,7 @@ export const WeightPool = {
 		"Get Power Herb": 0,
 		'Get Super Shell Bell': 10,
 		'Get Priority Glove': 10,
+		'Get Rocky Armor': 10
 	},
 	'moveroomweight': {
 		'Learn Super Steel Beam': 8,
@@ -457,6 +458,7 @@ export const WeightPool = {
 		"Become Szpenguin": 10,
 		'Become Power Priority': 10,
 		'Become Master All': 10,
+		'Become Fickle Body': 10
 	},
 	'eliteroomweight': {
 		'Gain Artirain': 10,
@@ -490,27 +492,27 @@ export const WeightPool = {
 		'Gain Fall Rise': 10,
 		'Gain Order Way Up': 10,
 		'Gain Exp Of Spring': 10,
-		'Gain Teratype Sword': 10,
-		'Gain Teratype Shield': 10,
-		'Gain Dragon Thrones': 5,
-		'Gain Dancing Floor': 5,
-		'Gain Egg Of Compassion': 5,
-		'Gain Industrial Plant': 5,
-		'Gain Ticket Of Colosseum': 5,
-		'Gain Soy Milk': 5,
-		'Gain Garden Guardian': 5,
-		'Gain Pole Tracker': 5,
-		'Gain Industrial Emissions': 5,
-		'Gain Sun Shower': 5,
-		'Gain Combustible': 5,
-		'Gain Infestation2': 5,
-		'Gain Gang Guarantee': 5,
-		'Gain False Moon': 5,
-		'Gain Gun of Nerf': 5,
-		'Gain Eight Diagrams drawing': 5,
-		'Gain Psychoanalysis': 5,
-		'Gain Gravity Generator': 5,
-		'Gain Stope': 5,
+		'Gain Teratype Sword': 8,
+		'Gain Teratype Shield': 8,
+		'Gain Dragon Thrones': 7,
+		'Gain Dancing Floor': 10,
+		'Gain Egg Of Compassion': 10,
+		'Gain Industrial Plant': 10,
+		'Gain Ticket Of Colosseum': 10,
+		'Gain Soy Milk': 8,
+		'Gain Garden Guardian': 7,
+		'Gain Pole Tracker': 7,
+		'Gain Industrial Emissions': 10,
+		'Gain Sun Shower': 10,
+		'Gain Combustible': 10,
+		'Gain Infestation2': 7,
+		'Gain Gang Guarantee': 7,
+		'Gain False Moon': 10,
+		'Gain Gun of Nerf': 7,
+		'Gain Eight Diagrams drawing': 7,
+		'Gain Psychoanalysis': 7,
+		'Gain Gravity Generator': 7,
+		'Gain Stope': 7,
 		'Gain Final Act': 5,
 		'Gain Piercing Attack': 5,
 		"Gain Champion Belt": 10,
@@ -522,12 +524,13 @@ export const WeightPool = {
 		"Gain Melody Of Siren": 10,
 		"Gain Conjuring Show": 10,
 		"Gain Holographic Projection": 8,
-		"Gain Replication": 6,
+		"Gain Replication": 8,
 		"Gain Physical Suppression": 5,
 		'Gain Move Reaction': 5,
 		'Gain Wrathwell': 8,
 		'Gain Natural Mastery': 10,
-		'Gain Giga Energy Cell': 7
+		'Gain Giga Energy Cell': 8,
+		'Gain Close Buckshot': 10
 	},
 };
 
@@ -608,7 +611,7 @@ export const updateWeightPool = {
 		let types = new Set<string>(pokemons.flatMap(pokemon => pokemon.getTypes()));
 		for (let type of types) {
 			//@ts-ignore
-			weightPool[stabMovePool[type]] += 8;
+			weightPool[stabMovePool[type]] += 10;
 		}
 		if (relics.includes('Artirain')) {
 			weightPool['Learn Hurricane'] += 19;
@@ -685,25 +688,37 @@ export const updateWeightPool = {
 			weightPool['Gain Artisnow'] += 30;
 		}
 		if (pokemons.filter(x => x.hasType('Dragon')).length) {
-			weightPool['Gain Dragon Thrones'] += 5;
+			weightPool['Gain Dragon Thrones'] += 7;
 		}
 		if (pokemons.filter(x => x.hasType('Fairy')).length) {
-			weightPool['Gain Garden Guardian'] += 5;
+			weightPool['Gain Garden Guardian'] += 7;
 		}
 		if (pokemons.filter(x => x.hasType('Ice')).length) {
-			weightPool['Gain Pole Tracker'] += 5;
+			weightPool['Gain Pole Tracker'] += 7;
 		}
 		if (pokemons.filter(x => x.hasType('Bug')).length) {
-			weightPool['Gain Infestation2'] += 5;
+			weightPool['Gain Infestation2'] += 7;
 		}
 		if (pokemons.filter(x => x.hasType('Dark')).length) {
-			weightPool['Gain Gang Guarantee'] += 5;
+			weightPool['Gain Gang Guarantee'] += 7;
 		}
 		if (pokemons.filter(x => x.hasType('Grand')).length) {
-			weightPool['Gain Eight Diagrams drawing'] += 5;
+			weightPool['Gain Eight Diagrams drawing'] += 7;
 		}
 		if (pokemons.filter(x => x.hasType('Normal')).length) {
-			weightPool['Gain Gunofnerf'] += 5;
+			weightPool['Gain Gunofnerf'] += 7;
+		}
+		if (pokemons.filter(x => x.hasType('Psychic')).length) {
+			weightPool['Gain Psychoanalysis'] += 7;
+		}
+		if (pokemons.filter(x => x.hasType('Rock')).length) {
+			weightPool['Gain Stope'] += 7;
+		}
+		if (pokemons.filter(x => x.species.baseStats.spe <= 40).length) {
+			weightPool['Gain Trick Props'] += 5;
+		}
+		if (pokemons.filter(x => x.species.bst <= 350).length) {
+			weightPool["Gain Contrary Blade"] += 5;
 		}
 	},
 };

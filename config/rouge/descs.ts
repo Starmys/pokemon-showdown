@@ -167,7 +167,11 @@ export const RougeDesc = {
 		name: 'Priority Glove',
 		desc: '技能先至+1，威力减少1/3',
 	},
-
+	getrockyarmor: {
+		name: 'Rocky Armor',
+		desc: '受到接触伤害或造成接触伤害时对手失去1/6血',
+	},
+	/* ---------  itemmoves  ------*/ 
 	learnsheercolder: {
 		name: 'Sheer Colder',
 		desc: '冰系精灵50%其他40%的绝对零度',
@@ -342,7 +346,11 @@ export const RougeDesc = {
 		name: 'Master All',
 		desc: '非本系技能威力提高40%',
 	},
-	//----------------elitemoves---------
+	becomeficklebody: {
+		name: 'Fickle Body',
+		desc: '使用技能时有30%的概率使技能威力翻倍',
+	},
+	//----------------abilitymoves---------
 	gainartirain: {
 		name: 'Artirain',
 		desc: '第一回合将天气改成无限回合的雨天，并且不再被常规天气切掉',
@@ -361,7 +369,7 @@ export const RougeDesc = {
 	},
 	gainconfidentstart: {
 		name: 'Confident Start',
-		desc: '第一回合随机提升场上己方精灵的能力等级，次数随着层数增加，最高3次',
+		desc: '第一回合随机提升场上己方精灵的能力等级，次数随着层数增加，最高4次',
 	},
 	gainartilightscreen: {
 		name: 'Artilightscreen',
@@ -373,7 +381,7 @@ export const RougeDesc = {
 	},
 	gainfocusdevice: {
 		name: 'Focus Device',
-		desc: '精灵有道具并且满血被秒时消耗道具并且留下1点血',
+		desc: '精灵有道具并且满血被秒时消耗道具并且留下1点血,同时附带气势头带效果',
 	},
 	gainangelhalo: {
 		name: 'Angel Halo',
@@ -481,7 +489,7 @@ export const RougeDesc = {
 	},
 	gainoverdriver: {
 		name: 'Overdriver',
-		desc: '己方非z技能威力*300%但是需要硬直1回合',
+		desc: '己方技能威力*330%但是需要硬直1回合, z和极巨技能不会硬直',
 	},
 	gaintimejewel: {
 		name: 'Time Jewel',
@@ -509,11 +517,11 @@ export const RougeDesc = {
 	},
 	gainfuturescope: {
 		name: 'Future Scope',
-		desc: '第一回合对对面场地添加类似预支未来的效果，2回合后使对面atk，spa，def，spd -1',
+		desc: '第一回合对对面场地添加类似预支未来的效果，2回合后对对面造成100伤害并使对面atk，spa，def，spd -1',
 	},
 	gainfuturecamera: {
 		name: 'Future Camera',
-		desc: '第一回合对对面场地添加破灭愿望效果',
+		desc: '第一回合对对面场地添加200威力的破灭愿望效果',
 	},
 	gainstatuspush: {
 		name: 'Status Push',
@@ -537,7 +545,7 @@ export const RougeDesc = {
 	},
 	gainpacklight: {
 		name: 'Pack Light',
-		desc: '己方宝可梦入场时消耗道具并速度翻倍',
+		desc: '己方宝可梦入场时消耗道具并速度翻倍,同时加1级物攻和特攻',
 	},
 	gainreplication: {
 		name: 'Replication',
@@ -628,8 +636,12 @@ export const RougeDesc = {
 		name: 'Giga Energy Cell',
 		desc: '每个精灵的攻击和挨打都会积攒极巨能量，满了之后可以极巨化，每场战斗只能极巨化一次',
 	},
+	gainclosebuckshot: {
+		name: 'Close Buckshot',
+		desc: '我方目标是aoe的伤害技能伤害提高20%或40%',
+	},
 
-	/* gainmove */
+	/* gainmove ---- elitemoves */
 	getspearow: {
 		name: 'Spearow',
 		desc: '增加恶属性，特性恶意啄食，会大嘴雀啄钻:<br />110威力 飞行系物攻 95%命中<br />若目标物防能力值低于使用者攻击能力值则有50%概率畏缩',

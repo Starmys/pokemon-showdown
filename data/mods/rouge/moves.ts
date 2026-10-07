@@ -2799,8 +2799,27 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 			selectpokemon(pokemon, ' Get Item');
 
 		},
-		desc: 'random pokemon of your team get Super Shell Bell',
-		shortDesc: 'random pokemon of your team get Super Shell Bell',
+		desc: 'random pokemon of your team get Priority Glove',
+		shortDesc: 'random pokemon of your team get Priority Glove',
+	},
+	getrockyarmor: {
+		num: 1002,
+		name: 'Get Rocky Armor',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			selectpokemon(pokemon, ' Get Item');
+
+		},
+		desc: 'random pokemon of your team get Rocky Armor',
+		shortDesc: 'random pokemon of your team get Rocky Armor',
 	},
 	//----------movemoves
 
@@ -9340,6 +9359,24 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		desc: '',
 		shortDesc: '',
 	},
+	becomeficklebody: {
+		num: 1002,
+		name: 'Become Fickle Body',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			selectpokemon(pokemon, ' Transform Ability');
+		},
+		desc: '',
+		shortDesc: '',
+	},
 	//----------------elitemoves---------
 	gainartirain: {
 		num: 1002,
@@ -10717,6 +10754,26 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		onHit(pokemon) {
 			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Giga Energy Cell');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Giga Energy Cell</strong></div>`);
+			chooseroom(pokemon, this.prng);
+		},
+		desc: '',
+		shortDesc: '',
+	},
+	gainclosebuckshot: {
+		num: 1002,
+		name: 'Gain Close Buckshot',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Close Buckshot');
+			this.add('html', `<div class="broadcast-green"><strong>you get the Close Buckshot</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
 		desc: '',

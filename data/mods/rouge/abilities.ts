@@ -426,10 +426,11 @@ export const Abilities: import('../../../sim/dex-abilities').ModdedAbilityDataTa
 	},
 	shuoer: {
 
-		onModifyPriority(priority, pokemon, target, move) {
-			return priority + 0.5;
-		},
-		onEmergencyExit(target) {
+		// onModifyPriority(priority, pokemon, target, move) {
+		// 	return priority + 0.5;
+		// },
+
+		onEmergencyExit(originalhp ,target) {
 			if (!this.canSwitch(target.side) || target.forceSwitchFlag || target.switchFlag || (target.side===this.p1&& target.side.pokemonLeft <=7)) return;
 			for (const side of this.sides) {
 				for (const active of side.active) {
@@ -439,13 +440,22 @@ export const Abilities: import('../../../sim/dex-abilities').ModdedAbilityDataTa
 			target.switchFlag = true;
 			this.add('-activate', target, 'ability: Emergency Exit');
 		},
+		onModifyDefPriority: 6,
+		onModifyDef(def, pokemon) {
+			return this.chainModify(1.25);
+		},
+		onModifySpDPriority: 6,
+		onModifySpD(spd, pokemon) {
+			return this.chainModify(1.25);
+		},
+
 		name: "Shuoer",
 		rating: 3,
 		num: 62,
 	},
 	emergencyexit: {
 		inherit: true,
-		onEmergencyExit(target) {
+		onEmergencyExit(originalhp, target) {
 			if (!this.canSwitch(target.side) || target.forceSwitchFlag || target.switchFlag || (target.side===this.p1&& target.side.pokemonLeft <=7)) return;
 			for (const side of this.sides) {
 				for (const active of side.active) {
@@ -1185,5 +1195,17 @@ export const Abilities: import('../../../sim/dex-abilities').ModdedAbilityDataTa
 		name: "Leek",
 		rating: 2,
 		num: 97,
+	},
+	ficklebody: {
+		onBasePowerPriority: 102,
+		onBasePower(basePower, attacker, defender, move) {
+			if (this.randomChance(3, 10)) {
+				return this.chainModify(2);
+			}
+		},
+		flags: {},
+		name: "Fickle Body",
+		rating: 3.5,
+		num: 181,
 	},
 };
