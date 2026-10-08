@@ -440,6 +440,10 @@ export const Abilities: import('../../../sim/dex-abilities').ModdedAbilityDataTa
 			target.switchFlag = true;
 			this.add('-activate', target, 'ability: Emergency Exit');
 		},
+		onModifyAtkPriority: 5,
+		onModifyAtk(atk, pokemon) {
+			return this.chainModify(1.25);
+		},
 		onModifyDefPriority: 6,
 		onModifyDef(def, pokemon) {
 			return this.chainModify(1.25);
