@@ -48,7 +48,7 @@ export const RewardPool = {
 		'Get Portable Earth', 'Get Death Speaker', 'Get Giant Clothes', "Get Power Herb",
 		'Get Explosive Arm', 'Get Double-edged Sword', 'Get Flexible Device', 'Get Pain Connector',
 		'Get Immunity Herb', 'Get Deep Sea Dew', 'Get Seismic Lever', 'Get Azure Flute', 'Get Super Shell Bell',
-		'Get Priority Glove', 'Get Rocky Armor'
+		'Get Priority Glove', 'Get Rocky Armor', 'Get Omni Weapon'
 	],
 	'itemroom2': [],
 	'moveroom': [
@@ -82,7 +82,7 @@ export const RewardPool = {
 		'Become Fortitude Shield', 'Become Poison Around', 'Become Alpha Bond', 'Become Incomplete Nirvana',
 		'Become Sheer Force', 'Become Beast Boost', 'Become Protean', 'Become Regenerator',
 		'Become Speed Boost', 'Become Concentrator', 'Become Immolating', 'Become Renewal', 'Become Sacrifice',
-		'Become Power Priority', 'Become Master All', 'Become Fickle Body'
+		'Become Power Priority', 'Become Master All', 'Become Fickle Body', 'Become Warfeed', 'Become Prism Body'
 	],
 	'abilityroom2': [],
 
@@ -101,7 +101,7 @@ export const RewardPool = {
 		'Gain Gang Guarantee', 'Gain False Moon', 'Gain Gun of Nerf', 'Gain Eight Diagrams drawing',
 		'Gain Psychoanalysis', 'Gain Gravity Generator', 'Gain Stope', 'Gain Final Act',
 		'Gain Piercing Attack', 'Gain Move Reaction', 'Gain Wrathwell','Gain Natural Mastery',
-		'Gain Giga Energy Cell', 'Gain Close Buckshot'
+		'Gain Giga Energy Cell', 'Gain Close Buckshot', 'Gain Unlimited Activation'
 	],
 	'eliteroom2': [],
 };
@@ -328,7 +328,8 @@ export const WeightPool = {
 		"Get Power Herb": 0,
 		'Get Super Shell Bell': 10,
 		'Get Priority Glove': 10,
-		'Get Rocky Armor': 10
+		'Get Rocky Armor': 10,
+		'Get Omni Weapon': 10
 	},
 	'moveroomweight': {
 		'Learn Super Steel Beam': 8,
@@ -458,7 +459,9 @@ export const WeightPool = {
 		"Become Szpenguin": 10,
 		'Become Power Priority': 10,
 		'Become Master All': 10,
-		'Become Fickle Body': 10
+		'Become Fickle Body': 10,
+		'Become Warfeed': 10,
+		'Become Prism Body': 10
 	},
 	'eliteroomweight': {
 		'Gain Artirain': 10,
@@ -530,7 +533,8 @@ export const WeightPool = {
 		'Gain Wrathwell': 8,
 		'Gain Natural Mastery': 10,
 		'Gain Giga Energy Cell': 8,
-		'Gain Close Buckshot': 10
+		'Gain Close Buckshot': 10,
+		'Gain Unlimited Activation': 6
 	},
 };
 

@@ -171,6 +171,10 @@ export const RougeDesc = {
 		name: 'Rocky Armor',
 		desc: '受到接触伤害或造成接触伤害时对手失去1/6血',
 	},
+	getomniweapon: {
+		name: 'Omni Weapon',
+		desc: '所有技能视为拳，咬，波动，切割，声音，风类，光束技能',
+	},
 	/* ---------  itemmoves  ------*/ 
 	learnsheercolder: {
 		name: 'Sheer Colder',
@@ -350,6 +354,14 @@ export const RougeDesc = {
 		name: 'Fickle Body',
 		desc: '使用技能时有30%的概率使技能威力翻倍',
 	},
+	becomewarfeed: {
+		name: 'Warfeed',
+		desc: '对方精灵倒下后回复25%hp，并提升一段数值最高的一项能力',
+	},
+	becomeprismbody: {
+		name: 'Prism Body',
+		desc: '光束类技能威力提高50%',
+	},
 	//----------------abilitymoves---------
 	gainartirain: {
 		name: 'Artirain',
@@ -525,7 +537,7 @@ export const RougeDesc = {
 	},
 	gainstatuspush: {
 		name: 'Status Push',
-		desc: '非变化技能有20%的概率附加一个随机状态（不受强行影响）',
+		desc: '非变化技能有20%（接触30%）的概率附加一个随机状态（不受强行影响）',
 	},
 	gainlifestream: {
 		name: 'Lifestream',
@@ -639,6 +651,10 @@ export const RougeDesc = {
 	gainclosebuckshot: {
 		name: 'Close Buckshot',
 		desc: '我方目标是aoe的伤害技能伤害提高20%或40%',
+	},
+	gainunlimitedactivation: {
+		name: 'Unlimited Activation',
+		desc: '每回合重置发动类特性的发动机会（可能会有很变态的bug），并重置变化自如类特性发动次数（不一定生效）',
 	},
 
 	/* gainmove ---- elitemoves */

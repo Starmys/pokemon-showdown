@@ -1181,7 +1181,11 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 
 		onAfterMoveSecondary(target, source, move) {
 			if (move.category !== "Status" && target && target.side === this.p1) {
-				if (this.prng.random(5) === 0) {
+				let x = 2;
+				if (this.checkMoveMakesContact(move, source, target)){
+					x = 3;
+				}
+				if (this.randomChance(x, 10)) {
 					target.setStatus(this.sample(['brn', 'par', 'slp', 'frz', 'psn']), target);
 				}
 			}
@@ -2042,6 +2046,38 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 		onFieldEnd() {
 			this.add('-fieldend', 'Close Buckshot');
 			this.add('-message', 'The Close Buckshot subsided.');
+		},
+	},
+	unlimitedactivation: {
+		name: 'Unlimited Activation',
+		effectType: 'Condition',
+		duration: 0,
+		onBeforeTurn(pokemon) {
+			if (pokemon && pokemon.side === this.p2) {
+				pokemon.swordBoost = false;
+				pokemon.shieldBoost = false;
+				pokemon.isStarted = false;
+				this.effectState.protean = false;
+				this.effectState.libero = false;
+			}
+		},
+		onFieldStart(battle, source, effect) {
+			if (effect?.effectType === 'Ability') {
+				this.add('-fieldstart', 'Unlimited Activation', '[from] ability: ' + effect, '[of] ' + source);
+			} else {
+				this.add('-fieldstart', 'Unlimited Activation');
+			}
+			this.add('-message', 'Unlimited Activation is radiated.');
+		},
+
+		onFieldResidualOrder: 1,
+		onFieldResidual() {
+			this.add('-weather', 'Unlimited Activation', '[upkeep]');
+			this.eachEvent('Weather');
+		},
+		onFieldEnd() {
+			this.add('-fieldend', 'Unlimited Activation');
+			this.add('-message', 'The Unlimited Activation subsided.');
 		},
 	},
 };

@@ -825,4 +825,22 @@ export const Items: import('../../../sim/dex-items').ModdedItemDataTable = {
 		num: 253,
 		gen: 5,
 	},
+	omniweapon: {
+		name: "Omni Weapon",
+		spritenum: 438,
+		fling: {
+			basePower: 30,
+		},
+		onModifyMovePriority: 1,
+		onModifyMove(move) {
+			move.flags['punch'] = 1;
+			move.flags['bite'] = 1;
+			move.flags['pulse'] = 1;
+			move.flags['slicing'] = 1;
+			move.flags['sound'] = 1;
+			move.flags['wind'] = 1;
+		},
+		num: 253,
+		gen: 5,
+	},
 };

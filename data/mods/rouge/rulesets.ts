@@ -803,6 +803,14 @@ export const relicsEffects = {
 		battle.field.addPseudoWeather("gigaenergycell");
 		battle.add('message', 'Giga Energy Cell start');
 	},
+	'closebuckshot': (battle: Battle) => {
+		battle.field.addPseudoWeather("closebuckshot");
+		battle.add('message', 'Close Buckshot start');
+	},
+	'unlimitedactivation': (battle: Battle) => {
+		battle.field.addPseudoWeather("unlimitedactivation");
+		battle.add('message', 'Unlimited Activation start');
+	},
 };
 
 

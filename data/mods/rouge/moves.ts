@@ -2821,6 +2821,25 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		desc: 'random pokemon of your team get Rocky Armor',
 		shortDesc: 'random pokemon of your team get Rocky Armor',
 	},
+	getomniweapon: {
+		num: 1002,
+		name: 'Get Omni Weapon',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			selectpokemon(pokemon, ' Get Item');
+
+		},
+		desc: 'random pokemon of your team get Omni Weapon',
+		shortDesc: 'random pokemon of your team get Omni Weapon',
+	},
 	//----------movemoves
 
 	learnextremespeed: {
@@ -9377,6 +9396,42 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		desc: '',
 		shortDesc: '',
 	},
+	becomewarfeed: {
+		num: 1002,
+		name: 'Become Warfeed',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			selectpokemon(pokemon, ' Transform Ability');
+		},
+		desc: '',
+		shortDesc: '',
+	},
+	becomeprismbody: {
+		num: 1002,
+		name: 'Become Prism Body',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			selectpokemon(pokemon, ' Transform Ability');
+		},
+		desc: '',
+		shortDesc: '',
+	},
 	//----------------elitemoves---------
 	gainartirain: {
 		num: 1002,
@@ -10774,6 +10829,26 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		onHit(pokemon) {
 			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Close Buckshot');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Close Buckshot</strong></div>`);
+			chooseroom(pokemon, this.prng);
+		},
+		desc: '',
+		shortDesc: '',
+	},
+	gainunlimitedactivation: {
+		num: 1002,
+		name: 'Gain Unlimited Activation',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Unlimited Activation');
+			this.add('html', `<div class="broadcast-green"><strong>you get the Unlimited Activation</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
 		desc: '',

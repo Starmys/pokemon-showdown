@@ -431,6 +431,7 @@ export const Abilities: import('../../../sim/dex-abilities').ModdedAbilityDataTa
 		// },
 
 		onEmergencyExit(originalhp ,target) {
+			if (!target.hp || target.hp > target.maxhp / 2 || originalhp <= target.maxhp / 2) return;
 			if (!this.canSwitch(target.side) || target.forceSwitchFlag || target.switchFlag || (target.side===this.p1&& target.side.pokemonLeft <=7)) return;
 			for (const side of this.sides) {
 				for (const active of side.active) {
@@ -460,6 +461,7 @@ export const Abilities: import('../../../sim/dex-abilities').ModdedAbilityDataTa
 	emergencyexit: {
 		inherit: true,
 		onEmergencyExit(originalhp, target) {
+			if (!target.hp || target.hp > target.maxhp / 2 || originalhp <= target.maxhp / 2) return;
 			if (!this.canSwitch(target.side) || target.forceSwitchFlag || target.switchFlag || (target.side===this.p1&& target.side.pokemonLeft <=7)) return;
 			for (const side of this.sides) {
 				for (const active of side.active) {
@@ -693,7 +695,6 @@ export const Abilities: import('../../../sim/dex-abilities').ModdedAbilityDataTa
 	},
 	wondercheck: {
 		onStart(source) {
-			this.boost({atk:1},source,source);
 			this.field.addPseudoWeather('trickroom');
 			this.field.setTerrain('psychicterrain');
 			this.add('-activate', source, 'ability: trick room');
@@ -837,7 +838,14 @@ export const Abilities: import('../../../sim/dex-abilities').ModdedAbilityDataTa
 
 		onResidual(pokemon) {
 			pokemon.removeVolatile('choicelock');
-
+			
+		},
+		onDisableMovePriority: -1000,
+		onDisableMove(pokemon) {
+			for (const moveSlot of pokemon.moveSlots) {
+				moveSlot.disabled = false;
+				moveSlot.disabledSource = undefined;
+			}
 		},
 		name: "Hyperactivity",
 		rating: 3,
@@ -1211,5 +1219,32 @@ export const Abilities: import('../../../sim/dex-abilities').ModdedAbilityDataTa
 		name: "Fickle Body",
 		rating: 3.5,
 		num: 181,
+	},
+	warfeed: {
+		onAnyFaintPriority: 1,
+		onAnyFaint() {
+			const target = this.effectState.target;
+			if (!target || target.fainted) return;
+			const bestStat = target.getBestStat(true, true);
+			this.heal(0.25 * target.baseMaxhp, target);
+			this.boost(bestStat, target);
+		},
+		flags: {},
+		name: "Warfeed",
+		rating: 3.5,
+		num: 220,
+	},
+	prismbody: {
+		onBasePowerPriority: 19,
+		onBasePower(basePower, attacker, defender, move) {
+			if (move.id.includes('beam') || move.id === 'prismaticlaser' || attacker.item === 'omniweapon') {
+				this.debug('Prism Body boost');
+				return this.chainModify(1.5);
+			}
+		},
+		flags: {},
+		name: "Prism Body",
+		rating: 3.5,
+		num: 292,
 	},
 };
