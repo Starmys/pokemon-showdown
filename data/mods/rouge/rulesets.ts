@@ -811,6 +811,49 @@ export const relicsEffects = {
 		battle.field.addPseudoWeather("unlimitedactivation");
 		battle.add('message', 'Unlimited Activation start');
 	},
+	'pokebilities': (battle: Battle) => {
+		for (const pokemon of battle.p2.pokemon) {
+			if (pokemon.ability === battle.toID(pokemon.species.abilities['S'])) {
+				continue;
+			}
+			pokemon.m.innates = Object.keys(pokemon.species.abilities)
+				.filter(key => key !== 'S' && (key !== 'H' || !pokemon.species.unreleasedHidden))
+				.map(key => battle.toID(pokemon.species.abilities[key as "0" | "1" | "H" | "S"]))
+				.filter(ability => ability !== pokemon.ability);
+
+			pokemon.hasAbility = function (ability) {
+				if (this.ignoringAbility()) return false;
+				if (Array.isArray(ability)) return ability.some(abil => this.hasAbility(abil));
+				ability = this.battle.toID(ability);
+				return this.ability === ability || !!this.volatiles['ability:' + ability];
+			}
+			pokemon.transformInto = function (template, sourceEffect) {
+				const result = this.transformInto(template, sourceEffect);
+				return result;
+			}
+			const originalTransformInto = pokemon.transformInto;
+			pokemon.transformInto = function (
+				this: Pokemon,
+				...args: Parameters<typeof originalTransformInto>
+			): ReturnType<typeof originalTransformInto> {
+				const result = originalTransformInto.apply(this, args);
+				const target = args[0] as Pokemon;
+				if (this.m.innates) {
+					for (const innate of this.m.innates) {
+						this.removeVolatile('ability:' + innate);
+					}
+				}
+				if (target.m.innates) {
+					for (const innate of target.m.innates) {
+						this.addVolatile('ability:' + innate, this);
+					}
+				}
+				return result;
+			};
+		}
+		battle.field.addPseudoWeather("pokebilities");
+		battle.add('message', 'Pokebilities start');
+	},
 };
 
 

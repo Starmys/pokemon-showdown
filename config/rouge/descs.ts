@@ -141,7 +141,7 @@ export const RougeDesc = {
 	},
 	geteffortberry: {
 		name: 'Effort Berry',
-		desc: 'hp在25%以下时食用，所有努力+24点（下场战斗生效）',
+		desc: 'hp在25%以下时食用，回复25%hp并所有努力+24点（下场战斗生效）',
 	},
 	getportableearth: {
 		name: 'Portable Earth',
@@ -174,6 +174,10 @@ export const RougeDesc = {
 	getomniweapon: {
 		name: 'Omni Weapon',
 		desc: '所有技能视为拳，咬，波动，切割，声音，风类，光束技能',
+	},
+	getpowerberry: {
+		name: 'Power Berry',
+		desc: 'hp在25%以下时食用，全能力提升1级，ct等级+2，随机1项能力再提升2级',
 	},
 	/* ---------  itemmoves  ------*/ 
 	learnsheercolder: {
@@ -361,6 +365,10 @@ export const RougeDesc = {
 	becomeprismbody: {
 		name: 'Prism Body',
 		desc: '光束类技能威力提高50%',
+	},
+	becomestress: {
+		name: 'Stress',
+		desc: '血量低于1/3时所有技能威力提高50%',
 	},
 	//----------------abilitymoves---------
 	gainartirain: {
@@ -655,6 +663,10 @@ export const RougeDesc = {
 	gainunlimitedactivation: {
 		name: 'Unlimited Activation',
 		desc: '每回合重置发动类特性的发动机会（可能会有很变态的bug），并重置变化自如类特性发动次数（不一定生效）',
+	},
+	gainpokebilities: {
+		name: 'Pokebilities',
+		desc: '我方精灵会额外获得所有原有的特性',
 	},
 
 	/* gainmove ---- elitemoves */

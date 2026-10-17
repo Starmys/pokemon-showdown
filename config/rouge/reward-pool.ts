@@ -48,7 +48,7 @@ export const RewardPool = {
 		'Get Portable Earth', 'Get Death Speaker', 'Get Giant Clothes', "Get Power Herb",
 		'Get Explosive Arm', 'Get Double-edged Sword', 'Get Flexible Device', 'Get Pain Connector',
 		'Get Immunity Herb', 'Get Deep Sea Dew', 'Get Seismic Lever', 'Get Azure Flute', 'Get Super Shell Bell',
-		'Get Priority Glove', 'Get Rocky Armor', 'Get Omni Weapon'
+		'Get Priority Glove', 'Get Rocky Armor', 'Get Omni Weapon',  'Get Power Berry',
 	],
 	'itemroom2': [],
 	'moveroom': [
@@ -69,7 +69,8 @@ export const RewardPool = {
 		'Learn Blizzard', 'Learn Solar Beam', 'Learn Solar Blade', 'Learn Hurricane', 'Learn Thunder',
 		'Learn Weather Ball', 'Learn Tri Attack', 'Learn Explosion', 'Learn Self-Destruct',
 		'Learn Quick Attack','Learn Vacuum Wave','Learn Bullet Punch','Learn Water Shuriken','Learn Accelerock','Learn Sucker Punch',
-		'Learn Shift Gear', 'Learn Coil','Learn Super Acupressure',
+		'Learn Shift Gear', 'Learn Coil','Learn Super Acupressure', 'Learn Heat Wave', 'Learn Rock Slide', 'Learn Earthquake', 'Learn Hyper Voice',
+		'Learn Ice Beam', 'Learn Twin Beam', 'Learn Fickle Beam', 'Learn Hyper Beam'
 	],
 	'moveroom2': [],
 
@@ -82,7 +83,8 @@ export const RewardPool = {
 		'Become Fortitude Shield', 'Become Poison Around', 'Become Alpha Bond', 'Become Incomplete Nirvana',
 		'Become Sheer Force', 'Become Beast Boost', 'Become Protean', 'Become Regenerator',
 		'Become Speed Boost', 'Become Concentrator', 'Become Immolating', 'Become Renewal', 'Become Sacrifice',
-		'Become Power Priority', 'Become Master All', 'Become Fickle Body', 'Become Warfeed', 'Become Prism Body'
+		'Become Power Priority', 'Become Master All', 'Become Fickle Body', 'Become Warfeed', 'Become Prism Body',
+		'Become Stress'
 	],
 	'abilityroom2': [],
 
@@ -101,7 +103,7 @@ export const RewardPool = {
 		'Gain Gang Guarantee', 'Gain False Moon', 'Gain Gun of Nerf', 'Gain Eight Diagrams drawing',
 		'Gain Psychoanalysis', 'Gain Gravity Generator', 'Gain Stope', 'Gain Final Act',
 		'Gain Piercing Attack', 'Gain Move Reaction', 'Gain Wrathwell','Gain Natural Mastery',
-		'Gain Giga Energy Cell', 'Gain Close Buckshot', 'Gain Unlimited Activation'
+		'Gain Giga Energy Cell', 'Gain Close Buckshot', 'Gain Unlimited Activation', 'Gain Pokebilities',
 	],
 	'eliteroom2': [],
 };
@@ -329,7 +331,8 @@ export const WeightPool = {
 		'Get Super Shell Bell': 10,
 		'Get Priority Glove': 10,
 		'Get Rocky Armor': 10,
-		'Get Omni Weapon': 10
+		'Get Omni Weapon': 10,
+		'Get Power Berry': 8,
 	},
 	'moveroomweight': {
 		'Learn Super Steel Beam': 8,
@@ -338,7 +341,7 @@ export const WeightPool = {
 		'Learn PhotonGeyser': 8,
 		'Learn Boomburst': 10,
 		'Learn Sheer Colder': 7,
-		'Learn Aeroblast': 88,
+		'Learn Aeroblast': 8,
 		'Learn Double Impression': 8,
 		'Learn Wicked Blow': 10,
 		'Learn Glaive Rush': 8,
@@ -415,6 +418,14 @@ export const WeightPool = {
 		'Learn Shift Gear': 7,
 		'Learn Coil': 8,
 		'Learn Super Acupressure': 10,
+		'Learn Heat Wave': 1,
+		'Learn Rock Slide': 1,
+		'Learn Earthquake': 4,
+		'Learn Hyper Voice': 0,
+		'Learn Ice Beam': 4,
+		'Learn Twin Beam': 0,
+		'Learn Fickle Beam': 1,
+		'Learn Hyper Beam': 0
 	},
 	'abilityroomweight': {
 		'Become Bomber': 10,
@@ -461,7 +472,8 @@ export const WeightPool = {
 		'Become Master All': 10,
 		'Become Fickle Body': 10,
 		'Become Warfeed': 10,
-		'Become Prism Body': 10
+		'Become Prism Body': 10,
+		'Become Stress': 10,
 	},
 	'eliteroomweight': {
 		'Gain Artirain': 10,
@@ -534,7 +546,8 @@ export const WeightPool = {
 		'Gain Natural Mastery': 10,
 		'Gain Giga Energy Cell': 8,
 		'Gain Close Buckshot': 10,
-		'Gain Unlimited Activation': 6
+		'Gain Unlimited Activation': 6,
+		'Gain Pokebilities': 8
 	},
 };
 
@@ -545,7 +558,7 @@ const snowAbility = ['snowcloak', 'slushrush', 'icebody'];
 const stabMovePool = {
 	Bug: ['Learn Super Silver Wind', 'Learn Double Impression'],
 	Dark: ['Learn Knock Off', 'Learn Baddy Bad', 'Learn Sucker Punch'],
-	Dragon: ['Learn DragonEnergy', 'Learn Glaive Rush', 'Learn Core Enforcer'],
+	Dragon: ['Learn DragonEnergy', 'Learn Glaive Rush', 'Learn Core Enforcer', 'Learn Fickle Beam'],
 	Electric: ['Learn Super Parabolic Charge', 'Learn Bolt Beak'],
 	Fairy: ['Learn Super Spirit Break', 'Learn Super Light of Ruin'],
 	Fighting: ['Learn Sacred Sword', 'Learn Secret Sword', 'Learn Speed Impact'],
@@ -553,8 +566,8 @@ const stabMovePool = {
 	Flying: ['Learn Aeroblast', 'Learn Dual Ace'],
 	Ghost: ['Learn Poltergeist', 'Learn Moongeist Beam'],
 	Grass: ['Learn Apple Acid', 'Learn Grav Apple'],
-	Ground: ['Learn Precipice Blades', 'Learn Swamp Power',],
-	Ice: ['Learn Triple Axel', 'Learn Freeze-Dry', 'Learn Sheer Colder'],
+	Ground: ['Learn Precipice Blades', 'Learn Swamp Power', 'Learn Earthquake'],
+	Ice: ['Learn Triple Axel', 'Learn Freeze-Dry', 'Learn Sheer Colder', 'Learn Ice Beam'],
 	Normal: ["Learn Population Bomb", 'Learn Tri Attack'],
 	Poison: ['Learn Shell Side Arm', 'Learn Gunk Shot'],
 	Psychic: ['Learn Psychic Sword', 'Learn PhotonGeyser'],
@@ -563,6 +576,8 @@ const stabMovePool = {
 	Stellar: [],
 	Water: ['Learn Surging Strikes', 'Learn Origin Pulse'],
 };
+const learnAoemove = ['Learn Blizzard', 'Learn Heat Wave', 'Learn Rock Slide', 'Learn Earthquake', 'Learn Hyper Voice'];
+const learnBeammove = ['Learn ice Beam', 'Learn Hyper Beam', 'Learn Twin Beam', 'Learn Fickle Beam', 'Learn Solar Beam'];
 const Charge = [
 	'bounce', 'dig', 'dive', 'fly', 'freezeshock', 'geomancy', 'iceburn', 'phantomforce', 'shadowforce', 'skullbash',
 	'skyattack', 'meteorbeam', 'electroshot'
@@ -582,9 +597,16 @@ const recoil = [
 	'headcharge', 'bravebird', 'doubleedge', 'flareblitz', 'headsmash', 'superlightofruin', 'volttackle', 'wavecrash',
 	'wildcharge', 'woodhammer'
 ];
+
+const aoemove = [
+	'blizzard', 'heatqave', 'rockslide', 'earthquake', 'hypervoice', 'boomburst', 'dragonenergy', 'superparaboliccharge', 'diamondstorm',
+	'originpulse', 'precipiceblades'
+];
+const beammove = ['iceBeam', 'hyperbeam', 'twinbeam', 'ficklebeam', 'solarbeam', 'meteorbeam', 'moongeistbeam'];
 const RecoveryMove = [
 	'healorder', 'milkdrink', 'moonlight', 'morningsun', 'recover', 'roost', 'shoreup', 'slackoff', 'softboiled', 'strengthsap', 'synthesis',
 ];
+
 const priorityMoveWeight = ['Learn Quick Attack','Learn Vacuum Wave','Learn Bullet Punch','Learn Water Shuriken','Learn Accelerock','Learn Sucker Punch']
 export const updateWeightPool = {
 	"pokemonroom": function (battle: Battle, weightPool: Record<string, number>, relics: string[] = []) { },
@@ -643,15 +665,15 @@ export const updateWeightPool = {
 			weightPool['Learn Explosion'] += 15;
 			weightPool['Learn Self-Destruct'] += 20;
 		}
-		if (pokemons.filter(x => (x.ability === 'megalauncher' || x.item === 'Blastoisinite') && x.moves.includes('originpulse')).length) {
+		if (pokemons.filter(x => (x.ability === 'megalauncher' || x.item === 'Blastoisinite') && !x.moves.includes('originpulse')).length) {
 			weightPool['Learn Origin Pulse'] += 10;
 		}
 		if (pokemons.filter(x => x.ability === 'principaldancer').length) {
-			weightPool['Learn Dragon Dance'] += 5;
-			weightPool['Learn Quiver Dance'] += 5;
+			weightPool['Learn Dragon Dance'] += 7;
+			weightPool['Learn Quiver Dance'] += 7;
 		}
 		if (pokemons.filter(x => x.ability === 'anfist').length) {
-			weightPool['Learn Double Iron Bash'] += 5;
+			weightPool['Learn Double Iron Bash'] += 7;
 		}
 		if (pokemons.filter(x => x.ability === 'powerpriority').length) {
 			for (let reward of priorityMoveWeight) {
@@ -661,6 +683,38 @@ export const updateWeightPool = {
 			weightPool['Learn Fake Shot'] += 5;
 
 		}
+		if (relics.includes('Close Buckshot') || pokemons.filter(x => x.ability === 'diffuser').length) {
+			for (let move of learnAoemove) {
+				weightPool[move] += 10;
+			}
+			weightPool['Learn Boomburst'] += 3;
+			weightPool['Learn Dragon Energy'] += 3;
+			weightPool['Learn Super Parabolic Charge'] += 3;
+			weightPool['Learn Diamond Storm'] += 3;
+			weightPool['Learn Origin Pulse'] += 3;
+			weightPool['Learn Precipice Blades'] += 3;
+		}
+		if (pokemons.filter(x => x.ability === 'punkrock').length) {
+			weightPool['Learn Boomburst'] += 7;
+			weightPool['Learn Hyper Voice'] += 7;
+		}
+		if (pokemons.filter(x => x.ability === 'prismbody').length) {
+			for (let move of learnBeammove) {
+				weightPool[move] += 10;
+			}
+			weightPool['Learn Meteor Beam'] += 5;
+			weightPool['Learn Moongeist Beam'] += 5;	
+		}
+		if (pokemons.filter(x => x.ability === 'noguard' || x.ability === 'compoundeyes' || x.item === 'sightlens' || x.item === 'pidgeotite' || x.item === 'hawluchanite').length) {
+			weightPool['Learn Sleep Powder'] += 10;
+			weightPool['Learn Precipice Blades'] += 5;
+			weightPool['Learn Hurricane'] += 10;
+			weightPool['Learn Thunder'] += 10;
+			weightPool['Learn Blizzard'] += 10;
+			weightPool["Learn Population Bomb"] += 5;
+			weightPool['Learn Blue Flare'] += 5;
+			weightPool['Learn Origin Pulse'] += 5;
+		}
 	},
 	'abilityroom': function (battle: Battle, weightPool: Record<string, number>, relics: string[] = []) {
 		let pokemons = battle.p2.pokemon;
@@ -668,14 +722,18 @@ export const updateWeightPool = {
 		if (pokemons.filter(x => x.moves.filter(x => Charge2.includes(x)).length && x.ability !== 'overcharge').length) {
 			weightPool["Become Overcharge"] += 40;
 		}
-		if (pokemons.filter(x => x.moves.filter(x => RecoveryMove.includes(x)).length && x.item !== 'gladiatorhelmet').length) {
+		if (pokemons.filter(x => x.moves.filter(x => RecoveryMove.includes(x)).length && x.ability !== 'haven').length) {
 			weightPool["Become Haven"] += 10;
 		}
 		if (relics.includes('Artisunny')) {
 			weightPool['Become Solar Power'] += 10;
 		}
-
-
+		if (pokemons.filter(x => x.moves.filter(x => aoemove.includes(x)).length && x.ability !== 'diffuser').length) {
+			weightPool['Become Diffuser'] += 5;
+		}
+		if (pokemons.filter(x => x.moves.filter(x => beammove.includes(x)).length && x.ability !== 'prismbody').length) {
+			weightPool['Become Prism Body'] += 10;
+		}
 	},
 	'eliteroom': function (battle: Battle, weightPool: Record<string, number>, relics: string[] = []) {
 		let pokemons = battle.p2.pokemon;
@@ -685,7 +743,7 @@ export const updateWeightPool = {
 		if (pokemons.filter(x => sunAbility.includes(x.ability) || x.item === 'houndoominite').length) {
 			weightPool['Gain Artisunny'] += 30;
 		}
-		if (pokemons.filter(x => sandfAbility.includes(x.ability) || x.item === 'Garchompite').length) {
+		if (pokemons.filter(x => sandfAbility.includes(x.ability) || x.item === 'garchompite').length) {
 			weightPool['Gain Artistorm'] += 30;
 		}
 		if (pokemons.filter(x => snowAbility.includes(x.ability)).length) {

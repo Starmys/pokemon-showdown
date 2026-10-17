@@ -81,7 +81,7 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 	dynamax:{
 		inherit:true,
 		onStart(pokemon) {
-			this.effectState.turns = 0;
+			this.effectState.turns = 3;
 			pokemon.removeVolatile('minimize');
 			pokemon.removeVolatile('substitute');
 			if (pokemon.volatiles['torment']) {
@@ -2056,9 +2056,13 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 			if (pokemon && pokemon.side === this.p2) {
 				pokemon.swordBoost = false;
 				pokemon.shieldBoost = false;
-				pokemon.isStarted = false;
-				this.effectState.protean = false;
-				this.effectState.libero = false;
+				this.singleEvent('Start', pokemon.getAbility(), pokemon.abilityState, pokemon);
+				if (pokemon.abilityState.protean){
+					pokemon.abilityState.protean = false;
+				}
+				if (pokemon.abilityState.libero){
+					pokemon.abilityState.libero = false;
+				}
 			}
 		},
 		onFieldStart(battle, source, effect) {
@@ -2078,6 +2082,63 @@ export const Conditions: import('../../../sim/dex-conditions').ModdedConditionDa
 		onFieldEnd() {
 			this.add('-fieldend', 'Unlimited Activation');
 			this.add('-message', 'The Unlimited Activation subsided.');
+		},
+	},
+	pokebilities: {
+		name: 'Pokebilities',
+		effectType: 'Condition',
+		duration: 0,
+		onBeforeSwitchIn(pokemon) {
+			if (pokemon.m.innates) {
+				for (const innate of pokemon.m.innates) {
+					if (pokemon.hasAbility(innate)) continue;
+					const effect = 'ability:' + this.toID(innate);
+					pokemon.volatiles[effect] = this.initEffectState({ id: effect, target: pokemon });
+				}
+			}
+		},
+		onSwitchOut(pokemon) {
+			for (const innate of Object.keys(pokemon.volatiles).filter(i => i.startsWith('ability:'))) {
+				pokemon.removeVolatile(innate);
+			}
+		},
+		onFaint(pokemon) {
+			for (const innate of Object.keys(pokemon.volatiles).filter(i => i.startsWith('ability:'))) {
+				const innateEffect = this.dex.conditions.get(innate) as Effect;
+				this.singleEvent('End', innateEffect, null, pokemon);
+			}
+		},
+		onAfterMega(pokemon) {
+			for (const innate of Object.keys(pokemon.volatiles).filter(i => i.startsWith('ability:'))) {
+				pokemon.removeVolatile(innate);
+			}
+			pokemon.m.innates = undefined;
+		},
+		onFieldStart(battle, source, effect) {
+			const pokemon = this.p2.active[0];
+			if (pokemon.m.innates) {
+				for (const innate of pokemon.m.innates) {
+					if (pokemon.hasAbility(innate)) continue;
+					const effect = 'ability:' + this.toID(innate);
+					pokemon.volatiles[effect] = this.initEffectState({ id: effect, target: pokemon });
+				}
+			}
+			if (effect?.effectType === 'Ability') {
+				this.add('-fieldstart', 'Pokebilities', '[from] ability: ' + effect, '[of] ' + source);
+			} else {
+				this.add('-fieldstart', 'Pokebilities');
+			}
+			this.add('-message', 'Pokebilities is radiated.');
+		},
+		
+		onFieldResidualOrder: 1,
+		onFieldResidual() {
+			this.add('-weather', 'Pokebilities', '[upkeep]');
+			this.eachEvent('Weather');
+		},
+		onFieldEnd() {
+			this.add('-fieldend', 'Pokebilities');
+			this.add('-message', 'The Pokebilities subsided.');
 		},
 	},
 };

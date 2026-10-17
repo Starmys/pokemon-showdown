@@ -838,7 +838,11 @@ export const Abilities: import('../../../sim/dex-abilities').ModdedAbilityDataTa
 
 		onResidual(pokemon) {
 			pokemon.removeVolatile('choicelock');
-			
+			pokemon.removeVolatile('taunt');
+			pokemon.removeVolatile('encore');
+			pokemon.removeVolatile('disable');
+			pokemon.removeVolatile('torment');
+			pokemon.removeVolatile('healblock');
 		},
 		onDisableMovePriority: -1000,
 		onDisableMove(pokemon) {
@@ -1246,5 +1250,25 @@ export const Abilities: import('../../../sim/dex-abilities').ModdedAbilityDataTa
 		name: "Prism Body",
 		rating: 3.5,
 		num: 292,
+	},
+	stress: {
+		onModifyAtkPriority: 5,
+		onModifyAtk(atk, attacker, defender, move) {
+			if (attacker.hp <= attacker.maxhp / 3) {
+				this.debug('Stress boost');
+				return this.chainModify(1.5);
+			}
+		},
+		onModifySpAPriority: 5,
+		onModifySpA(atk, attacker, defender, move) {
+			if (attacker.hp <= attacker.maxhp / 3) {
+				this.debug('Stress boost');
+				return this.chainModify(1.5);
+			}
+		},
+		flags: {},
+		name: "Stress",
+		rating: 2,
+		num: 68,
 	},
 };

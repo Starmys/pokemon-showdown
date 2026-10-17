@@ -461,7 +461,8 @@ export const Items: import('../../../sim/dex-items').ModdedItemDataTable = {
 			type: "Dragon",
 		},
 		onUpdate(pokemon) {
-			if (pokemon.hp <= pokemon.maxhp / 4 || (pokemon.hp <= pokemon.maxhp / 2 && pokemon.hasAbility('gluttony'))) {
+			if (pokemon.hp <= pokemon.maxhp / 4 || (pokemon.hp <= pokemon.maxhp / 2 &&
+				pokemon.hasAbility('gluttony') && pokemon.abilityState.gluttony)) {
 				pokemon.eatItem();
 			}
 		},
@@ -697,7 +698,8 @@ export const Items: import('../../../sim/dex-items').ModdedItemDataTable = {
 			type: "Dragon",
 		},
 		onUpdate(pokemon) {
-			if (pokemon.hp <= pokemon.maxhp / 4 || (pokemon.hp <= pokemon.maxhp / 2 && pokemon.hasAbility('gluttony'))) {
+			if (pokemon.hp <= pokemon.maxhp / 4 || (pokemon.hp <= pokemon.maxhp / 2 &&
+				pokemon.hasAbility('gluttony') && pokemon.abilityState.gluttony)) {
 				pokemon.eatItem();
 			}
 		},
@@ -705,6 +707,7 @@ export const Items: import('../../../sim/dex-items').ModdedItemDataTable = {
 			if (!this.runEvent('TryHeal', pokemon)) return false;
 		},
 		onEat(pokemon) {
+			this.heal(pokemon.baseMaxhp / 4);
 			for(let i in pokemon.set.evs){
 				pokemon.set.evs[i as keyof typeof pokemon.set.evs]=Math.min( pokemon.set.evs[i as keyof typeof pokemon.set.evs]+24,252);
 			}
@@ -842,5 +845,39 @@ export const Items: import('../../../sim/dex-items').ModdedItemDataTable = {
 		},
 		num: 253,
 		gen: 5,
+	},
+	powerberry: {
+		name: "Power Berry",
+		spritenum: 426,
+		isBerry: true,
+		naturalGift: {
+			basePower: 150,
+			type: "Fighting",
+		},
+		onUpdate(pokemon) {
+			if (pokemon.hp <= pokemon.maxhp / 4 || (pokemon.hp <= pokemon.maxhp / 2 &&
+				pokemon.hasAbility('gluttony') && pokemon.abilityState.gluttony)) {
+				pokemon.eatItem();
+			}
+		},
+		onEat(pokemon) {
+			this.boost({ atk:1, def: 1, spa: 1, spd: 1, spe: 1 });
+			pokemon.addVolatile('focusenergy');
+			const stats: BoostID[] = [];
+			let stat: BoostID;
+			for (stat in pokemon.boosts) {
+				if (stat !== 'accuracy' && stat !== 'evasion' && pokemon.boosts[stat] < 6) {
+					stats.push(stat);
+				}
+			}
+			if (stats.length) {
+				const randomStat = this.sample(stats);
+				const boost: SparseBoostsTable = {};
+				boost[randomStat] = 2;
+				this.boost(boost);
+			}
+		},
+		num: 203,
+		gen: 3,
 	},
 };

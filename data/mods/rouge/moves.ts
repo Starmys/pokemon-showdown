@@ -2840,6 +2840,25 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		desc: 'random pokemon of your team get Omni Weapon',
 		shortDesc: 'random pokemon of your team get Omni Weapon',
 	},
+	getpowerberry: {
+		num: 1002,
+		name: 'Get Power Berry',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			selectpokemon(pokemon, ' Get Item');
+
+		},
+		desc: 'random pokemon of your team get Power Berry',
+		shortDesc: 'random pokemon of your team get Power Berry',
+	},
 	//----------movemoves
 
 	learnextremespeed: {
@@ -4442,6 +4461,158 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 	learnsuperacupressure: {
 		num: 1000,
 		name: 'Learn Super Acupressure',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon, source, move) {
+			selectpokemon(pokemon, ' Learn Move');
+			setMoveName(pokemon,move.name);
+
+		},
+
+	},
+	learnheatwave: {
+		num: 1000,
+		name: 'Learn Heat Wave',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon, source, move) {
+			selectpokemon(pokemon, ' Learn Move');
+			setMoveName(pokemon,move.name);
+
+		},
+
+	},
+	learnrockslide: {
+		num: 1000,
+		name: 'Learn Rock Slide',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon, source, move) {
+			selectpokemon(pokemon, ' Learn Move');
+			setMoveName(pokemon,move.name);
+
+		},
+
+	},
+	learnhypervoice: {
+		num: 1000,
+		name: 'Learn Hyper Voice',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon, source, move) {
+			selectpokemon(pokemon, ' Learn Move');
+			setMoveName(pokemon,move.name);
+
+		},
+
+	},
+	learnearthquake: {
+		num: 1000,
+		name: 'Learn Earthquake',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon, source, move) {
+			selectpokemon(pokemon, ' Learn Move');
+			setMoveName(pokemon,move.name);
+
+		},
+
+	},
+	learnicebeam: {
+		num: 1000,
+		name: 'Learn Ice Beam',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon, source, move) {
+			selectpokemon(pokemon, ' Learn Move');
+			setMoveName(pokemon,move.name);
+
+		},
+
+	},
+	learntwinbeam: {
+		num: 1000,
+		name: 'Learn Twin Beam',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon, source, move) {
+			selectpokemon(pokemon, ' Learn Move');
+			setMoveName(pokemon,move.name);
+
+		},
+
+	},
+	learnficklebeam: {
+		num: 1000,
+		name: 'Learn Fickle Beam',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon, source, move) {
+			selectpokemon(pokemon, ' Learn Move');
+			setMoveName(pokemon,move.name);
+
+		},
+
+	},
+	learnhyperbeam: {
+		num: 1000,
+		name: 'Learn Hyper Beam',
 		type: 'Normal',
 		accuracy: true,
 		basePower: 0,
@@ -9432,6 +9603,24 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		desc: '',
 		shortDesc: '',
 	},
+	becomestress: {
+		num: 1002,
+		name: 'Become Stress',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			selectpokemon(pokemon, ' Transform Ability');
+		},
+		desc: '',
+		shortDesc: '',
+	},
 	//----------------elitemoves---------
 	gainartirain: {
 		num: 1002,
@@ -10849,6 +11038,26 @@ export const Moves: import('../../../sim/dex-moves').ModdedMoveDataTable = {
 		onHit(pokemon) {
 			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Unlimited Activation');
 			this.add('html', `<div class="broadcast-green"><strong>you get the Unlimited Activation</strong></div>`);
+			chooseroom(pokemon, this.prng);
+		},
+		desc: '',
+		shortDesc: '',
+	},
+	gainpokebilities: {
+		num: 1002,
+		name: 'Gain Pokebilities',
+		type: 'Normal',
+		accuracy: true,
+		basePower: 0,
+		category: 'Status',
+		pp: 1,
+		isZ: true,
+		priority: -10,
+		target: 'self',
+		flags: {},
+		onHit(pokemon) {
+			RougeUtils.addRelics(this.toID(pokemon.side.name), 'Pokebilities');
+			this.add('html', `<div class="broadcast-green"><strong>you get the Pokebilities</strong></div>`);
 			chooseroom(pokemon, this.prng);
 		},
 		desc: '',
