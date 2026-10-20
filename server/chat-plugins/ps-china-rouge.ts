@@ -1,21 +1,28 @@
 import { PRNG } from "../../sim";
-import { BOTID, PetUtils } from "./ps-china-pet-mode";
+import { BOTID, PetUtils, } from "./ps-china-pet-mode";
 import { sample, getRougeSet } from "../../data/mods/rouge/moves";
 import { PokemonPool } from "../../config/rouge/pokemon-pool";
 import { ChampionTeams } from "../../config/rouge/champion-teams";
 import { Enemies } from "../../config/rouge/enemies";
 import { RougeUtils } from "../../data/mods/rouge/rulesets";
 
+const POKESHEET = 'https://play.pokemonshowdown.com/sprites/pokemonicons-sheet.png';
+
 export class Rouge {
 
-	static specialInitMons = ['Pidgey', 'Quagsire','Umbreon']
+	static specialInitMons = ['Pidgey', 'Quagsire', 'Umbreon']
 	static initButtons = [
 		[1, 5, 8, 11, 14, 17, 20, 23,26],
 		[2, 6, 9, 12, 15, 18, 21, 24,27],
 		[3, 7, 10, 13, 16, 19, 22, 25,28],
 		[4]
 	].map(x => x.map(x => PetUtils.button(`/rouge start ${x}`, '', PetUtils.iconStyle(RougeUtils.initMons[x - 1]))).join('')).join('<br>');
-	static specialInitButtons = [PetUtils.button(`/rouge start ${RougeUtils.initMons.length + 1}`, '', PetUtils.iconStyle(Rouge.specialInitMons[0])), PetUtils.button(`/rouge start ${RougeUtils.initMons.length + 2}`, '', PetUtils.iconStyle(Rouge.specialInitMons[1])), PetUtils.button(`/rouge start ${RougeUtils.initMons.length+3}`, '', PetUtils.iconStyle(Rouge.specialInitMons[2]))].join('');
+	static specialInitButtons = [
+		PetUtils.button(`/rouge start 29`, '', PetUtils.iconStyle(Rouge.specialInitMons[0])),
+		PetUtils.button(`/rouge start 30`, '', PetUtils.iconStyle(Rouge.specialInitMons[1])),
+		PetUtils.button(`/rouge start 31`, '', PetUtils.iconStyle(Rouge.specialInitMons[2])),
+		PetUtils.button(`/rouge start 32`, '', `background: transparent url(${POKESHEET}?v5) no-repeat scroll; height: 32px; width: 40px;`),
+	].join('');
 	static leadbButtons = [2, 3, 4, 5, 6].map(x => PetUtils.button(`/rouge chooselead ${x}`, `${x}`)).join('');
 	static banEvobButtons = [1, 2, 3, 4, 5, 6].map(x => PetUtils.button(`/rouge choosebanevoable ${x}`, `${x}`)).join('');
 	static difficult=['正常','困难'];
@@ -176,6 +183,7 @@ export const commands: Chat.ChatCommands = {
 					case 29: userTeam = getRougeSet(PokemonPool.Cscl, Rouge.prng); break;
 					case 30: userTeam = getRougeSet(PokemonPool["Daiwa Scarlet"], Rouge.prng); break;
 					case 31: userTeam = getRougeSet(PokemonPool.Wind777, Rouge.prng); break;
+					case 32: userTeam = getRougeSet(Rouge.prng.sample(Object.values(PokemonPool)), Rouge.prng); break;
 					default: return user.sendTo(room.roomid, `|html|<b>该角色暂未公布</b><br>`);
 				}
 				RougeUtils.setInitial(user.id, role);
@@ -300,7 +308,7 @@ export const commands: Chat.ChatCommands = {
 		fullpassrecord(target, room, user) {
 			if (!user.registered) return PetUtils.popup(user, "请先注册账号!");
 			if (!room) return PetUtils.popup(user, "请在房间里使用Rouge系统");
-			this.checkCan('bypassall');
+			// this.checkCan('bypassall');
 			let rougeUser = RougeUtils.getUser(user.id);
 			if (rougeUser) {
 				rougeUser.passrecord = { 'cave': Array(RougeUtils.initMons.length).fill(1), 'void': Array(RougeUtils.initMons.length).fill(1) };

@@ -25,7 +25,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Charmeleon": {
-		"name": 'Charmander',
+		"name": 'Charmeleon',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Specs', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Firium Z', 'Charcoal', 'Charizardite X', 'Charizardite Y', 'Eviolite', 'Charizardite X', 'Charizardite Y'],
 		"ability": ['Blaze', 'Blaze', 'Blaze', 'Blaze', 'Solar Power'],
@@ -37,7 +37,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Charizard": {
-		"name": 'Charmander',
+		"name": 'Charizard',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Specs', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Firium Z', 'Charcoal', 'Charizardite X', 'Charizardite Y', 'Eviolite', 'Charizardite X', 'Charizardite Y'],
 		"ability": ['Blaze', 'Blaze', 'Blaze', 'Blaze', 'Solar Power'],
@@ -61,7 +61,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Wartortle": {
-		"name": 'Squirtle',
+		"name": 'Wartortle',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Specs', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Waterium Z', 'Mystic Water', 'Blastoisinite', 'Eviolite', 'Blastoisinite'],
 		"ability": ['Torrent', 'Torrent', 'Torrent', 'Torrent', 'Rain Dish'],
@@ -73,7 +73,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Blastoise": {
-		"name": 'Squirtle',
+		"name": 'Blastoise',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Specs', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Waterium Z', 'Mystic Water', 'Blastoisinite', 'Eviolite', 'Blastoisinite'],
 		"ability": ['Torrent', 'Torrent', 'Torrent', 'Torrent', 'Rain Dish'],
@@ -97,7 +97,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Ivysaur": {
-		"name": 'Bulbasaur',
+		"name": 'Ivysaur',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Specs', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Grassium Z', 'Miracle Seed', 'Venusaurite', 'Black Sludge', 'Eviolite', 'Venusaurite'],
 		"ability": ['Overgrow', 'Overgrow', 'Overgrow', 'Overgrow', 'Chlorophyll'],
@@ -109,7 +109,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Venusaur": {
-		"name": 'Bulbasaur',
+		"name": 'Venusaur',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Specs', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Grassium Z', 'Miracle Seed', 'Venusaurite', 'Black Sludge', 'Eviolite', 'Venusaurite'],
 		"ability": ['Overgrow', 'Overgrow', 'Overgrow', 'Overgrow', 'Chlorophyll'],
@@ -133,7 +133,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Raichu-Alola": {
-		"name": 'Pikachu',
+		"name": 'Raichu-Alola',
 		"species": "",
 		"item": ['Aloraichium Z', 'Electrium Z'],
 		"ability": ['Surge Surfer'],
@@ -145,7 +145,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Raichu": {
-		"name": 'Pikachu',
+		"name": 'Raichu',
 		"species": "",
 		"item": ['Electrium Z', 'Raichunite X', 'Raichunite Y'],
 		"ability": ['Static', 'Lightning Rod'],
@@ -193,7 +193,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Snorlax": {
-		"name": 'Munchlax',
+		"name": 'Snorlax',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Normalium Z', 'Silk Scarf', 'Snorlium Z', 'Eviolite'],
 		"ability": ['Immunity', 'Thick Fat', 'Gluttony'],
@@ -229,7 +229,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Ferrothorn": {
-		"name": 'Ferroseed',
+		"name": 'Ferrothorn',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Specs', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Eviolite', 'Quick Claw'],
 		"ability": 'Iron Barbs',
@@ -277,7 +277,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Arcanine": {
-		"name": 'Growlithe',
+		"name": 'Arcanine',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Choice Specs', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Shuca Berry', 'Firium Z', 'Charcoal', 'Eviolite'],
 		"ability": ['Intimidate', 'Flash Fire', 'Justified'],
@@ -337,7 +337,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Drakloak": {
-		"name": 'Dreepy',
+		"name": 'Drakloak',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Band', 'Choice Specs', 'Choice Scarf', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Ghostium Z', 'Spell Tag', 'Dragon Fang', 'Dragonium Z'],
 		"ability": ['Clear Body', 'Infiltrator', 'Cursed Body'],
@@ -349,7 +349,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Dragapult": {
-		"name": 'Dreepy',
+		"name": 'Dragapult',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Band', 'Choice Specs', 'Choice Scarf', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Ghostium Z', 'Spell Tag', 'Dragon Fang', 'Dragonium Z'],
 		"ability": ['Clear Body', 'Infiltrator', 'Cursed Body'],
@@ -385,7 +385,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Metang": {
-		"name": 'Beldum',
+		"name": 'Metang',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Band', 'Choice Scarf', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Odd Incense', 'Psychium Z', 'Weakness Policy', 'Metagrossite', 'Metagrossite'],
 		"ability": ['Clear Body', 'Light Metal'],
@@ -397,7 +397,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Metagross": {
-		"name": 'Beldum',
+		"name": 'Metagross',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Band', 'Choice Scarf', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Odd Incense', 'Psychium Z', 'Weakness Policy', 'Metagrossite', 'Metagrossite'],
 		"ability": ['Clear Body', 'Light Metal'],
@@ -421,7 +421,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Steelix": {
-		"name": 'Onix',
+		"name": 'Steelix',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Band', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Rockium Z', 'Steelixite', 'Steelixite'],
 		"ability": ['Rock Head', 'Sturdy', 'Sheer Force'],
@@ -445,7 +445,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Vigoroth": {
-		"name": 'Slakoth',
+		"name": 'Vigoroth',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Band', 'Choice Scarf', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Silk Scarf', 'Normalium Z'],
 		"ability": ['Vital Spirit'],
@@ -457,7 +457,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Slaking": {
-		"name": 'Slakoth',
+		"name": 'Slaking',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Band', 'Choice Scarf', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Silk Scarf', 'Normalium Z'],
 		"ability": ['Truant'],
@@ -481,7 +481,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Duosion": {
-		"name": 'Solosis',
+		"name": 'Duosion',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Specs', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Odd Incense', 'Psychium Z', 'Colbur Berry', 'Quick Claw'],
 		"ability": ['Overcoat', 'Magic Guard', 'Regenerator'],
@@ -493,7 +493,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Reuniclus": {
-		"name": 'Solosis',
+		"name": 'Reuniclus',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Specs', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Odd Incense', 'Psychium Z', 'Colbur Berry', 'Quick Claw'],
 		"ability": ['Overcoat', 'Magic Guard', 'Regenerator'],
@@ -601,7 +601,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Weavile": {
-		"name": 'Sneasel',
+		"name": 'Weavile',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Band', 'Choice Scarf', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Never-Melt Ice', 'Darkinium Z', 'Icium Z'],
 		"ability": ['Pressure', 'Pickpocket'],
@@ -625,7 +625,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Houndoom": {
-		"name": 'Houndour',
+		"name": 'Houndoom',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Specs', 'Choice Scarf', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Firium Z', 'Darkinium Z', 'Passho Berry', 'Houndoominite', 'Houndoominite'],
 		"ability": ['Early Bird', 'Flash Fire', 'Unnerve'],
@@ -649,7 +649,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Kingdra": {
-		"name": 'Seadra',
+		"name": 'Kingdra',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Band', 'Choice Specs', 'Choice Scarf', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Wiki Berry', 'Sitrus Berry', 'Waterium Z', 'Dragonium Z', 'Scope Lens'],
 		"ability": ['Swift Swim', 'Sniper'],
@@ -673,7 +673,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Luxio": {
-		"name": 'Shinx',
+		"name": 'Luxio',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Band', 'Choice Scarf', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Wiki Berry', 'Sitrus Berry', 'Electrium Z', 'Magnet', 'Flame Orb','Flame Orb'],
 		"ability": ['Intimidate', 'Guts'],
@@ -685,7 +685,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Luxray": {
-		"name": 'Shinx',
+		"name": 'Luxray',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Band', 'Choice Scarf', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb',  'Wiki Berry', 'Sitrus Berry', 'Electrium Z', 'Magnet', 'Flame Orb','Flame Orb'],
 		"ability": ['Intimidate', 'Guts'],
@@ -709,7 +709,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Lucario": {
-		"name": 'Riolu',
+		"name": 'Lucario',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Band', 'Choice Scarf', 'Choice Specs', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Sitrus Berry', 'Fightinium Z', 'Black Belt', 'Lucarionite', 'Lucarionite', 'Lucarionite Z', 'Lucarionite Z', 'Lucarionite Z'],
 		"ability": ['Steadfast', 'Inner Focus', 'Justified'],
@@ -745,7 +745,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Talonflame": {
-		"name": 'Fletchinder',
+		"name": 'Talonflame',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Band', 'Choice Scarf', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Wiki Berry', 'Sitrus Berry', 'Flyinium Z', 'Sharp Beak'],
 		"ability": ['Flame Body', 'Gale Wings'],
@@ -781,7 +781,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Roserade": {
-		"name": 'Roselia',
+		"name": 'Roserade',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Specs', 'Choice Scarf', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Wiki Berry', 'Sitrus Berry', 'Poisonium Z', 'Grassium Z', 'Eviolite', 'Miracle Seed', 'Black Sludge'],
 		"ability": ['Natural Cure', 'Poison Point', 'Technician'],
@@ -841,7 +841,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Pupitar": {
-		"name": 'Larvitar',
+		"name": 'Pupitar',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Band', 'Choice Scarf', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Wiki Berry', 'Sitrus Berry', 'Rockium Z', 'Darkinium Z', 'Tyranitarite', 'Tyranitarite'],
 		"ability": ['Shed Skin'],
@@ -853,7 +853,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Tyranitar": {
-		"name": 'Larvitar',
+		"name": 'Tyranitar',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Band', 'Choice Scarf', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Wiki Berry', 'Sitrus Berry', 'Rockium Z', 'Darkinium Z', 'Tyranitarite', 'Tyranitarite'],
 		"ability": ['Sand Stream', 'Unnerve'],
@@ -1009,7 +1009,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Fearow": {
-		"name": 'Spearow',
+		"name": 'Fearow',
 		"species": "Fearow",
 		"item": ['Darkinium Z', 'Choice Band', 'Life Orb', 'Focus Sash', 'Wiki Berry', 'Mago Berry', 'Figy Berry', 'Iapapa Berry', 'Aguav Berry', 'Silk Scarf', 'Flyinium Z'],
 		"ability": ['Malicious Pluck'],
@@ -1045,7 +1045,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Clefable": {
-		"name": 'Clefairy',
+		"name": 'Clefable',
 		"species": "",
 		"item": ['Light Clay', 'Babiri Berry', 'Apicot Berry', 'Wiki Berry', 'Mago Berry', 'Iapapa Berry', 'Figy Berry', 'Leftovers', 'Aguav Berry', 'Life Orb', 'Choice Specs', 'Clefablite', 'Clefablite'],
 		"ability": ['Unaware','Magic Guard'],
@@ -1069,7 +1069,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Tyrantrum": {
-		"name": 'Tyrunt',
+		"name": 'Tyrantrum',
 		"species": "",
 		"item": ['Rockium Z', 'Dragonium Z', 'Choice Scarf', 'Iapapa Berry', 'Expert Belt', 'Choice Band', 'Wiki Berry', 'Mago Berry', 'Rock Incense', 'Dragon Fang', 'Metronome'],
 		"ability": ['Strong Jaw', 'Rock Head'],
@@ -1093,7 +1093,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Excadrill": {
-		"name": 'Drilbur',
+		"name": 'Excadrill',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Wiki Berry', 'Sitrus Berry', 'Groundium Z', 'Steelium Z', 'Metronome', 'Soft Sand', 'Excadrite', 'Excadrite'],
 		"ability": ['Sand Rush', 'Sand Force', 'Mold Breaker'],
@@ -1117,7 +1117,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Cloyster": {
-		"name": 'Shellder',
+		"name": 'Cloyster',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Wiki Berry', 'Sitrus Berry', 'Waterium Z', "King's Rock", 'Metronome', 'Never-Melt Ice', 'Focus Sash', 'White Herb'],
 		"ability": ['Shell Armor', 'Skill Link', 'Overcoat'],
@@ -1189,7 +1189,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Piloswine": {
-		"name": 'Swinub',
+		"name": 'Piloswine',
 		"species": "",
 		"item": ['Choice Band', 'Leftovers', 'Life Orb', 'Expert Belt', 'Salac Berry', 'Soft Sand', 'Never-Melt Ice', 'Metronome', 'Eviolite', 'Icium Z', 'Adrenaline Orb', 'Choice Scarf'],
 		"ability": ['Thick Fat', 'Snow Cloak', 'Oblivious'],
@@ -1201,7 +1201,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Mamoswine": {
-		"name": 'Swinub',
+		"name": 'Mamoswine',
 		"species": "",
 		"item": ['Choice Band', 'Leftovers', 'Life Orb', 'Expert Belt', 'Salac Berry', 'Soft Sand', 'Never-Melt Ice', 'Metronome', 'Eviolite', 'Icium Z', 'Adrenaline Orb', 'Choice Scarf'],
 		"ability": ['Thick Fat', 'Snow Cloak', 'Oblivious'],
@@ -1309,7 +1309,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Ninetales-Alola": {
-		"name": 'Vulpix-Alola',
+		"name": 'Ninetales-Alola',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Specs', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Never-Melt Ice', 'Icium Z'],
 		"ability": ['Snow Cloak', 'Snow Warning'],
@@ -1333,7 +1333,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Kleavor": {
-		"name": 'Scyther',
+		"name": 'Kleavor',
 		"species": "",
 		"item": ['Aguav Berry', 'Choice Band', 'Choice Scarf', 'Assault Vest', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Wiki Berry', 'Sitrus Berry', "Buginium Z", 'Scizorite', 'Scizorite'],
 		"ability": ['Swarm', 'Technician', 'Steadfast'],
@@ -1345,7 +1345,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Scizor": {
-		"name": 'Scyther',
+		"name": 'Scizor',
 		"species": "",
 		"item": ['Aguav Berry', 'Choice Band', 'Choice Scarf', 'Assault Vest', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Wiki Berry', 'Sitrus Berry', "Buginium Z", 'Scizorite', 'Scizorite'],
 		"ability": ['Swarm', 'Technician', 'Light Metal'],
@@ -1369,7 +1369,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Quilava": {
-		"name": 'Cyndaquil',
+		"name": 'Quilava',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Specs', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Firium Z', 'Charcoal', 'Eviolite'],
 		"ability": ['Blaze', 'Blaze', 'Blaze', 'Blaze', 'Flash Fire'],
@@ -1381,7 +1381,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Typhlosion": {
-		"name": 'Cyndaquil',
+		"name": 'Typhlosion',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Specs', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Firium Z', 'Charcoal', 'Eviolite'],
 		"ability": ['Blaze', 'Blaze', 'Blaze', 'Blaze', 'Flash Fire'],
@@ -1405,7 +1405,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Croconaw": {
-		"name": 'Totodile',
+		"name": 'Croconaw',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Waterium Z', 'Mystic Water', 'Eviolite', 'Feraligite', 'Feraligite'],
 		"ability": ['Torrent', 'Torrent', 'Torrent', 'Torrent', 'Sheer Force'],
@@ -1417,7 +1417,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Feraligatr": {
-		"name": 'Totodile',
+		"name": 'Feraligatr',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Waterium Z', 'Mystic Water', 'Eviolite', 'Feraligite', 'Feraligite'],
 		"ability": ['Torrent', 'Torrent', 'Torrent', 'Torrent', 'Sheer Force'],
@@ -1441,7 +1441,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Bayleef": {
-		"name": 'Chikorita',
+		"name": 'Bayleef',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Specs', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Grassium Z', 'Miracle Seed', 'Eviolite', 'Meganiumite', 'Meganiumite'],
 		"ability": ['Overgrow', 'Overgrow', 'Overgrow', 'Overgrow', 'Leaf Guard'],
@@ -1453,7 +1453,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Meganium": {
-		"name": 'Chikorita',
+		"name": 'Meganium',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Specs', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Grassium Z', 'Miracle Seed', 'Eviolite', 'Meganiumite', 'Meganiumite'],
 		"ability": ['Overgrow', 'Overgrow', 'Overgrow', 'Overgrow', 'Leaf Guard'],
@@ -1621,7 +1621,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Wailord": {
-		"name": 'Wailmer',
+		"name": 'Wailord',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Specs', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Waterium Z', 'Mystic Water', 'Eviolite'],
 		"ability": ['Whale Fall'],
@@ -1693,7 +1693,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Combusken": {
-		"name": 'Torchic',
+		"name": 'Combusken',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Firium Z', 'Charcoal', 'Eviolite', 'Blazikenite', 'Blazikenite'],
 		"ability": ['Blaze', 'Blaze', 'Blaze', 'Blaze', 'Speed Boost'],
@@ -1705,7 +1705,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Blaziken": {
-		"name": 'Torchic',
+		"name": 'Blaziken',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Firium Z', 'Charcoal', 'Eviolite', 'Blazikenite', 'Blazikenite'],
 		"ability": ['Blaze', 'Blaze', 'Blaze', 'Blaze', 'Speed Boost'],
@@ -1729,7 +1729,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Marshtomp": {
-		"name": 'Mudkip',
+		"name": 'Marshtomp',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Waterium Z', 'Mystic Water', 'Eviolite', 'Swampertite', 'Swampertite'],
 		"ability": ['Torrent', 'Torrent', 'Torrent', 'Torrent', 'Damp'],
@@ -1741,7 +1741,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Swampert": {
-		"name": 'Mudkip',
+		"name": 'Swampert',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Waterium Z', 'Mystic Water', 'Eviolite', 'Swampertite', 'Swampertite'],
 		"ability": ['Torrent', 'Torrent', 'Torrent', 'Torrent', 'Damp'],
@@ -1765,7 +1765,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Grovyle": {
-		"name": 'Treecko',
+		"name": 'Grovyle',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Specs', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Grassium Z', 'Miracle Seed', 'Eviolite', 'Sceptilite', 'Sceptilite'],
 		"ability": ['Overgrow', 'Overgrow', 'Overgrow', 'Overgrow', 'Unburden'],
@@ -1777,7 +1777,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Sceptile": {
-		"name": 'Treecko',
+		"name": 'Sceptile',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Specs', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Grassium Z', 'Miracle Seed', 'Eviolite', 'Sceptilite', 'Sceptilite'],
 		"ability": ['Overgrow', 'Overgrow', 'Overgrow', 'Overgrow', 'Unburden'],
@@ -1825,7 +1825,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Golduck": {
-		"name": 'Psyduck',
+		"name": 'Golduck',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Specs', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry'],
 		"ability": ["Swift Swim"],
@@ -1897,7 +1897,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Monferno": {
-		"name": 'Chimchar',
+		"name": 'Monferno',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Firium Z', 'Charcoal', 'Eviolite', 'Fightinium Z'],
 		"ability": ['Blaze', 'Blaze', 'Blaze', 'Blaze', 'Iron Fist'],
@@ -1909,7 +1909,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Infernape": {
-		"name": 'Chimchar',
+		"name": 'Infernape',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Firium Z', 'Charcoal', 'Eviolite', 'Fightinium Z'],
 		"ability": ['Blaze', 'Blaze', 'Blaze', 'Blaze', 'Iron Fist'],
@@ -1933,7 +1933,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Prinplup": {
-		"name": 'Piplup',
+		"name": 'Prinplup',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Specs', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Waterium Z', 'Mystic Water', 'Eviolite'],
 		"ability": ['Torrent', 'Torrent', 'Torrent', 'Torrent', 'Competitive'],
@@ -1945,7 +1945,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Empoleon": {
-		"name": 'Piplup',
+		"name": 'Empoleon',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Specs', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Waterium Z', 'Mystic Water', 'Eviolite'],
 		"ability": ['Torrent', 'Torrent', 'Torrent', 'Torrent', 'Competitive'],
@@ -1969,7 +1969,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Grotle": {
-		"name": 'Turtwig',
+		"name": 'Grotle',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Grassium Z', 'Miracle Seed', 'Eviolite'],
 		"ability": ['Overgrow', 'Overgrow', 'Overgrow', 'Overgrow', 'Shell Armor'],
@@ -1981,7 +1981,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Torterra": {
-		"name": 'Turtwig',
+		"name": 'Torterra',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Grassium Z', 'Miracle Seed', 'Eviolite'],
 		"ability": ['Overgrow', 'Overgrow', 'Overgrow', 'Overgrow', 'Shell Armor'],
@@ -2005,7 +2005,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Pignite": {
-		"name": 'Tepig',
+		"name": 'Pignite',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Firium Z', 'Charcoal', 'Eviolite', 'Fightinium Z', 'Emboarite', 'Emboarite'],
 		"ability": ['Blaze', 'Blaze', 'Blaze', 'Blaze', 'Thick Fat'],
@@ -2017,7 +2017,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Emboar": {
-		"name": 'Tepig',
+		"name": 'Emboar',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Firium Z', 'Charcoal', 'Eviolite', 'Fightinium Z', 'Emboarite', 'Emboarite'],
 		"ability": ['Blaze', 'Blaze', 'Blaze', 'Blaze', 'Reckless'],
@@ -2041,7 +2041,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Dewott": {
-		"name": 'Oshawott',
+		"name": 'Dewott',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Waterium Z', 'Mystic Water', 'Eviolite'],
 		"ability": ['Torrent', 'Torrent', 'Torrent', 'Torrent', 'Shell Armor'],
@@ -2053,7 +2053,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Samurott": {
-		"name": 'Oshawott',
+		"name": 'Samurott',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Waterium Z', 'Mystic Water', 'Eviolite'],
 		"ability": ['Torrent', 'Torrent', 'Torrent', 'Torrent', 'Shell Armor'],
@@ -2077,7 +2077,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Servine": {
-		"name": 'Snivy',
+		"name": 'Servine',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Specs', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Grassium Z', 'Miracle Seed', 'Eviolite'],
 		"ability": ['Overgrow', 'Overgrow', 'Overgrow', 'Overgrow', 'Contrary'],
@@ -2089,7 +2089,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Serperior": {
-		"name": 'Snivy',
+		"name": 'Serperior',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Specs', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Grassium Z', 'Miracle Seed', 'Eviolite'],
 		"ability": ['Overgrow', 'Overgrow', 'Overgrow', 'Overgrow', 'Contrary'],
@@ -2113,7 +2113,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Gabite": {
-		"name": 'Gible',
+		"name": 'Gabite',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'dragonium z', 'groundium z', 'Eviolite', 'Garchompite', 'Garchompite Z', 'Garchompite Z', 'Garchompite Z'],
 		"ability": ['Sand Veil', 'Rough Skin'],
@@ -2125,7 +2125,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Garchomp": {
-		"name": 'Gible',
+		"name": 'Garchomp',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'dragonium z', 'groundium z', 'Eviolite', 'Garchompite', 'Garchompite Z', 'Garchompite Z', 'Garchompite Z'],
 		"ability": ['Sand Veil', 'Rough Skin'],
@@ -2185,7 +2185,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Braixen": {
-		"name": 'Fennekin',
+		"name": 'Braixen',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Specs', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Firium Z', 'Charcoal', 'Eviolite', 'psychium Z', 'Delphoxite'],
 		"ability": ['Blaze', 'Blaze', 'Blaze', 'Blaze', 'Magician'],
@@ -2197,7 +2197,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Delphox": {
-		"name": 'Fennekin',
+		"name": 'Delphox',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Specs', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Firium Z', 'Charcoal', 'Eviolite', 'psychium Z', 'Delphoxite'],
 		"ability": ['Blaze', 'Blaze', 'Blaze', 'Blaze', 'Magician'],
@@ -2221,7 +2221,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Frogadier": {
-		"name": 'Froakie',
+		"name": 'Frogadier',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Specs', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Waterium Z', 'Mystic Water', 'Eviolite', 'Greninjite'],
 		"ability": ['Torrent', 'Torrent', 'Torrent', 'Torrent', 'Protean'],
@@ -2233,7 +2233,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Greninja": {
-		"name": 'Froakie',
+		"name": 'Greninja',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Specs', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Waterium Z', 'Mystic Water', 'Eviolite', 'Greninjite'],
 		"ability": ['Torrent', 'Torrent', 'Torrent', 'Torrent', 'Protean'],
@@ -2269,7 +2269,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Quilladin": {
-		"name": 'Chespin',
+		"name": 'Quilladin',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Grassium Z', 'Miracle Seed', 'Eviolite', 'Chesnaughtite'],
 		"ability": ['Overgrow', 'Overgrow', 'Overgrow', 'Overgrow', 'Bulletproof'],
@@ -2281,7 +2281,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Chesnaught": {
-		"name": 'Chespin',
+		"name": 'Chesnaught',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Grassium Z', 'Miracle Seed', 'Eviolite', 'Chesnaughtite'],
 		"ability": ['Overgrow', 'Overgrow', 'Overgrow', 'Overgrow', 'Bulletproof'],
@@ -2305,7 +2305,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Torracat": {
-		"name": 'Litten',
+		"name": 'Torracat',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Firium Z', 'Charcoal', 'Eviolite', 'Incinium Z'],
 		"ability": ['Blaze', 'Blaze', 'Blaze', 'Blaze', 'Intimidate'],
@@ -2317,7 +2317,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Incineroar": {
-		"name": 'Litten',
+		"name": 'Incineroar',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Firium Z', 'Charcoal', 'Eviolite', 'Incinium Z'],
 		"ability": ['Blaze', 'Blaze', 'Blaze', 'Blaze', 'Intimidate'],
@@ -2341,7 +2341,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Brionne": {
-		"name": 'Popplio',
+		"name": 'Brionne',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Specs', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Waterium Z','Primarium Z', 'Mystic Water', 'Eviolite'],
 		"ability": ['Torrent', 'Torrent', 'Torrent', 'Torrent', 'Liquid Voice'],
@@ -2353,7 +2353,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Primarina": {
-		"name": 'Popplio',
+		"name": 'Primarina',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Specs', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Waterium Z','Primarium Z', 'Mystic Water', 'Eviolite'],
 		"ability": ['Torrent', 'Torrent', 'Torrent', 'Torrent', 'Liquid Voice'],
@@ -2377,7 +2377,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Dartrix": {
-		"name": 'Rowlet',
+		"name": 'Dartrix',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Specs', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Grassium Z', 'Miracle Seed', 'Eviolite', 'Decidium Z'],
 		"ability": ['Overgrow', 'Overgrow', 'Overgrow', 'Overgrow', 'Long Reach'],
@@ -2389,7 +2389,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Decidueye": {
-		"name": 'Rowlet',
+		"name": 'Decidueye',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Specs', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Grassium Z', 'Miracle Seed', 'Eviolite', 'Decidium Z'],
 		"ability": ['Overgrow', 'Overgrow', 'Overgrow', 'Overgrow', 'Long Reach'],
@@ -2413,7 +2413,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Raboot": {
-		"name": 'Scorbunny',
+		"name": 'Raboot',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Firium Z', 'Charcoal', 'Eviolite'],
 		"ability": ['Blaze', 'Blaze', 'Blaze', 'Blaze', 'Libero'],
@@ -2425,7 +2425,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Cinderace": {
-		"name": 'Scorbunny',
+		"name": 'Cinderace',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Firium Z', 'Charcoal', 'Eviolite'],
 		"ability": ['Blaze', 'Blaze', 'Blaze', 'Blaze', 'Libero'],
@@ -2449,7 +2449,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Drizzile": {
-		"name": 'Sobble',
+		"name": 'Drizzile',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Specs', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Waterium Z',  'Mystic Water', 'Eviolite'],
 		"ability": ['Torrent', 'Torrent', 'Torrent', 'Torrent', 'Sniper'],
@@ -2461,7 +2461,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Inteleon": {
-		"name": 'Sobble',
+		"name": 'Inteleon',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Specs', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Waterium Z', 'Mystic Water', 'Eviolite'],
 		"ability": ['Torrent', 'Torrent', 'Torrent', 'Torrent', 'Sniper'],
@@ -2485,7 +2485,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Thwackey": {
-		"name": 'Grookey',
+		"name": 'Thwackey',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Grassium Z', 'Miracle Seed', 'Eviolite',],
 		"ability": ['Overgrow', 'Overgrow', 'Overgrow', 'Overgrow', 'Grassy Surge'],
@@ -2497,7 +2497,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Rillaboom": {
-		"name": 'Grookey',
+		"name": 'Rillaboom',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Grassium Z', 'Miracle Seed', 'Eviolite',],
 		"ability": ['Overgrow', 'Overgrow', 'Overgrow', 'Overgrow', 'Grassy Surge'],
@@ -2521,7 +2521,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Legend-Unown": {
-		"name": 'Unown',
+		"name": 'Legend-Unown',
 		"species": "Unown",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Specs', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry'],
 		"ability": ['Ununown'],
@@ -2557,7 +2557,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Altaria": {
-		"name": 'Swablu',
+		"name": 'Altaria',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Specs', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Altarianite', 'Altarianite'],
 		"ability": ['Natural Cure', 'Cloud Nine'],
@@ -2617,7 +2617,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Breloom": {
-		"name": 'Shroomish',
+		"name": 'Breloom',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry'],
 		"ability": ['Effect Spore', 'Poison Heal', 'Technician'],
@@ -2750,7 +2750,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Gumshoos": {
-		"name": 'Yungoos',
+		"name": 'Gumshoos',
 		"species": "",
 		"item": ['Expert Belt', 'Iapapa Berry', 'Wiki Berry', 'Life Orb', 'Choice Band', 'Aguav Berry', 'Focus Sash', 'Assault Vest'],
 		"ability": ['Stakeout', 'Strong Jaw', 'Adaptability'],
@@ -2787,7 +2787,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Kirlia": {
-		"name": 'Ralts',
+		"name": 'Kirlia',
 		"species": "",
 		"item": ['Gardevoirite', 'Life Orb', 'Leftovers', 'Choice Specs', 'Focus Sash', 'Galladite'],
 		"ability": ['Synchronize', 'Trace', 'Telepathy'],
@@ -2799,7 +2799,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Gardevoir": {
-		"name": 'Ralts',
+		"name": 'Gardevoir',
 		"species": "",
 		"item": ['Gardevoirite', 'Life Orb', 'Leftovers', 'Choice Specs', 'Focus Sash', ],
 		"ability": ['Synchronize', 'Trace', 'Telepathy'],
@@ -2811,7 +2811,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Gallade": {
-		"name": '',
+		"name": 'Gallade',
 		"species": "",
 		"item": ['Galladite', 'Life Ord', 'Choice Band'],
 		"ability": ['Steadfast','Sharpness', 'Justified'],
@@ -2991,7 +2991,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Archaludon": {
-		"name": 'Duraludon',
+		"name": 'Archaludon',
 		"species": "",
 		"item": ['Aguav Berry', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry','Power Herb', 'Sitrus Berry','Assault Vest', 'Life Orb', 'Choice Specs', 'Metal Coat', 'Dragon Fang'],
 		"ability": ['Light Metal', 'Heavy Metal', 'Stalwart'],
@@ -3435,7 +3435,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Crocalor": {
-		"name": 'Fuecoco',
+		"name": 'Crocalor',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Specs', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Throat Spray', 'Eviolite',],
 		"ability": ['Blaze', 'Blaze', 'Blaze', 'Blaze', 'Unaware'],
@@ -3447,7 +3447,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Skeledirge": {
-		"name": 'Fuecoco',
+		"name": 'Skeledirge',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Specs', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Throat Spray', 'Eviolite'],
 		"ability": ['Blaze', 'Blaze', 'Blaze', 'Blaze', 'Unaware'],
@@ -3471,7 +3471,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Floragato": {
-		"name": 'Sprigatito',
+		"name": 'Floragato',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Eviolite'],
 		"ability": ['Overgrow', 'Overgrow', 'Overgrow', 'Overgrow', 'Protean'],
@@ -3483,7 +3483,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Meowscarada": {
-		"name": 'Sprigatito',
+		"name": 'Meowscarada',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Eviolite'],
 		"ability": ['Overgrow', 'Overgrow', 'Overgrow', 'Overgrow', 'Protean'],
@@ -3507,7 +3507,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Quaxwell": {
-		"name": 'Quaxly',
+		"name": 'Quaxwell',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Eviolite'],
 		"ability": ['Torrent', 'Torrent', 'Torrent', 'Torrent', 'Moxie'],
@@ -3519,7 +3519,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Quaquaval": {
-		"name": 'Quaxly',
+		"name": 'Quaquaval',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Eviolite'],
 		"ability": ['Torrent', 'Torrent', 'Torrent', 'Torrent', 'Moxie'],
@@ -3543,7 +3543,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Herdier": {
-		"name": 'Lillipup',
+		"name": 'Herdier',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Eviolite', 'Normalium Z'],
 		"ability": ['Intimidate', 'Sand Rush', 'Scrappy'],
@@ -3555,7 +3555,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Stoutland": {
-		"name": 'Lillipup',
+		"name": 'Stoutland',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Eviolite', 'Normalium Z'],
 		"ability": ['Intimidate', 'Sand Rush', 'Scrappy'],
@@ -3579,7 +3579,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Metapod": {
-		"name": 'Caterpie',
+		"name": 'Metapod',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Eviolite'],
 		"ability": ['Shed Skin'],
@@ -3591,7 +3591,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Butterfree": {
-		"name": 'Caterpie',
+		"name": 'Butterfree',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Eviolite'],
 		"ability": ['Compound Eyes', 'Tinted Lens'],
@@ -3639,7 +3639,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Weepinbell": {
-		"name": 'Bellsprout',
+		"name": 'Weepinbell',
 		"species": "",
 		"item": ['Life Orb', 'Choice Scarf', 'Black Sludge', 'Metronome', 'Eviolite', 'Grassium Z', 'Victreebelite'],
 		"ability": ['Chlorophyll', 'Concentrator'],
@@ -3651,7 +3651,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Victreebel": {
-		"name": 'Bellsprout',
+		"name": 'Victreebel',
 		"species": "",
 		"item": ['Life Orb', 'Choice Scarf', 'Black Sludge', 'Metronome', 'Eviolite', 'Grassium Z', 'Victreebelite'],
 		"ability": ['Chlorophyll', 'Concentrator'],
@@ -3675,7 +3675,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Flaaffy": {
-		"name": 'Mareep',
+		"name": 'Flaaffy',
 		"species": "",
 		"item": ['Ampharosite', 'Leftovers', 'Electrium Z', 'Magnet', 'Eviolite', 'Air Balloon', 'Aguav Berry'],
 		"ability": ['Static', 'Moody'],
@@ -3687,7 +3687,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Ampharos": {
-		"name": 'Mareep',
+		"name": 'Ampharos',
 		"species": "",
 		"item": ['Ampharosite', 'Leftovers', 'Electrium Z', 'Magnet', 'Eviolite', 'Air Balloon', 'Aguav Berry'],
 		"ability": ['Static', 'Moody'],
@@ -3711,7 +3711,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Palpitoad": {
-		"name": 'Tympole',
+		"name": 'Palpitoad',
 		"species": "",
 		"item": ['Life Orb', 'Throat Spray', 'Expert Belt', 'Choice Scarf', 'Assault Vest', 'Eviolite'],
 		"ability": ['Swift Swim', 'Liquid Voice'],
@@ -3723,7 +3723,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Seismitoad": {
-		"name": 'Tympole',
+		"name": 'Seismitoad',
 		"species": "",
 		"item": ['Life Orb', 'Throat Spray', 'Expert Belt', 'Choice Scarf', 'Assault Vest', 'Eviolite'],
 		"ability": ['Swift Swim', 'Liquid Voice'],
@@ -3747,7 +3747,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Tentacruel": {
-		"name": 'Tentacool',
+		"name": 'Tentacruel',
 		"species": "",
 		"item": ['Leftovers', 'Intact Apple', 'Sitrus Berry', 'Huge Berry', 'Rocky Helmet', 'Eviolite', 'Life Orb'],
 		"ability": ['Clear Body', 'Swift Swim', 'Regenerator'],
@@ -3771,7 +3771,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Scrafty": {
-		"name": 'Scraggy',
+		"name": 'Scrafty',
 		"species": "",
 		"item": ['Aguav Berry', 'Kee Berry', 'Rocky Helmet', 'Quick Claw', 'Black Belt', 'Black Glasses', 'Focus Sash', 'Fightinium Z', 'Darkinium Z', 'Scraftinite', 'Scraftinite'],
 		"ability": ['Defiant'],
@@ -3795,7 +3795,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Naclstack": {
-		"name": 'Nacli',
+		"name": 'Naclstack',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Eviolite'],
 		"ability": ['Purifying Salt', 'Sturdy', 'Clear Body'],
@@ -3807,7 +3807,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Garganacl": {
-		"name": 'Nacli',
+		"name": 'Garganacl',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Eviolite'],
 		"ability": ['Purifying Salt', 'Sturdy', 'Clear Body'],
@@ -3831,7 +3831,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Primeape": {
-		"name": 'Mankey',
+		"name": 'Primeape',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Eviolite'],
 		"ability": ['Vital Spirit', 'Anger Point', 'Defiant'],
@@ -3843,7 +3843,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Annihilape": {
-		"name": 'Mankey',
+		"name": 'Annihilape',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Eviolite'],
 		"ability": ['Vital Spirit', 'Anger Point', 'Defiant'],
@@ -3867,7 +3867,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Scovillain": {
-		"name": 'Capsakid',
+		"name": 'Scovillain',
 		"species": "",
 		"item": ['Choice Scarf', 'Choice Specs', 'Expert Belt', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Scovillainite', 'Scovillainite'],
 		"ability": ['Chlorophyll', 'Moody'],
@@ -3891,7 +3891,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Arctibax": {
-		"name": 'Frigibax',
+		"name": 'Arctibax',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Baxcalibrite', 'Baxcalibrite'],
 		"ability": ['Thermal Exchange', 'Ice Body'],
@@ -3903,7 +3903,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Baxcalibur": {
-		"name": 'Frigibax',
+		"name": 'Baxcalibur',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Baxcalibrite', 'Baxcalibrite'],
 		"ability": ['Thermal Exchange', 'Ice Body'],
@@ -3927,7 +3927,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Maushold": {
-		"name": 'Tandemaus',
+		"name": 'Maushold',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry'],
 		"ability": ['Technician'],
@@ -3951,7 +3951,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Bisharp": {
-		"name": 'Pawniard',
+		"name": 'Bisharp',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Eviolite'],
 		"ability": ['Defiant', 'Inner Focus', 'Pressure'],
@@ -3963,7 +3963,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Kingambit": {
-		"name": 'Pawniard',
+		"name": 'Kingambit',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Eviolite'],
 		"ability": ['Defiant', 'Supreme Overlord', 'Pressure'],
@@ -3987,7 +3987,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Tinkatuff": {
-		"name": 'Tinkatink',
+		"name": 'Tinkatuff',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Eviolite'],
 		"ability": ['Hamile'],
@@ -3999,7 +3999,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Tinkaton": {
-		"name": 'Tinkatink',
+		"name": 'Tinkaton',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf', 'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Eviolite'],
 		"ability": ['Hamile'],
@@ -4194,7 +4194,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Graveler-Alola": {
-		"name": 'Geodude-Alola',
+		"name": 'Graveler-Alola',
 		"species": "Geodude-Alola",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf',  'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry'],
 		"ability": ['Galvanize'],
@@ -4206,7 +4206,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Golem-Alola": {
-		"name": 'Geodude-Alola',
+		"name": 'Golem-Alola',
 		"species": "Geodude-Alola",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf',  'Choice Band', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry'],
 		"ability": ['Galvanize'],
@@ -4230,7 +4230,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Chansey": {
-		"name": 'Happiny',
+		"name": 'Chansey',
 		"species": "",
 		"item": ['Aguav Berry', 'Lucky Punch',   'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers',  'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Eviolite'],
 		"ability": ['Natural Cure', 'Serene Grace'],
@@ -4242,7 +4242,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Blissey": {
-		"name": 'Happiny',
+		"name": 'Blissey',
 		"species": "",
 		"item": ['Aguav Berry', 'Lucky Punch',   'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers',  'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Eviolite'],
 		"ability": ['Natural Cure', 'Serene Grace'],
@@ -4410,7 +4410,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Lampent": {
-		"name": 'Litwick',
+		"name": 'Lampent',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf',  'Choice Specs', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry','Firium Z', 'Chandelurite', 'Chandelurite'],
 		"ability": ['Flash Fire', 'Flame Body', 'Infiltrator'],
@@ -4422,7 +4422,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Chandelure": {
-		"name": 'Litwick',
+		"name": 'Chandelure',
 		"species": "",
 		"item": ['Aguav Berry', 'Assault Vest', 'Choice Scarf',  'Choice Specs', 'Expert Belt', 'Figy Berry', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry','Firium Z', 'Chandelurite', 'Chandelurite'],
 		"ability": ['Flash Fire', 'Flame Body', 'Infiltrator'],
@@ -4482,7 +4482,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Whirlipede": {
-		"name": 'Venipede',
+		"name": 'Whirlipede',
 		"species": "",
 		"item": ['Assault Vest', 'Choice Scarf',  'Choice Band', 'Expert Belt', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Scolipite', 'Scolipite'],
 		"ability": ['Poison Point', 'Speed Boost'],
@@ -4494,7 +4494,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Scolipede": {
-		"name": 'Venipede',
+		"name": 'Scolipede',
 		"species": "",
 		"item": ['Assault Vest', 'Choice Scarf',  'Choice Band', 'Expert Belt', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Scolipite', 'Scolipite'],
 		"ability": ['Poison Point', 'Speed Boost'],
@@ -4542,7 +4542,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Doublade": {
-		"name": 'Honedge',
+		"name": 'Doublade',
 		"species": "",
 		"item": ['Assault Vest', 'Choice Scarf',  'Choice Specs', 'Choice Band', 'Expert Belt', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Ghostium Z'],
 		"ability": ['No Guard'],
@@ -4554,7 +4554,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Aegislash": {
-		"name": 'Honedge',
+		"name": 'Aegislash',
 		"species": "",
 		"item": ['Assault Vest', 'Choice Scarf',  'Choice Specs', 'Choice Band', 'Expert Belt', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Ghostium Z'],
 		"ability": ['Stance Change'],
@@ -4578,7 +4578,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Wigglytuff": {
-		"name": 'Jigglypuff',
+		"name": 'Wigglytuff',
 		"species": "",
 		"item": ['Assault Vest', 'Choice Scarf',  'Choice Specs', 'Expert Belt', 'Focus Sash', 'Iapapa Berry', 'Leftovers', 'Life Orb', 'Mago Berry', 'Rocky Helmet', 'Wiki Berry', 'Sitrus Berry', 'Fairium Z'],
 		"ability": ['No Guard'],
@@ -4614,7 +4614,7 @@ export const PokemonPool = {
 		'level': 10,
 	},
 	"Sneasler": {
-		"name": 'Sneasel-Hisui',
+		"name": 'Sneasler',
 		"species": "",
 		"item": ['White Herb', 'Assault Vest', 'Choice Scarf',  'Choice Band', 'Expert Belt', 'Focus Sash', 'Iapapa Berry', 'Wiki Berry', 'Sitrus Berry'],
 		"ability": ['Keen Eye', 'Pickpocket'],
@@ -4630,7 +4630,7 @@ export const PokemonPool = {
 		"species": "",
 		"item": ['Leek'],
 		"ability": ['Leek'],
-		"moves": ['First Impression', 'Brave Bird', 'Dual Wingbeat', 'Quick Attack', 'Slash', 'Swords Dance', 'U-turn', 'Roost', 'Meteor Assault', 'Leaf Blade', 'Night Slash', 'Body Slam'],
+		"moves": ['First Impression', 'Brave Bird', 'Dual Wingbeat', 'Quick Attack', 'Slash', 'Swords Dance', 'U-turn', 'Roost', 'Leaf Blade', 'Night Slash', 'Body Slam'],
 		'nature': '',
 		'gender': '',
 		'evs': '0,0,0,0,0,0',

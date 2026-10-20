@@ -821,8 +821,8 @@ export const Items: import('../../../sim/dex-items').ModdedItemDataTable = {
 			}
 		},
 		onSourceDamagingHit(damage, target, source, move) {
-			if (this.checkMoveMakesContact(move, target, source)) {
-				this.damage(source.baseMaxhp / 6, source, target);
+			if (this.checkMoveMakesContact(move, source, target)) {
+				this.damage(target.baseMaxhp / 6, target, source);
 			}
 		},
 		num: 253,
